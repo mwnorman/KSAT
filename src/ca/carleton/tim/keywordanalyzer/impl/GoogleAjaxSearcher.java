@@ -19,12 +19,12 @@
  * USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
-package ca.carleton.tim.keywordanalyzer;
+package ca.carleton.tim.keywordanalyzer.impl;
 
 /**
  * 
- * This helper class utilizes the Google Ajax search API in order to search for keywords 
- * on websites.
+ * This helper class utilizes the Google Ajax search API in order to search for
+ * keywords on websites.
  * 
  * @author mwnorman
  *

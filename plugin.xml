@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="ca.carleton.tim.keywordanalyzer.plugin.prefs.KeywordAnalyzerPreferencePages"
+            id="prefs.KeywordAnalyzerPreferencePages"
+            name="Keyword Analyzer Preferences">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="ca.carleton.tim.keywordanalyzer.plugin.prefs.KeywordAnalyzerPropertiesPages"
+            id="prefs.KeywordAnalyzerPropertiesPages"
+            name="Keyword Analyzer Properties">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+            </adapt>
+         </enabledWhen>
+      </page>
+   </extension>
+</plugin>
