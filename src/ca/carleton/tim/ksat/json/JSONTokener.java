@@ -1,4 +1,4 @@
-package ca.carleton.tim.keywordanalyzer.json;
+package ca.carleton.tim.ksat.json;
 
 import java.io.BufferedReader;
 import java.io.IOException;

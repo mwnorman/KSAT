@@ -13,4 +13,4 @@ Require-Bundle: org.eclipse.core.runtime,
   org.eclipse.ui.navigator.resources,
   org.eclipse.ui.views,
   org.eclipse.ui.console
-Bundle-Activator: ca.carleton.tim.keywordanalyzer.plugin.Activator
+Bundle-Activator: ca.carleton.tim.ksat.plugin.Activator

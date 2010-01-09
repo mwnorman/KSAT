@@ -1,4 +1,4 @@
-package ca.carleton.tim.keywordanalyzer.plugin;
+package ca.carleton.tim.ksat.plugin;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;

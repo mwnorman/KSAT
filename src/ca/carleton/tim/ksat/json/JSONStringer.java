@@ -1,4 +1,4 @@
-package ca.carleton.tim.keywordanalyzer.json;
+package ca.carleton.tim.ksat.json;
 
 /*
 Copyright (c) 2006 JSON.org

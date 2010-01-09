@@ -19,7 +19,7 @@
  * USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
-package ca.carleton.tim.keywordanalyzer.impl;
+package ca.carleton.tim.ksat.impl;
 
 /**
  * 

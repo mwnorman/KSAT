@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="ca.carleton.tim.keywordanalyzer.plugin.prefs.KeywordAnalyzerPreferencePages"
+            class="ca.carleton.tim.ksat.plugin.prefs.KeywordAnalyzerPreferencePages"
             id="prefs.KeywordAnalyzerPreferencePages"
             name="Keyword Analyzer Preferences">
       </page>
@@ -12,7 +12,7 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            class="ca.carleton.tim.keywordanalyzer.plugin.prefs.KeywordAnalyzerPropertiesPages"
+            class="ca.carleton.tim.ksat.plugin.prefs.KeywordAnalyzerPropertiesPages"
             id="prefs.KeywordAnalyzerPropertiesPages"
             name="Keyword Analyzer Properties">
          <enabledWhen>

@@ -1,4 +1,4 @@
-package ca.carleton.tim.keywordanalyzer.json;
+package ca.carleton.tim.ksat.json;
 
 /**
  * The JSONException is thrown by the JSON.org classes then things are amiss.
