@@ -21,13 +21,16 @@
  */
 package ca.carleton.tim.ksat.model;
 
-public class KeywordExpression {
+//javase imports
+import java.util.Date;
+
+public class AnalysisResult {
 
 	protected int id;
 	protected Analysis owner;
-	protected String expression;
-	
-    public KeywordExpression() {
+	protected Date dateTime;
+    
+    public AnalysisResult() {
         super();
     }
 
@@ -45,11 +48,11 @@ public class KeywordExpression {
         this.owner = owner;
     }
 
-    public String getExpression() {
-        return expression;
+    public Date getDateTime() {
+        return dateTime;
     }
-    public void setExpression(String expression) {
-        this.expression = expression;
+    public void setDateTime(Date dateTime) {
+        this.dateTime = dateTime;
     }
     
 }

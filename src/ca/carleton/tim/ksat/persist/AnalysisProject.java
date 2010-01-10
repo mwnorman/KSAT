@@ -1,0 +1,204 @@
+/*
+ * This software is licensed under the terms of the ISC License.
+ * (ISCL http://www.opensource.org/licenses/isc-license.txt
+ * It is functionally equivalent to the 2-clause BSD licence,
+ * with language "made unnecessary by the Berne convention" removed).
+ * 
+ * Copyright (c) 2009, Mike Norman
+ * 
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+ * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER
+ * RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE
+ * USE OR PERFORMANCE OF THIS SOFTWARE.
+ * 
+ */
+package ca.carleton.tim.ksat.persist;
+
+//javase imports
+import java.util.ArrayList;
+
+//EclipseLink imports
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.sessions.Project;
+
+//KSAT imports
+import ca.carleton.tim.ksat.model.Analysis;
+import ca.carleton.tim.ksat.model.AnalysisResult;
+import ca.carleton.tim.ksat.model.KeywordExpression;
+import ca.carleton.tim.ksat.model.Site;
+
+public class AnalysisProject extends Project {
+
+    public AnalysisProject() {
+        setName("AnalysisProject");
+
+        addDescriptor(buildAnalysisDescriptor());
+        addDescriptor(buildSiteDescriptor());
+        addDescriptor(buildKeywordExpressionDescriptor());
+        addDescriptor(buildAnalysisResultDescriptor());
+    }
+
+    protected ClassDescriptor buildAnalysisDescriptor() {
+
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(Analysis.class);
+        descriptor.addTableName("KSAT_ANALYSIS_TABLE");
+        descriptor.addPrimaryKeyFieldName("KSAT_ANALYSIS_TABLE.ID");
+        descriptor.setSequenceNumberFieldName("KSAT_ANALYSIS_TABLE.ID");
+        descriptor.setSequenceNumberName("ANALYSIS_SEQ");
+        descriptor.setAlias("Analysis");
+        descriptor.getQueryManager().checkCacheForDoesExist();
+        
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setFieldName("KSAT_ANALYSIS_TABLE.ID");
+        descriptor.addMapping(idMapping);
+        
+        DirectToFieldMapping descriptionMapping = new DirectToFieldMapping();
+        descriptionMapping.setAttributeName("description");
+        descriptionMapping.setFieldName("KSAT_ANALYSIS_TABLE.DESCRIPT");
+        descriptor.addMapping(descriptionMapping);
+        
+        OneToManyMapping sitesMapping = new OneToManyMapping();
+        sitesMapping.setAttributeName("sites");
+        sitesMapping.setReferenceClass(Site.class);
+        sitesMapping.dontUseIndirection();
+        sitesMapping.privateOwnedRelationship();
+        sitesMapping.useCollectionClass(ArrayList.class);
+        sitesMapping.addTargetForeignKeyFieldName("KSAT_SITE_TABLE.ANALYSIS_ID",
+            "KSAT_ANALYSIS_TABLE.ID");
+        descriptor.addMapping(sitesMapping);
+        
+        OneToManyMapping expressionsMapping = new OneToManyMapping();
+        expressionsMapping.setAttributeName("expressions");
+        expressionsMapping.setReferenceClass(KeywordExpression.class);
+        expressionsMapping.dontUseIndirection();
+        expressionsMapping.privateOwnedRelationship();
+        expressionsMapping.useCollectionClass(ArrayList.class);
+        expressionsMapping.addTargetForeignKeyFieldName("KSAT_KEYWORD_TABLE.ANALYSIS_ID",
+            "KSAT_ANALYSIS_TABLE.ID");
+        descriptor.addMapping(expressionsMapping);
+        
+        OneToManyMapping analysisRunsMapping = new OneToManyMapping();
+        analysisRunsMapping.setAttributeName("results");
+        analysisRunsMapping.setReferenceClass(AnalysisResult.class);
+        analysisRunsMapping.dontUseIndirection();
+        analysisRunsMapping.privateOwnedRelationship();
+        analysisRunsMapping.useCollectionClass(ArrayList.class);
+        analysisRunsMapping.addTargetForeignKeyFieldName("KSAT_RESULT_TABLE.ANALYSIS_ID",
+            "KSAT_ANALYSIS_TABLE.ID");
+        descriptor.addMapping(analysisRunsMapping);
+        
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildSiteDescriptor() {
+
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(Site.class);
+        descriptor.setTableName("KSAT_SITE_TABLE");
+        descriptor.addPrimaryKeyFieldName("KSAT_SITE_TABLE.ID");
+        descriptor.setSequenceNumberFieldName("KSAT_SITE_TABLE.ID");
+        descriptor.setSequenceNumberName("SITE_SEQ");
+        descriptor.setAlias("Site");
+        descriptor.getQueryManager().checkCacheForDoesExist();
+        
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setFieldName("KSAT_SITE_TABLE.ID");
+        descriptor.addMapping(idMapping);
+        
+        DirectToFieldMapping descriptionMapping = new DirectToFieldMapping();
+        descriptionMapping.setAttributeName("description");
+        descriptionMapping.setFieldName("KSAT_SITE_TABLE.DESCRIPT");
+        descriptor.addMapping(descriptionMapping);
+        
+        DirectToFieldMapping urlMapping = new DirectToFieldMapping();
+        urlMapping.setAttributeName("url");
+        urlMapping.setFieldName("KSAT_SITE_TABLE.URL");
+        descriptor.addMapping(urlMapping);
+        
+        OneToOneMapping ownerMapping = new OneToOneMapping();
+        ownerMapping.setAttributeName("owner");
+        ownerMapping.setReferenceClass(Analysis.class);
+        ownerMapping.dontUseIndirection();
+        ownerMapping.addForeignKeyFieldName("KSAT_SITE_TABLE.ANALYSIS_ID",
+            "KSAT_ANALYSIS_TABLE.ID");
+        descriptor.addMapping(ownerMapping);
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildKeywordExpressionDescriptor() {
+
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(KeywordExpression.class);
+        descriptor.addTableName("KSAT_KEYWORD_TABLE");
+        descriptor.addPrimaryKeyFieldName("KSAT_KEYWORD_TABLE.ID");
+        descriptor.setSequenceNumberFieldName("KSAT_KEYWORD_TABLE.ID");
+        descriptor.setSequenceNumberName("KEYWORD_SEQ");
+        descriptor.setAlias("KeywordExpression");
+        
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setFieldName("KSAT_KEYWORD_TABLE.ID");
+        descriptor.addMapping(idMapping);
+        
+        DirectToFieldMapping expressionMapping = new DirectToFieldMapping();
+        expressionMapping.setAttributeName("expression");
+        expressionMapping.setFieldName("KSAT_KEYWORD_TABLE.EXPRESSION");
+        descriptor.addMapping(expressionMapping);
+        
+        OneToOneMapping ownerMapping = new OneToOneMapping();
+        ownerMapping.setAttributeName("owner");
+        ownerMapping.setReferenceClass(Analysis.class);
+        ownerMapping.dontUseIndirection();
+        ownerMapping.addForeignKeyFieldName("KSAT_KEYWORD_TABLE.ANALYSIS_ID",
+            "KSAT_ANALYSIS_TABLE.ID");
+        descriptor.addMapping(ownerMapping);
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildAnalysisResultDescriptor() {
+
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(AnalysisResult.class);
+        descriptor.addTableName("KSAT_RESULT_TABLE");
+        descriptor.addPrimaryKeyFieldName("KSAT_RESULT_TABLE.ID");
+        descriptor.setSequenceNumberFieldName("KSAT_RESULT_TABLE.ID");
+        descriptor.setSequenceNumberName("RESULT_SEQ");
+        descriptor.setAlias("AnalysisResult");
+        
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setFieldName("KSAT_RESULT_TABLE.ID");
+        descriptor.addMapping(idMapping);
+        
+        DirectToFieldMapping dateMapping = new DirectToFieldMapping();
+        dateMapping.setAttributeName("dateTime");
+        dateMapping.setFieldName("KSAT_RESULT_TABLE.RUN_DATE");
+        descriptor.addMapping(dateMapping);
+        
+        OneToOneMapping ownerMapping = new OneToOneMapping();
+        ownerMapping.setAttributeName("owner");
+        ownerMapping.setReferenceClass(Analysis.class);
+        ownerMapping.dontUseIndirection();
+        ownerMapping.addForeignKeyFieldName("KSAT_RESULT_TABLE.ANALYSIS_ID",
+            "KSAT_ANALYSIS_TABLE.ID");
+        descriptor.addMapping(ownerMapping);
+        
+        return descriptor;
+    }
+}
