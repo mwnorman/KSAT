@@ -35,7 +35,7 @@ public class AnalysisProjectTablesCreator extends TableCreator {
         addTableDefinition(buildKSAT_ANALYSIS_TABLE());
         addTableDefinition(buildKSAT_KEYWORD_TABLE());
         addTableDefinition(buildKSAT_SITE_TABLE());
-        addTableDefinition(buildKSAT_RESULTS_TABLE());
+        addTableDefinition(buildKSAT_RESULT_TABLE());
         addTableDefinition(buildKSAT_SEQUENCE_TABLE());
     }
 
@@ -173,9 +173,9 @@ public class AnalysisProjectTablesCreator extends TableCreator {
         return table;
     }
 
-    protected TableDefinition buildKSAT_RESULTS_TABLE() {
+    protected TableDefinition buildKSAT_RESULT_TABLE() {
         TableDefinition table = new TableDefinition();
-        table.setName("KSAT_RESULTS_TABLE");
+        table.setName("KSAT_RESULT_TABLE");
         
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -198,6 +198,17 @@ public class AnalysisProjectTablesCreator extends TableCreator {
         fieldRUN_DATE.setUnique(false);
         fieldRUN_DATE.setShouldAllowNull(false);
         table.addField(fieldRUN_DATE);
+
+        FieldDefinition fieldRAW_RESULT = new FieldDefinition();
+        fieldRAW_RESULT.setName("RAW_RESULT");
+        fieldRAW_RESULT.setTypeName("blob");
+        fieldRAW_RESULT.setSize(0);
+        fieldRAW_RESULT.setSubSize(0);
+        fieldRAW_RESULT.setIsPrimaryKey(false);
+        fieldRAW_RESULT.setIsIdentity(false);
+        fieldRAW_RESULT.setUnique(false);
+        fieldRAW_RESULT.setShouldAllowNull(true);
+        table.addField(fieldRAW_RESULT);
         
         FieldDefinition fieldANALYSIS_ID = new FieldDefinition();
         fieldANALYSIS_ID.setName("ANALYSIS_ID");

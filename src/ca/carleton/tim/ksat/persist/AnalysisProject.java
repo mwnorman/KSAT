@@ -27,12 +27,14 @@ import java.util.ArrayList;
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.Project;
 
-//KSAT imports
+//domain imports (KSAT)
 import ca.carleton.tim.ksat.model.Analysis;
 import ca.carleton.tim.ksat.model.AnalysisResult;
 import ca.carleton.tim.ksat.model.KeywordExpression;
@@ -111,6 +113,16 @@ public class AnalysisProject extends Project {
         analysisRunsMapping.addTargetForeignKeyFieldName("KSAT_RESULT_TABLE.ANALYSIS_ID",
             "KSAT_ANALYSIS_TABLE.ID");
         descriptor.addMapping(analysisRunsMapping);
+        
+        // Named Query -- findByDescription
+        ReadObjectQuery findByDescriptionQuery = new ReadObjectQuery(Analysis.class);
+        findByDescriptionQuery.setName("findByDescription");
+        findByDescriptionQuery.setShouldBindAllParameters(true);
+        ExpressionBuilder builder = findByDescriptionQuery.getExpressionBuilder();
+        findByDescriptionQuery.setSelectionCriteria(
+            builder.get("description").equal(builder.getParameter("description")));
+        findByDescriptionQuery.addArgument("description", String.class);
+        descriptor.getQueryManager().addQuery("findByDescription", findByDescriptionQuery);
         
         return descriptor;
     }
@@ -225,7 +237,7 @@ public class AnalysisProject extends Project {
         rawResultMapping.setAttributeName("rawResult");
         rawResultMapping.setGetMethodName("getRawResult");
         rawResultMapping.setSetMethodName("setRawResult");
-        rawResultMapping.setFieldName("KSAT_RESULTS_TABLE.RAW_RESULT");
+        rawResultMapping.setFieldName("KSAT_RESULT_TABLE.RAW_RESULT");
         descriptor.addMapping(rawResultMapping);
         
         OneToOneMapping ownerMapping = new OneToOneMapping();

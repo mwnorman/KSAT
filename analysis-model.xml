@@ -1,0 +1,22 @@
+<analysis-model>
+  <properties>
+    <property name="logLevel">fine</property>
+    <property name="username">user</property>
+    <property name="password">password</property>
+    <property name="url">jdbc:mysql://localhost:3306/emp</property>
+    <property name="driver">com.mysql.jdbc.Driver</property>
+    <property name="platformClassname">org.eclipse.persistence.platform.database.MySQLPlatform</property>
+  </properties>
+  <!--
+  <new-analysis
+    sites-filename="P:/tim/project/ksat/sites.txt"
+	expressions-filename="P:/tim/project/ksat/keywords.txt"
+	create-tables="true"
+	analysis-description="analysis1"
+  />
+  -->
+  <report-analysis
+    analysis-description="analysis1"
+    report-destination="P:/tim/project/ksat/report.xml"
+  />
+</analysis-model>

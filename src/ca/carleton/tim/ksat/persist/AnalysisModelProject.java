@@ -129,7 +129,7 @@ public class AnalysisModelProject extends Project {
         operationsMapping.setAttributeName("operations");
         operationsMapping.setContainerPolicy(new ListContainerPolicy(ArrayList.class));
         operationsMapping.addChoiceElement("new-analysis", NewAnalysisOperationModel.class);
-        operationsMapping.addChoiceElement("report", ReportAnalysisOperationModel.class);
+        operationsMapping.addChoiceElement("report-analysis", ReportAnalysisOperationModel.class);
         operationsMapping.addChoiceElement("update-analysis", UpdateAnalysisOperationModel.class);
         operationsMapping.addChoiceElement("run-analysis", RunAnalysisOperationModel.class);
         descriptor.addMapping(operationsMapping);
@@ -164,6 +164,11 @@ public class AnalysisModelProject extends Project {
         createTablesMapping.setNullValue(Boolean.FALSE);
         createTablesMapping.setXPath("@create-tables");
         descriptor.addMapping(createTablesMapping);
+
+        XMLDirectMapping descriptionMapping = new XMLDirectMapping();
+        descriptionMapping.setAttributeName("analysisDescription");
+        descriptionMapping.setXPath("analysis-description/text()");
+        descriptor.addMapping(descriptionMapping);
         
         return descriptor;
     }
@@ -172,7 +177,12 @@ public class AnalysisModelProject extends Project {
 
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(ReportAnalysisOperationModel.class);
-        descriptor.setDefaultRootElement("report");
+        descriptor.setDefaultRootElement("report-analysis");
+        
+        XMLDirectMapping descriptionMapping = new XMLDirectMapping();
+        descriptionMapping.setAttributeName("analysisDescription");
+        descriptionMapping.setXPath("analysis-description/text()");
+        descriptor.addMapping(descriptionMapping);
         
         return descriptor;
     }

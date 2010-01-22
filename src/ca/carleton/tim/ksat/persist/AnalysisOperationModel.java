@@ -21,6 +21,7 @@
  */
 package ca.carleton.tim.ksat.persist;
 
+//EclipseLink imports
 import org.eclipse.persistence.sessions.UnitOfWork;
 
 public abstract class AnalysisOperationModel {

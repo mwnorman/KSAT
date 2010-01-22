@@ -39,6 +39,7 @@ public class NewAnalysisOperationModel extends AnalysisOperationModel {
     protected String sitesFilename;
     protected String expressionsFilename;
     protected boolean createTables = false;
+    protected String analysisDescription;
 
     public NewAnalysisOperationModel() {
         super();
@@ -62,6 +63,7 @@ public class NewAnalysisOperationModel extends AnalysisOperationModel {
             }
         }
         Analysis newAnalysis = (Analysis)uow.registerNewObject(new Analysis());
+        newAnalysis.setDescription(analysisDescription);
         try {
             BufferedReader input = new BufferedReader(new FileReader(sitesFilename));
             String line = null;

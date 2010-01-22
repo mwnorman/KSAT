@@ -21,15 +21,41 @@
  */
 package ca.carleton.tim.ksat.persist;
 
+//javase imports
+import java.io.File;
+import java.io.FileOutputStream;
+
+//EclipseLink imports
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
+//domain import (KSAT)
+import ca.carleton.tim.ksat.model.Analysis;
+
 public class ReportAnalysisOperationModel extends AnalysisOperationModel {
+
+    protected String analysisDescription;
+    protected String reportDestination;
 
     public ReportAnalysisOperationModel() {
         super();
     }
 
     public void build(AnalysisBuilder builder, UnitOfWork uow) {
-       
+        try {
+            Analysis reportingAnalysis = (Analysis)uow.executeQuery("findByDescription",
+                Analysis.class, analysisDescription);
+            if (reportingAnalysis != null) {
+                AnalysisReport report = (AnalysisReport)uow.registerNewObject(new AnalysisReport());
+                report.setReportingAnalysis(reportingAnalysis);
+                XMLContext context = new XMLContext(new AnalysisReportProject());
+                XMLMarshaller marshaller = context.createMarshaller();
+                marshaller.marshal(report, new FileOutputStream(new File(analysisDescription)));
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
