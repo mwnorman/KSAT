@@ -29,6 +29,7 @@ public class AnalysisResult {
 	protected int id;
 	protected Analysis owner;
 	protected Date dateTime;
+	protected byte[] rawResult;
     
     public AnalysisResult() {
         super();
@@ -53,6 +54,13 @@ public class AnalysisResult {
     }
     public void setDateTime(Date dateTime) {
         this.dateTime = dateTime;
+    }
+
+    public byte[] getRawResult() {
+        return rawResult;
+    }
+    public void setRawResult(byte[] rawResult) {
+        this.rawResult = rawResult;
     }
     
 }

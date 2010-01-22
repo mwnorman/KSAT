@@ -62,18 +62,25 @@ public class AnalysisProject extends Project {
         
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
         idMapping.setAttributeName("id");
+        idMapping.setGetMethodName("getId");
+        idMapping.setSetMethodName("setId");
         idMapping.setFieldName("KSAT_ANALYSIS_TABLE.ID");
         descriptor.addMapping(idMapping);
         
         DirectToFieldMapping descriptionMapping = new DirectToFieldMapping();
         descriptionMapping.setAttributeName("description");
+        descriptionMapping.setGetMethodName("getDescription");
+        descriptionMapping.setSetMethodName("setDescription");
         descriptionMapping.setFieldName("KSAT_ANALYSIS_TABLE.DESCRIPT");
         descriptor.addMapping(descriptionMapping);
         
         OneToManyMapping sitesMapping = new OneToManyMapping();
         sitesMapping.setAttributeName("sites");
+        sitesMapping.setGetMethodName("getSites");
+        sitesMapping.setSetMethodName("setSites");
         sitesMapping.setReferenceClass(Site.class);
         sitesMapping.dontUseIndirection();
+        sitesMapping.useBatchReading();
         sitesMapping.privateOwnedRelationship();
         sitesMapping.useCollectionClass(ArrayList.class);
         sitesMapping.addTargetForeignKeyFieldName("KSAT_SITE_TABLE.ANALYSIS_ID",
@@ -82,8 +89,11 @@ public class AnalysisProject extends Project {
         
         OneToManyMapping expressionsMapping = new OneToManyMapping();
         expressionsMapping.setAttributeName("expressions");
+        expressionsMapping.setGetMethodName("getExpressions");
+        expressionsMapping.setSetMethodName("setExpressions");
         expressionsMapping.setReferenceClass(KeywordExpression.class);
         expressionsMapping.dontUseIndirection();
+        expressionsMapping.useBatchReading();
         expressionsMapping.privateOwnedRelationship();
         expressionsMapping.useCollectionClass(ArrayList.class);
         expressionsMapping.addTargetForeignKeyFieldName("KSAT_KEYWORD_TABLE.ANALYSIS_ID",
@@ -92,6 +102,8 @@ public class AnalysisProject extends Project {
         
         OneToManyMapping analysisRunsMapping = new OneToManyMapping();
         analysisRunsMapping.setAttributeName("results");
+        analysisRunsMapping.setGetMethodName("getResults");
+        analysisRunsMapping.setSetMethodName("setResults");
         analysisRunsMapping.setReferenceClass(AnalysisResult.class);
         analysisRunsMapping.dontUseIndirection();
         analysisRunsMapping.privateOwnedRelationship();
@@ -116,21 +128,29 @@ public class AnalysisProject extends Project {
         
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
         idMapping.setAttributeName("id");
+        idMapping.setGetMethodName("getId");
+        idMapping.setSetMethodName("setId");
         idMapping.setFieldName("KSAT_SITE_TABLE.ID");
         descriptor.addMapping(idMapping);
         
         DirectToFieldMapping descriptionMapping = new DirectToFieldMapping();
         descriptionMapping.setAttributeName("description");
+        descriptionMapping.setGetMethodName("getDescription");
+        descriptionMapping.setSetMethodName("setDescription");
         descriptionMapping.setFieldName("KSAT_SITE_TABLE.DESCRIPT");
         descriptor.addMapping(descriptionMapping);
         
         DirectToFieldMapping urlMapping = new DirectToFieldMapping();
         urlMapping.setAttributeName("url");
+        urlMapping.setGetMethodName("getUrl");
+        urlMapping.setSetMethodName("setUrl");
         urlMapping.setFieldName("KSAT_SITE_TABLE.URL");
         descriptor.addMapping(urlMapping);
         
         OneToOneMapping ownerMapping = new OneToOneMapping();
         ownerMapping.setAttributeName("owner");
+        ownerMapping.setGetMethodName("getOwner");
+        ownerMapping.setSetMethodName("setOwner");
         ownerMapping.setReferenceClass(Analysis.class);
         ownerMapping.dontUseIndirection();
         ownerMapping.addForeignKeyFieldName("KSAT_SITE_TABLE.ANALYSIS_ID",
@@ -152,16 +172,22 @@ public class AnalysisProject extends Project {
         
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
         idMapping.setAttributeName("id");
+        idMapping.setGetMethodName("getId");
+        idMapping.setSetMethodName("setId");
         idMapping.setFieldName("KSAT_KEYWORD_TABLE.ID");
         descriptor.addMapping(idMapping);
         
         DirectToFieldMapping expressionMapping = new DirectToFieldMapping();
         expressionMapping.setAttributeName("expression");
+        expressionMapping.setGetMethodName("getExpression");
+        expressionMapping.setSetMethodName("setExpression");
         expressionMapping.setFieldName("KSAT_KEYWORD_TABLE.EXPRESSION");
         descriptor.addMapping(expressionMapping);
         
         OneToOneMapping ownerMapping = new OneToOneMapping();
         ownerMapping.setAttributeName("owner");
+        ownerMapping.setGetMethodName("getOwner");
+        ownerMapping.setSetMethodName("setOwner");
         ownerMapping.setReferenceClass(Analysis.class);
         ownerMapping.dontUseIndirection();
         ownerMapping.addForeignKeyFieldName("KSAT_KEYWORD_TABLE.ANALYSIS_ID",
@@ -183,16 +209,29 @@ public class AnalysisProject extends Project {
         
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
         idMapping.setAttributeName("id");
+        idMapping.setGetMethodName("getId");
+        idMapping.setSetMethodName("setId");
         idMapping.setFieldName("KSAT_RESULT_TABLE.ID");
         descriptor.addMapping(idMapping);
         
         DirectToFieldMapping dateMapping = new DirectToFieldMapping();
         dateMapping.setAttributeName("dateTime");
+        dateMapping.setGetMethodName("getDateTime");
+        dateMapping.setSetMethodName("setDateTime");
         dateMapping.setFieldName("KSAT_RESULT_TABLE.RUN_DATE");
         descriptor.addMapping(dateMapping);
         
+        DirectToFieldMapping rawResultMapping = new DirectToFieldMapping();
+        rawResultMapping.setAttributeName("rawResult");
+        rawResultMapping.setGetMethodName("getRawResult");
+        rawResultMapping.setSetMethodName("setRawResult");
+        rawResultMapping.setFieldName("KSAT_RESULTS_TABLE.RAW_RESULT");
+        descriptor.addMapping(rawResultMapping);
+        
         OneToOneMapping ownerMapping = new OneToOneMapping();
         ownerMapping.setAttributeName("owner");
+        ownerMapping.setGetMethodName("getOwner");
+        ownerMapping.setSetMethodName("setOwner");
         ownerMapping.setReferenceClass(Analysis.class);
         ownerMapping.dontUseIndirection();
         ownerMapping.addForeignKeyFieldName("KSAT_RESULT_TABLE.ANALYSIS_ID",
