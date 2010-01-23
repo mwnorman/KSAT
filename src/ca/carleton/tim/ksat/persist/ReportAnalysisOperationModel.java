@@ -88,6 +88,54 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
         "</xsl:template>" +
       "</xsl:stylesheet>";
     
+    static final String CSV_XSL =
+        "<xsl:stylesheet " +
+        "xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" " +
+        "version=\"1.0\" " +
+        ">" +
+        "<xsl:strip-space elements=\"*\"/>" +
+        "<xsl:output indent=\"no\" media-type=\"text/plain\" method=\"text\" omit-xml-declaration=\"yes\" />" +
+        "<xsl:template match=\"/\">" +
+          "Site id,Estimated Size of Site" +
+          "<xsl:for-each select=\"analysis-report/analysis/keywords/keyword\">" +
+            "<xsl:text>,</xsl:text>e<xsl:value-of select=\"@id\"/>" +
+          "</xsl:for-each>" +
+          "<xsl:text>&#13;</xsl:text>" +
+          "<xsl:for-each select=\"analysis-report/analysis/results/result/site-page-counts\">" +
+            "<xsl:value-of select=\"@site-id\"/>" +
+            "<xsl:text>,</xsl:text><xsl:value-of select=\"@estimated-total-pages\"/>" +
+            "<xsl:for-each select=\"keyword-page-count\">" +
+              "<xsl:text>,</xsl:text><xsl:value-of select=\"text()\"/>" +
+            "</xsl:for-each>" +
+            "<xsl:text>&#13;</xsl:text>" +
+          "</xsl:for-each>" +
+        "</xsl:template>" +
+      "</xsl:stylesheet>";
+/*
+<xsl:stylesheet
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  version="1.0"
+  >
+  <xsl:strip-space elements="*"/>
+  <xsl:output indent="no" media-type="text/plain" method="text" omit-xml-declaration="yes" />
+  <xsl:template match="/">
+    Site id,Estimated Size of Site,
+    <xsl:for-each select="analysis-report/analysis/keywords/keyword">
+      e<xsl:value-of select="@id"/><xsl:text>,</xsl:text>
+    </xsl:for-each>
+    <xsl:text>&#13;</xsl:text>
+    <xsl:for-each select="analysis-report/analysis/results/result/site-page-counts">
+      <xsl:value-of select="@site-id"/><xsl:text>,</xsl:text>
+      <xsl:value-of select="@estimated-total-pages"/>
+      <xsl:for-each select="keyword-page-count">      
+        <xsl:text>,</xsl:text><xsl:value-of select="text()"/>
+      </xsl:for-each>
+      <xsl:text>&#13;</xsl:text>
+    </xsl:for-each>
+  </xsl:template>
+</xsl:stylesheet>    
+ */
+        
     protected String reportFormat;
     protected String analysisDescription;
     protected String reportDestination;
@@ -113,6 +161,16 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
                     Document doc = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
                     marshaller.marshal(report, doc);
                     StreamSource xslSource = new StreamSource(new StringReader(HTML_XSL));
+                    Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
+                    DOMSource domSource = new DOMSource(doc);
+                    transformer.transform(domSource, new StreamResult(destination));
+                }
+                else if (REPORT_CSV_FORMAT.equalsIgnoreCase(reportFormat)) {
+                    Document doc = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
+                    marshaller.marshal(report, doc);
+                    //XMLParser parser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
+                    //doc = parser.parse(new File("P:/tim/project/ksat/new_results.xml"));
+                    StreamSource xslSource = new StreamSource(new StringReader(CSV_XSL));
                     Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
                     DOMSource domSource = new DOMSource(doc);
                     transformer.transform(domSource, new StreamResult(destination));
