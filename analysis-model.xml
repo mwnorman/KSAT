@@ -1,6 +1,6 @@
 <analysis-model>
   <properties>
-    <property name="logLevel">fine</property>
+    <property name="logLevel">off</property>
     <property name="username">user</property>
     <property name="password">password</property>
     <property name="url">jdbc:mysql://localhost:3306/emp</property>

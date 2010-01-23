@@ -167,7 +167,7 @@ public class AnalysisModelProject extends Project {
 
         XMLDirectMapping descriptionMapping = new XMLDirectMapping();
         descriptionMapping.setAttributeName("analysisDescription");
-        descriptionMapping.setXPath("analysis-description/text()");
+        descriptionMapping.setXPath("@analysis-description");
         descriptor.addMapping(descriptionMapping);
         
         return descriptor;
@@ -181,8 +181,13 @@ public class AnalysisModelProject extends Project {
         
         XMLDirectMapping descriptionMapping = new XMLDirectMapping();
         descriptionMapping.setAttributeName("analysisDescription");
-        descriptionMapping.setXPath("analysis-description/text()");
+        descriptionMapping.setXPath("@analysis-description");
         descriptor.addMapping(descriptionMapping);
+        
+        XMLDirectMapping reportDestinationMapping = new XMLDirectMapping();
+        reportDestinationMapping.setAttributeName("reportDestination");
+        reportDestinationMapping.setXPath("@report-destination");
+        descriptor.addMapping(reportDestinationMapping);
         
         return descriptor;
     }

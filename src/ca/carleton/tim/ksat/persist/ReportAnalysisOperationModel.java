@@ -22,8 +22,7 @@
 package ca.carleton.tim.ksat.persist;
 
 //javase imports
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 
 //EclipseLink imports
 import org.eclipse.persistence.oxm.XMLContext;
@@ -47,11 +46,11 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
             Analysis reportingAnalysis = (Analysis)uow.executeQuery("findByDescription",
                 Analysis.class, analysisDescription);
             if (reportingAnalysis != null) {
-                AnalysisReport report = (AnalysisReport)uow.registerNewObject(new AnalysisReport());
+                AnalysisReport report = new AnalysisReport();
                 report.setReportingAnalysis(reportingAnalysis);
                 XMLContext context = new XMLContext(new AnalysisReportProject());
                 XMLMarshaller marshaller = context.createMarshaller();
-                marshaller.marshal(report, new FileOutputStream(new File(analysisDescription)));
+                marshaller.marshal(report, new FileWriter(reportDestination));
             }
         }
         catch (Exception e) {
