@@ -37,6 +37,7 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
 
+import ca.carleton.tim.ksat.model.AnalysisResult;
 import ca.carleton.tim.ksat.model.KeywordExpression;
 import ca.carleton.tim.ksat.model.Site;
 
@@ -54,6 +55,7 @@ public class AnalysisReportProject extends Project {
         addDescriptor(buildAnalysisReportDescriptor());
         addDescriptor(buildSiteDescriptor());
         addDescriptor(buildAnalysisKeywordDescriptor());
+        addDescriptor(buildAnalysisResultDescriptor());
 
         for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
             XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
@@ -129,6 +131,22 @@ public class AnalysisReportProject extends Project {
         keywordsMapping.setXPath("analysis/keywords/keyword");
         descriptor.addMapping(keywordsMapping);
         
+        XMLCompositeCollectionMapping resultsMapping = new XMLCompositeCollectionMapping();
+        resultsMapping.setAttributeName("analysisResults");
+        resultsMapping.setReferenceClass(AnalysisResult.class);
+        resultsMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
+            public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+                // no-op - marshall 'out' only
+            }
+            @Override
+            public Object getAttributeValueFromObject(Object object) throws DescriptorException {
+                return ((AnalysisReport)object).getAnalysisResults();
+            }
+        });
+        resultsMapping.setXPath("analysis/results/result");
+        descriptor.addMapping(resultsMapping);
+        
         return descriptor;
     }
     
@@ -166,6 +184,25 @@ public class AnalysisReportProject extends Project {
         expressionMapping.setAttributeName("expression");
         expressionMapping.setXPath("text()");
         descriptor.addMapping(expressionMapping);
+        
+        return descriptor;
+    }
+    
+    protected ClassDescriptor buildAnalysisResultDescriptor() {
+    
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(AnalysisResult.class);
+        descriptor.setDefaultRootElement("result");
+
+        XMLDirectMapping idMapping = new XMLDirectMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setXPath("@id");
+        descriptor.addMapping(idMapping);
+
+        XMLDirectMapping timestampMapping = new XMLDirectMapping();
+        timestampMapping.setAttributeName("dateTime");
+        timestampMapping.setXPath("@timestamp");
+        descriptor.addMapping(timestampMapping);
         
         return descriptor;
     }

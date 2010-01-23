@@ -85,6 +85,7 @@ public class AnalysisProject extends Project {
         sitesMapping.useBatchReading();
         sitesMapping.privateOwnedRelationship();
         sitesMapping.useCollectionClass(ArrayList.class);
+        sitesMapping.addAscendingOrdering("id");
         sitesMapping.addTargetForeignKeyFieldName("KSAT_SITE_TABLE.ANALYSIS_ID",
             "KSAT_ANALYSIS_TABLE.ID");
         descriptor.addMapping(sitesMapping);
@@ -98,6 +99,7 @@ public class AnalysisProject extends Project {
         expressionsMapping.useBatchReading();
         expressionsMapping.privateOwnedRelationship();
         expressionsMapping.useCollectionClass(ArrayList.class);
+        expressionsMapping.addAscendingOrdering("id");
         expressionsMapping.addTargetForeignKeyFieldName("KSAT_KEYWORD_TABLE.ANALYSIS_ID",
             "KSAT_ANALYSIS_TABLE.ID");
         descriptor.addMapping(expressionsMapping);
@@ -108,8 +110,10 @@ public class AnalysisProject extends Project {
         analysisRunsMapping.setSetMethodName("setResults");
         analysisRunsMapping.setReferenceClass(AnalysisResult.class);
         analysisRunsMapping.dontUseIndirection();
+        analysisRunsMapping.useBatchReading();
         analysisRunsMapping.privateOwnedRelationship();
         analysisRunsMapping.useCollectionClass(ArrayList.class);
+        analysisRunsMapping.addAscendingOrdering("id");
         analysisRunsMapping.addTargetForeignKeyFieldName("KSAT_RESULT_TABLE.ANALYSIS_ID",
             "KSAT_ANALYSIS_TABLE.ID");
         descriptor.addMapping(analysisRunsMapping);
