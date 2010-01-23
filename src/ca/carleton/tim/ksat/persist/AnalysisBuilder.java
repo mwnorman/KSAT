@@ -58,12 +58,17 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 public class AnalysisBuilder {
 
     public static final String ANALYSIS_MODEL_FILE_PATH = "-analysisFile";
-    public static final String DRIVER_KEY = "driver";
-    public static final String USERNAME_KEY= "username";
-    public static final String PASSWORD_KEY = "password";
-    public static final String URL_KEY = "url";
     public static final String LOG_LEVEL_KEY = "logLevel";
+    public static final String USERNAME_KEY= "username";
+    public static final String SYSTEM_USERNAME_KEY= "db.user";
+    public static final String PASSWORD_KEY = "password";
+    public static final String SYSTEM_PASSWORD_KEY= "db.pwd";
+    public static final String URL_KEY = "url";
+    public static final String SYSTEM_URL_KEY = "db.url";
+    public static final String DRIVER_KEY = "driver";
+    public static final String SYSTEM_DRIVER_KEY = "db.driver";
     public static final String PLATFORM_CLASSNAME_KEY = "platformClassname";
+    public static final String SYSTEM_PLATFORM_CLASSNAME_KEY = "db.platform";
     public static final String DEFAULT_PLATFORM_CLASSNAME =
         "org.eclipse.persistence.platform.database.MySQLPlatform";
     public static final String CUSTOMIZER_KEY = "customizerClassName";
@@ -94,6 +99,51 @@ public class AnalysisBuilder {
                 XMLUnmarshaller unmarshaller = context.createUnmarshaller();
                 AnalysisBuilder builderModel = (AnalysisBuilder)unmarshaller.unmarshal(analysisModelFile);
                 properties = builderModel.properties;
+                String username = getUsername();
+                if (username == null) {
+                    username = System.getProperty(SYSTEM_USERNAME_KEY);
+                    if (username == null) {
+                        logMessage(SEVERE, "No database user specified");
+                        return;
+                    }
+                    setUsername(username);
+                }
+                String password = getPassword();
+                if (password == null) {
+                    password = System.getProperty(SYSTEM_PASSWORD_KEY);
+                    if (password == null) {
+                        logMessage(SEVERE, "No database user password specified");
+                        return;
+                    }
+                    setPassword(password);
+                }
+                String url = getUrl();
+                if (url == null) {
+                    url = System.getProperty(SYSTEM_URL_KEY);
+                    if (url == null) {
+                        logMessage(SEVERE, "No database url specified");
+                        return;
+                    }
+                    setUrl(url);
+                }
+                String driver = getDriver();
+                if (driver == null) {
+                    driver = System.getProperty(SYSTEM_DRIVER_KEY);
+                    if (driver == null) {
+                        logMessage(SEVERE, "No database driver specified");
+                        return;
+                    }
+                    setDriver(driver);
+                }
+                String platformClassname = getPlatformClassname();
+                if (platformClassname == null) {
+                    platformClassname = System.getProperty(SYSTEM_PLATFORM_CLASSNAME_KEY);
+                    if (platformClassname == null) {
+                        logMessage(SEVERE, "No database platform specified");
+                        return;
+                    }
+                    setPlatformClassname(platformClassname);
+                }
                 operations = builderModel.operations;
                 if (operations.size() == 0) {
                     logMessage(SEVERE, "No operations specified");

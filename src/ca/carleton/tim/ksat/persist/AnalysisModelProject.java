@@ -179,6 +179,11 @@ public class AnalysisModelProject extends Project {
         descriptor.setJavaClass(ReportAnalysisOperationModel.class);
         descriptor.setDefaultRootElement("report-analysis");
         
+        XMLDirectMapping formatMapping = new XMLDirectMapping();
+        formatMapping.setAttributeName("reportFormat");
+        formatMapping.setXPath("@report-format");
+        descriptor.addMapping(formatMapping);
+        
         XMLDirectMapping descriptionMapping = new XMLDirectMapping();
         descriptionMapping.setAttributeName("analysisDescription");
         descriptionMapping.setXPath("@analysis-description");

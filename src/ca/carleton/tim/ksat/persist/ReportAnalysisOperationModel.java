@@ -34,6 +34,7 @@ import ca.carleton.tim.ksat.model.Analysis;
 
 public class ReportAnalysisOperationModel extends AnalysisOperationModel {
 
+    protected String reportFormat;
     protected String analysisDescription;
     protected String reportDestination;
 
