@@ -38,7 +38,6 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME_QNAME;
-import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT;
 
 //domain-specific imports (KSAT)
 import ca.carleton.tim.ksat.model.AnalysisResult;
@@ -149,7 +148,6 @@ public class AnalysisReportProject extends Project {
             }
         });
         resultsMapping.setXPath("analysis/results/result");
-        resultsMapping.setKeepAsElementPolicy(KEEP_ALL_AS_ELEMENT);
         descriptor.addMapping(resultsMapping);
         
         return descriptor;
@@ -209,6 +207,10 @@ public class AnalysisReportProject extends Project {
         timestampMapping.setXPath("@timestamp");
         ((XMLField)timestampMapping.getField()).setSchemaType(DATE_TIME_QNAME);
         descriptor.addMapping(timestampMapping);
+        
+        // site-page-counts
+        
+           // keyword-page-count 
         
         return descriptor;
     }
