@@ -32,7 +32,8 @@ public class Analysis extends AnalysisBuilder {
 	public String description;
 
 	public List<Site> sites = new ArrayList<Site>();
-	public List<KeywordExpression> expressions = new ArrayList<KeywordExpression>(); 
+	public List<KeywordExpression> expressions = new ArrayList<KeywordExpression>();
+	public int expressionCount = 0;
 	public List<AnalysisResult> results = new ArrayList<AnalysisResult>();
 	
     public Analysis() {
@@ -69,12 +70,25 @@ public class Analysis extends AnalysisBuilder {
     }
     public void setExpressions(List<KeywordExpression> expressions) {
         this.expressions = expressions;
+        this.expressionCount = expressions.size();
     }
     public void addKeywordExpression(KeywordExpression expression) {
         expressions.add(expression);
+        expressionCount++;
         expression.owner = this;
     }
+    public void removeKeywordExpression(KeywordExpression expression) {
+        expressions.remove(expression);
+        expressionCount--;
+        expression.owner = null;
+    }
 
+    public int getExpressionCount() {
+        return expressionCount;
+    }
+    public void setExpressionCount(int expressionCount) {
+        this.expressionCount = expressionCount;
+    }
 
     public List<AnalysisResult> getResults() {
         return results;

@@ -64,7 +64,18 @@ public class AnalysisProjectTablesCreator extends TableCreator {
         fieldDESCRIPT.setUnique(false);
         fieldDESCRIPT.setShouldAllowNull(true);
         table.addField(fieldDESCRIPT);
-        
+
+        FieldDefinition fieldKWRDCOUNT = new FieldDefinition();
+        fieldKWRDCOUNT.setName("KWRDCOUNT");
+        fieldKWRDCOUNT.setTypeName("integer");
+        fieldKWRDCOUNT.setSize(0);
+        fieldKWRDCOUNT.setSubSize(0);
+        fieldKWRDCOUNT.setIsPrimaryKey(false);
+        fieldKWRDCOUNT.setIsIdentity(false);
+        fieldKWRDCOUNT.setUnique(false);
+        fieldKWRDCOUNT.setShouldAllowNull(true);
+        table.addField(fieldKWRDCOUNT);
+
         return table;
     }
 

@@ -90,6 +90,14 @@ public class AnalysisProject extends Project {
             "KSAT_ANALYSIS_TABLE.ID");
         descriptor.addMapping(sitesMapping);
         
+        DirectToFieldMapping expressionCountMapping = new DirectToFieldMapping();
+        expressionCountMapping.setAttributeName("expressionCount");
+        expressionCountMapping.setGetMethodName("getExpressionCount");
+        expressionCountMapping.setSetMethodName("setExpressionCount");
+        expressionCountMapping.setFieldName("KSAT_ANALYSIS_TABLE.KWRDCOUNT");
+        expressionCountMapping.setNullValue(Integer.valueOf(0));
+        descriptor.addMapping(expressionCountMapping);
+        
         OneToManyMapping expressionsMapping = new OneToManyMapping();
         expressionsMapping.setAttributeName("expressions");
         expressionsMapping.setGetMethodName("getExpressions");
@@ -237,12 +245,14 @@ public class AnalysisProject extends Project {
         dateMapping.setFieldName("KSAT_RESULT_TABLE.RUN_DATE");
         descriptor.addMapping(dateMapping);
         
+        /*
         DirectToFieldMapping rawResultMapping = new DirectToFieldMapping();
         rawResultMapping.setAttributeName("rawResult");
         rawResultMapping.setGetMethodName("getRawResult");
         rawResultMapping.setSetMethodName("setRawResult");
         rawResultMapping.setFieldName("KSAT_RESULT_TABLE.RAW_RESULT");
         descriptor.addMapping(rawResultMapping);
+        */
         
         OneToOneMapping ownerMapping = new OneToOneMapping();
         ownerMapping.setAttributeName("owner");

@@ -1,6 +1,7 @@
 package ca.carleton.tim.ksat.persist;
 
 //javase imports
+import java.util.Date;
 import java.util.List;
 
 //domain-specific imports (KSAT)
@@ -11,8 +12,8 @@ import ca.carleton.tim.ksat.model.Site;
 
 public class AnalysisReport {
 
-    //wrap Analysis
-    private Analysis reportingAnalysis;
+    protected Analysis reportingAnalysis;
+    protected Date dateTime; 
 
     public AnalysisReport() {
     }
@@ -23,7 +24,15 @@ public class AnalysisReport {
     public void setReportingAnalysis(Analysis reportingAnalysis) {
         this.reportingAnalysis = reportingAnalysis;
     }
-    
+
+    public Date getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(Date dateTime) {
+        this.dateTime = dateTime;
+    }
+
     public int getAnalysisId() {
         return reportingAnalysis.getId();
     }
@@ -43,5 +52,4 @@ public class AnalysisReport {
     public List<AnalysisResult> getAnalysisResults() {
         return reportingAnalysis.getResults();
     }
-    
 }

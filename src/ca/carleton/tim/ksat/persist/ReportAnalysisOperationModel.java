@@ -24,11 +24,16 @@ package ca.carleton.tim.ksat.persist;
 //javase imports
 import java.io.File;
 import java.io.StringReader;
+import java.util.Date;
+import java.util.List;
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
 
 //java eXtension imports
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -36,11 +41,13 @@ import javax.xml.transform.stream.StreamSource;
 //EclipseLink imports
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
 //domain import (KSAT)
 import ca.carleton.tim.ksat.model.Analysis;
+import ca.carleton.tim.ksat.model.AnalysisResult;
 
 public class ReportAnalysisOperationModel extends AnalysisOperationModel {
 
@@ -111,30 +118,6 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
           "</xsl:for-each>" +
         "</xsl:template>" +
       "</xsl:stylesheet>";
-/*
-<xsl:stylesheet
-  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  version="1.0"
-  >
-  <xsl:strip-space elements="*"/>
-  <xsl:output indent="no" media-type="text/plain" method="text" omit-xml-declaration="yes" />
-  <xsl:template match="/">
-    Site id,Estimated Size of Site,
-    <xsl:for-each select="analysis-report/analysis/keywords/keyword">
-      e<xsl:value-of select="@id"/><xsl:text>,</xsl:text>
-    </xsl:for-each>
-    <xsl:text>&#13;</xsl:text>
-    <xsl:for-each select="analysis-report/analysis/results/result/site-page-counts">
-      <xsl:value-of select="@site-id"/><xsl:text>,</xsl:text>
-      <xsl:value-of select="@estimated-total-pages"/>
-      <xsl:for-each select="keyword-page-count">      
-        <xsl:text>,</xsl:text><xsl:value-of select="text()"/>
-      </xsl:for-each>
-      <xsl:text>&#13;</xsl:text>
-    </xsl:for-each>
-  </xsl:template>
-</xsl:stylesheet>    
- */
         
     protected String reportFormat;
     protected String analysisDescription;
@@ -144,6 +127,18 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
         super();
     }
 
+    static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform(); 
+    static final String FAKE_RESULTS =
+      "<fake>" +
+        "<site-page-counts site-id=\"1\" estimated-total-pages=\"10000\">" +
+          "<keyword-page-count keyword-id=\"1\">234</keyword-page-count>" +
+          "<keyword-page-count keyword-id=\"2\">44</keyword-page-count>" +
+        "</site-page-counts>" +
+        "<site-page-counts site-id=\"2\" estimated-total-pages=\"34530\">" +
+          "<keyword-page-count keyword-id=\"1\">3344</keyword-page-count>" +
+          "<keyword-page-count keyword-id=\"2\">105</keyword-page-count>" +
+        "</site-page-counts>" +
+      "</fake>";
     public void build(AnalysisBuilder builder, UnitOfWork uow) {
         try {
             Analysis reportingAnalysis = (Analysis)uow.executeQuery("findByDescription",
@@ -151,6 +146,23 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
             if (reportingAnalysis != null) {
                 AnalysisReport report = new AnalysisReport();
                 report.setReportingAnalysis(reportingAnalysis);
+                // HACK, HACK
+                // build some results to test out marshalling
+                report.setDateTime(new Date(System.currentTimeMillis()));
+                List<AnalysisResult> analysisResults = report.getAnalysisResults();
+                AnalysisResult aResult = new AnalysisResult();
+                uow.registerNewObject(aResult);
+                aResult.setId(1);
+                aResult.setDateTime(report.getDateTime());
+                aResult.setOwner(reportingAnalysis);
+                Document tmp = xmlPlatform.createDocument();
+                DocumentFragment fragment = tmp.createDocumentFragment();
+                DOMResult dr = new DOMResult(fragment);
+                Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                Source source = new StreamSource(new StringReader(FAKE_RESULTS));
+                transformer.transform(source, dr);
+                aResult.setRawResults(dr.getNode());  
+                analysisResults.add(aResult);
                 XMLContext context = new XMLContext(new AnalysisReportProject());
                 XMLMarshaller marshaller = context.createMarshaller();
                 File destination = new File(reportDestination);
@@ -161,7 +173,8 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
                     Document doc = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
                     marshaller.marshal(report, doc);
                     StreamSource xslSource = new StreamSource(new StringReader(HTML_XSL));
-                    Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
+                    //Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
+                    transformer = TransformerFactory.newInstance().newTransformer(xslSource);
                     DOMSource domSource = new DOMSource(doc);
                     transformer.transform(domSource, new StreamResult(destination));
                 }
@@ -171,10 +184,12 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
                     //XMLParser parser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
                     //doc = parser.parse(new File("P:/tim/project/ksat/new_results.xml"));
                     StreamSource xslSource = new StreamSource(new StringReader(CSV_XSL));
-                    Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
+                    //Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
+                    transformer = TransformerFactory.newInstance().newTransformer(xslSource);
                     DOMSource domSource = new DOMSource(doc);
                     transformer.transform(domSource, new StreamResult(destination));
                 }
+                analysisResults.remove(aResult);
             }
         }
         catch (Exception e) {

@@ -23,13 +23,14 @@ package ca.carleton.tim.ksat.model;
 
 //javase imports
 import java.util.Date;
+import org.w3c.dom.Node;
 
 public class AnalysisResult {
 
 	protected int id;
 	protected Analysis owner;
 	protected Date dateTime;
-	protected byte[] rawResult;
+	protected Node rawResults;
     
     public AnalysisResult() {
         super();
@@ -56,11 +57,11 @@ public class AnalysisResult {
         this.dateTime = dateTime;
     }
 
-    public byte[] getRawResult() {
-        return rawResult;
+    public Node getRawResults() {
+        return rawResults;
     }
-    public void setRawResult(byte[] rawResult) {
-        this.rawResult = rawResult;
+    public void setRawResults(Node rawResults) {
+        this.rawResults = rawResults;
     }
     
 }

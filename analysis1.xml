@@ -18,8 +18,8 @@
   />
   -->
   <report-analysis
-    report-format="html"
+    report-format="xml"
     analysis-description="analysis1"
-    report-destination="P:/tim/project/ksat/report.html"
+    report-destination="P:/tim/project/ksat/report.xml"
   />
 </analysis-model>
