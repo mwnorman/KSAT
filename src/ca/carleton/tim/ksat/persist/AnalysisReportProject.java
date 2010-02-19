@@ -22,6 +22,7 @@
 package ca.carleton.tim.ksat.persist;
 
 //javase imports
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -108,6 +109,23 @@ public class AnalysisReportProject extends Project {
 
         XMLDirectMapping expressionMapping = new XMLDirectMapping();
         expressionMapping.setAttributeName("expression");
+        expressionMapping.setAttributeAccessor(new AttributeAccessor() {
+            @Override
+            public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+                // no-op - marshall 'out' only
+            }
+            @Override
+            public Object getAttributeValueFromObject(Object object) throws DescriptorException {
+                String decodedExpression = ((KeywordExpression)object).getExpression();
+                try {
+                    decodedExpression = URLDecoder.decode(decodedExpression, "UTF-8");
+                }
+                catch (Exception e) {
+                    // ignore
+                }
+                return decodedExpression;
+            }
+        });
         expressionMapping.setXPath("text()");
         descriptor.addMapping(expressionMapping);
         

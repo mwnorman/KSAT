@@ -150,6 +150,7 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
                 // build some results to test out marshalling
                 report.setDateTime(new Date(System.currentTimeMillis()));
                 List<AnalysisResult> analysisResults = report.getAnalysisResults();
+                /*
                 AnalysisResult aResult = new AnalysisResult();
                 uow.registerNewObject(aResult);
                 aResult.setId(1);
@@ -163,6 +164,7 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
                 transformer.transform(source, dr);
                 aResult.setRawResults(dr.getNode());  
                 analysisResults.add(aResult);
+                */
                 XMLContext context = new XMLContext(new AnalysisReportProject());
                 XMLMarshaller marshaller = context.createMarshaller();
                 File destination = new File(reportDestination);
@@ -173,23 +175,21 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
                     Document doc = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
                     marshaller.marshal(report, doc);
                     StreamSource xslSource = new StreamSource(new StringReader(HTML_XSL));
-                    //Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
-                    transformer = TransformerFactory.newInstance().newTransformer(xslSource);
+                    Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
+                    //transformer = TransformerFactory.newInstance().newTransformer(xslSource);
                     DOMSource domSource = new DOMSource(doc);
                     transformer.transform(domSource, new StreamResult(destination));
                 }
                 else if (REPORT_CSV_FORMAT.equalsIgnoreCase(reportFormat)) {
                     Document doc = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
                     marshaller.marshal(report, doc);
-                    //XMLParser parser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
-                    //doc = parser.parse(new File("P:/tim/project/ksat/new_results.xml"));
                     StreamSource xslSource = new StreamSource(new StringReader(CSV_XSL));
-                    //Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
-                    transformer = TransformerFactory.newInstance().newTransformer(xslSource);
+                    Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
+                    //transformer = TransformerFactory.newInstance().newTransformer(xslSource);
                     DOMSource domSource = new DOMSource(doc);
                     transformer.transform(domSource, new StreamResult(destination));
                 }
-                analysisResults.remove(aResult);
+                //analysisResults.remove(aResult);
             }
         }
         catch (Exception e) {

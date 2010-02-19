@@ -24,7 +24,6 @@ package ca.carleton.tim.ksat.model;
 public class Site {
 
 	protected int id;
-	protected Analysis owner;
 	protected String url;
 	protected String description;
 	
@@ -45,13 +44,6 @@ public class Site {
         this.id = id;
     }
 
-    public Analysis getOwner() {
-        return owner;
-    }
-    public void setOwner(Analysis owner) {
-        this.owner = owner;
-    }
-
     public String getUrl() {
         return url;
     }
@@ -65,5 +57,20 @@ public class Site {
     public void setDescription(String description) {
         this.description = description;
     }
-	
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(80);
+        sb.append("{");
+        sb.append(id);
+        sb.append("}Site");
+        if (description != null && description.length() > 0) {
+            sb.append("(");
+            sb.append(description);
+            sb.append(")");
+        }
+        sb.append("=");
+        sb.append(url);
+        return sb.toString();
+    }
 }

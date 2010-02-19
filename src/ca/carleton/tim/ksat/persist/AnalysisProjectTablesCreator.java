@@ -37,12 +37,14 @@ public class AnalysisProjectTablesCreator extends TableCreator {
         addTableDefinition(buildKSAT_SITE_TABLE());
         addTableDefinition(buildKSAT_RESULT_TABLE());
         addTableDefinition(buildKSAT_SEQUENCE_TABLE());
+        addTableDefinition(buildKSAT_ANALYSIS_KEYWORD_TABLE());
+        addTableDefinition(buildKSAT_ANALYSIS_SITE_TABLE());
     }
 
     protected TableDefinition buildKSAT_ANALYSIS_TABLE() {
         TableDefinition table = new TableDefinition();
         table.setName("KSAT_ANALYSIS_TABLE");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("integer");
@@ -53,19 +55,19 @@ public class AnalysisProjectTablesCreator extends TableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
-        FieldDefinition fieldDESCRIPT = new FieldDefinition();
-        fieldDESCRIPT.setName("DESCRIPT");
-        fieldDESCRIPT.setTypeName("varchar");
-        fieldDESCRIPT.setSize(40);
-        fieldDESCRIPT.setSubSize(0);
-        fieldDESCRIPT.setIsPrimaryKey(false);
-        fieldDESCRIPT.setIsIdentity(false);
-        fieldDESCRIPT.setUnique(false);
-        fieldDESCRIPT.setShouldAllowNull(true);
-        table.addField(fieldDESCRIPT);
 
-        FieldDefinition fieldKWRDCOUNT = new FieldDefinition();
+    	FieldDefinition fieldDESCRIPT = new FieldDefinition();
+    	fieldDESCRIPT.setName("DESCRIPT");
+    	fieldDESCRIPT.setTypeName("varchar");
+    	fieldDESCRIPT.setSize(40);
+    	fieldDESCRIPT.setSubSize(0);
+    	fieldDESCRIPT.setIsPrimaryKey(false);
+    	fieldDESCRIPT.setIsIdentity(false);
+    	fieldDESCRIPT.setUnique(false);
+    	fieldDESCRIPT.setShouldAllowNull(true);
+    	table.addField(fieldDESCRIPT);
+
+    	FieldDefinition fieldKWRDCOUNT = new FieldDefinition();
         fieldKWRDCOUNT.setName("KWRDCOUNT");
         fieldKWRDCOUNT.setTypeName("integer");
         fieldKWRDCOUNT.setSize(0);
@@ -104,24 +106,6 @@ public class AnalysisProjectTablesCreator extends TableCreator {
         fieldEXPRESSION.setUnique(false);
         fieldEXPRESSION.setShouldAllowNull(false);
         table.addField(fieldEXPRESSION);
-        
-        FieldDefinition fieldANALYSIS_ID = new FieldDefinition();
-        fieldANALYSIS_ID.setName("ANALYSIS_ID");
-        fieldANALYSIS_ID.setTypeName("integer");
-        fieldANALYSIS_ID.setSize(0);
-        fieldANALYSIS_ID.setSubSize(0);
-        fieldEXPRESSION.setIsPrimaryKey(false);
-        fieldEXPRESSION.setIsIdentity(false);
-        fieldEXPRESSION.setUnique(false);
-        fieldEXPRESSION.setShouldAllowNull(false);
-        table.addField(fieldANALYSIS_ID);
-
-        ForeignKeyConstraint foreignKeyKEYWORD_ANALYSIS_REF = new ForeignKeyConstraint();
-        foreignKeyKEYWORD_ANALYSIS_REF.setName("KEYWORD_ANALYSIS_REF");
-        foreignKeyKEYWORD_ANALYSIS_REF.setTargetTable("KSAT_ANALYSIS_TABLE");
-        foreignKeyKEYWORD_ANALYSIS_REF.addSourceField("ANALYSIS_ID");
-        foreignKeyKEYWORD_ANALYSIS_REF.addTargetField("ID");
-        table.addForeignKeyConstraint(foreignKeyKEYWORD_ANALYSIS_REF);
         
         return table;
     }
@@ -162,24 +146,6 @@ public class AnalysisProjectTablesCreator extends TableCreator {
         fieldURL.setUnique(false);
         fieldURL.setShouldAllowNull(false);
         table.addField(fieldURL);
-
-        FieldDefinition fieldANALYSIS_ID = new FieldDefinition();
-        fieldANALYSIS_ID.setName("ANALYSIS_ID");
-        fieldANALYSIS_ID.setTypeName("integer");
-        fieldANALYSIS_ID.setSize(0);
-        fieldANALYSIS_ID.setSubSize(0);
-        fieldANALYSIS_ID.setIsPrimaryKey(false);
-        fieldANALYSIS_ID.setIsIdentity(false);
-        fieldANALYSIS_ID.setUnique(false);
-        fieldANALYSIS_ID.setShouldAllowNull(false);
-        table.addField(fieldANALYSIS_ID);
-        
-        ForeignKeyConstraint foreignKeySITE_ANALYSIS_REF = new ForeignKeyConstraint();
-        foreignKeySITE_ANALYSIS_REF.setName("SITE_ANALYSIS_REF");
-        foreignKeySITE_ANALYSIS_REF.setTargetTable("KSAT_ANALYSIS_TABLE");
-        foreignKeySITE_ANALYSIS_REF.addSourceField("ANALYSIS_ID");
-        foreignKeySITE_ANALYSIS_REF.addTargetField("ID");
-        table.addForeignKeyConstraint(foreignKeySITE_ANALYSIS_REF);
 
         return table;
     }
@@ -270,4 +236,91 @@ public class AnalysisProjectTablesCreator extends TableCreator {
         
         return table;
     }
+
+    protected TableDefinition buildKSAT_ANALYSIS_KEYWORD_TABLE() {
+        TableDefinition table = new TableDefinition();
+        table.setName("KSAT_ANALYSIS_KEYWORD");
+        
+        FieldDefinition fieldANALYSIS_ID = new FieldDefinition();
+        fieldANALYSIS_ID.setName("ANALYSIS_ID");
+        fieldANALYSIS_ID.setTypeName("integer");
+        fieldANALYSIS_ID.setSize(0);
+        fieldANALYSIS_ID.setSubSize(0);
+        fieldANALYSIS_ID.setIsPrimaryKey(false);
+        fieldANALYSIS_ID.setIsIdentity(false);
+        fieldANALYSIS_ID.setUnique(false);
+        fieldANALYSIS_ID.setShouldAllowNull(false);
+        table.addField(fieldANALYSIS_ID);
+        
+        FieldDefinition fieldKEYWORD_ID = new FieldDefinition();
+        fieldKEYWORD_ID.setName("KEYWORD_ID");
+        fieldKEYWORD_ID.setTypeName("integer");
+        fieldKEYWORD_ID.setSize(0);
+        fieldKEYWORD_ID.setSubSize(0);
+        fieldKEYWORD_ID.setIsPrimaryKey(false);
+        fieldKEYWORD_ID.setIsIdentity(false);
+        fieldKEYWORD_ID.setUnique(false);
+        fieldKEYWORD_ID.setShouldAllowNull(false);
+        table.addField(fieldKEYWORD_ID);
+        
+        ForeignKeyConstraint foreignKeyKSAT_ANALYSIS_KEYWORD_KSAT_KEYWORD_TABLE = new ForeignKeyConstraint();
+        foreignKeyKSAT_ANALYSIS_KEYWORD_KSAT_KEYWORD_TABLE.setName("KSAT_ANALYSIS_KEYWORD_KSAT_KEYWORD_TABLE");
+        foreignKeyKSAT_ANALYSIS_KEYWORD_KSAT_KEYWORD_TABLE.setTargetTable("KSAT_KEYWORD_TABLE");
+        foreignKeyKSAT_ANALYSIS_KEYWORD_KSAT_KEYWORD_TABLE.addSourceField("KEYWORD_ID");
+        foreignKeyKSAT_ANALYSIS_KEYWORD_KSAT_KEYWORD_TABLE.addTargetField("ID");
+        table.addForeignKeyConstraint(foreignKeyKSAT_ANALYSIS_KEYWORD_KSAT_KEYWORD_TABLE);
+        
+        ForeignKeyConstraint foreignKeyKSAT_ANALYSIS_KEYWORD_KSAT_ANALYSIS_TABLE = new ForeignKeyConstraint();
+        foreignKeyKSAT_ANALYSIS_KEYWORD_KSAT_ANALYSIS_TABLE.setName("KSAT_ANALYSIS_KEYWORD_KSAT_ANALYSIS_TABLE");
+        foreignKeyKSAT_ANALYSIS_KEYWORD_KSAT_ANALYSIS_TABLE.setTargetTable("KSAT_ANALYSIS_TABLE");
+        foreignKeyKSAT_ANALYSIS_KEYWORD_KSAT_ANALYSIS_TABLE.addSourceField("ANALYSIS_ID");
+        foreignKeyKSAT_ANALYSIS_KEYWORD_KSAT_ANALYSIS_TABLE.addTargetField("ID");
+        table.addForeignKeyConstraint(foreignKeyKSAT_ANALYSIS_KEYWORD_KSAT_ANALYSIS_TABLE);
+        
+        return table;
+    }
+    
+    protected TableDefinition buildKSAT_ANALYSIS_SITE_TABLE() {
+        TableDefinition table = new TableDefinition();
+        table.setName("KSAT_ANALYSIS_SITE");
+        
+        FieldDefinition fieldANALYSIS_ID = new FieldDefinition();
+        fieldANALYSIS_ID.setName("ANALYSIS_ID");
+        fieldANALYSIS_ID.setTypeName("integer");
+        fieldANALYSIS_ID.setSize(0);
+        fieldANALYSIS_ID.setSubSize(0);
+        fieldANALYSIS_ID.setIsPrimaryKey(false);
+        fieldANALYSIS_ID.setIsIdentity(false);
+        fieldANALYSIS_ID.setUnique(false);
+        fieldANALYSIS_ID.setShouldAllowNull(false);
+        table.addField(fieldANALYSIS_ID);
+        
+        FieldDefinition fieldSITE_ID = new FieldDefinition();
+        fieldSITE_ID.setName("SITE_ID");
+        fieldSITE_ID.setTypeName("integer");
+        fieldSITE_ID.setSize(0);
+        fieldSITE_ID.setSubSize(0);
+        fieldSITE_ID.setIsPrimaryKey(false);
+        fieldSITE_ID.setIsIdentity(false);
+        fieldSITE_ID.setUnique(false);
+        fieldSITE_ID.setShouldAllowNull(false);
+        table.addField(fieldSITE_ID);
+        
+        ForeignKeyConstraint foreignKeyKSAT_ANALYSIS_SITE_KSAT_SITE_TABLE = new ForeignKeyConstraint();
+        foreignKeyKSAT_ANALYSIS_SITE_KSAT_SITE_TABLE.setName("KSAT_ANALYSIS_SITE_KSAT_SITE_TABLE");
+        foreignKeyKSAT_ANALYSIS_SITE_KSAT_SITE_TABLE.setTargetTable("KSAT_SITE_TABLE");
+        foreignKeyKSAT_ANALYSIS_SITE_KSAT_SITE_TABLE.addSourceField("SITE_ID");
+        foreignKeyKSAT_ANALYSIS_SITE_KSAT_SITE_TABLE.addTargetField("ID");
+        table.addForeignKeyConstraint(foreignKeyKSAT_ANALYSIS_SITE_KSAT_SITE_TABLE);
+        
+        ForeignKeyConstraint foreignKeyKSAT_ANALYSIS_SITE_KSAT_ANALYSIS_TABLE = new ForeignKeyConstraint();
+        foreignKeyKSAT_ANALYSIS_SITE_KSAT_ANALYSIS_TABLE.setName("KSAT_ANALYSIS_SITE_KSAT_ANALYSIS_TABLE");
+        foreignKeyKSAT_ANALYSIS_SITE_KSAT_ANALYSIS_TABLE.setTargetTable("KSAT_ANALYSIS_TABLE");
+        foreignKeyKSAT_ANALYSIS_SITE_KSAT_ANALYSIS_TABLE.addSourceField("ANALYSIS_ID");
+        foreignKeyKSAT_ANALYSIS_SITE_KSAT_ANALYSIS_TABLE.addTargetField("ID");
+        table.addForeignKeyConstraint(foreignKeyKSAT_ANALYSIS_SITE_KSAT_ANALYSIS_TABLE);
+        
+        return table;
+    }
+        
 }

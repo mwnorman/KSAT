@@ -62,7 +62,6 @@ public class Analysis extends AnalysisBuilder {
     }
     public void addSite(Site site) {
         sites.add(site);
-        site.setOwner(this);
     }
 
     public List<KeywordExpression> getExpressions() {
@@ -75,12 +74,10 @@ public class Analysis extends AnalysisBuilder {
     public void addKeywordExpression(KeywordExpression expression) {
         expressions.add(expression);
         expressionCount++;
-        expression.owner = this;
     }
     public void removeKeywordExpression(KeywordExpression expression) {
         expressions.remove(expression);
         expressionCount--;
-        expression.owner = null;
     }
 
     public int getExpressionCount() {
@@ -99,6 +96,11 @@ public class Analysis extends AnalysisBuilder {
     public void addAnalysisResult(AnalysisResult result) {
         results.add(result);
         result.setOwner(this);
+    }
+
+    @Override
+    public String toString() {
+        return "{" + id + "}Analysis(" + description + ")";
     }
 	
 }

@@ -21,10 +21,11 @@
  */
 package ca.carleton.tim.ksat.model;
 
+import java.net.URLDecoder;
+
 public class KeywordExpression {
 
 	protected int id;
-	protected Analysis owner;
 	protected String expression;
 	
     public KeywordExpression() {
@@ -38,18 +39,23 @@ public class KeywordExpression {
         this.id = id;
     }
 
-    public Analysis getOwner() {
-        return owner;
-    }
-    public void setOwner(Analysis owner) {
-        this.owner = owner;
-    }
-
     public String getExpression() {
         return expression;
     }
     public void setExpression(String expression) {
         this.expression = expression;
+    }
+
+    @Override
+    public String toString() {
+        String decodedExpression = expression;
+        try {
+            decodedExpression = URLDecoder.decode(decodedExpression, "UTF-8");
+        }
+        catch (Exception e) {
+            // ignore
+        }
+        return "{" + id + "}KeywordExpression=" + decodedExpression;
     }
     
 }

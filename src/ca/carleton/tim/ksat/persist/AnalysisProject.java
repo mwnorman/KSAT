@@ -29,6 +29,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -75,19 +76,19 @@ public class AnalysisProject extends Project {
         descriptionMapping.setSetMethodName("setDescription");
         descriptionMapping.setFieldName("KSAT_ANALYSIS_TABLE.DESCRIPT");
         descriptor.addMapping(descriptionMapping);
-        
-        OneToManyMapping sitesMapping = new OneToManyMapping();
+
+        ManyToManyMapping sitesMapping = new ManyToManyMapping();
         sitesMapping.setAttributeName("sites");
         sitesMapping.setGetMethodName("getSites");
         sitesMapping.setSetMethodName("setSites");
-        sitesMapping.setReferenceClass(Site.class);
+        sitesMapping.setReferenceClass(ca.carleton.tim.ksat.model.Site.class);
         sitesMapping.dontUseIndirection();
         sitesMapping.useBatchReading();
-        sitesMapping.privateOwnedRelationship();
-        sitesMapping.useCollectionClass(ArrayList.class);
+        sitesMapping.useCollectionClass(java.util.ArrayList.class);
         sitesMapping.addAscendingOrdering("id");
-        sitesMapping.addTargetForeignKeyFieldName("KSAT_SITE_TABLE.ANALYSIS_ID",
-            "KSAT_ANALYSIS_TABLE.ID");
+        sitesMapping.setRelationTableName("KSAT_ANALYSIS_SITE");
+        sitesMapping.addSourceRelationKeyFieldName("KSAT_ANALYSIS_SITE.ANALYSIS_ID", "KSAT_ANALYSIS_TABLE.ID");
+        sitesMapping.addTargetRelationKeyFieldName("KSAT_ANALYSIS_SITE.SITE_ID", "KSAT_SITE_TABLE.ID");
         descriptor.addMapping(sitesMapping);
         
         DirectToFieldMapping expressionCountMapping = new DirectToFieldMapping();
@@ -97,19 +98,19 @@ public class AnalysisProject extends Project {
         expressionCountMapping.setFieldName("KSAT_ANALYSIS_TABLE.KWRDCOUNT");
         expressionCountMapping.setNullValue(Integer.valueOf(0));
         descriptor.addMapping(expressionCountMapping);
-        
-        OneToManyMapping expressionsMapping = new OneToManyMapping();
+
+        ManyToManyMapping expressionsMapping = new ManyToManyMapping();
         expressionsMapping.setAttributeName("expressions");
         expressionsMapping.setGetMethodName("getExpressions");
         expressionsMapping.setSetMethodName("setExpressions");
-        expressionsMapping.setReferenceClass(KeywordExpression.class);
+        expressionsMapping.setReferenceClass(ca.carleton.tim.ksat.model.KeywordExpression.class);
         expressionsMapping.dontUseIndirection();
         expressionsMapping.useBatchReading();
-        expressionsMapping.privateOwnedRelationship();
-        expressionsMapping.useCollectionClass(ArrayList.class);
+        expressionsMapping.useCollectionClass(java.util.ArrayList.class);
         expressionsMapping.addAscendingOrdering("id");
-        expressionsMapping.addTargetForeignKeyFieldName("KSAT_KEYWORD_TABLE.ANALYSIS_ID",
-            "KSAT_ANALYSIS_TABLE.ID");
+        expressionsMapping.setRelationTableName("KSAT_ANALYSIS_KEYWORD");
+        expressionsMapping.addSourceRelationKeyFieldName("KSAT_ANALYSIS_KEYWORD.ANALYSIS_ID", "KSAT_ANALYSIS_TABLE.ID");
+        expressionsMapping.addTargetRelationKeyFieldName("KSAT_ANALYSIS_KEYWORD.KEYWORD_ID", "KSAT_KEYWORD_TABLE.ID");
         descriptor.addMapping(expressionsMapping);
         
         OneToManyMapping analysisRunsMapping = new OneToManyMapping();
@@ -170,16 +171,6 @@ public class AnalysisProject extends Project {
         urlMapping.setSetMethodName("setUrl");
         urlMapping.setFieldName("KSAT_SITE_TABLE.URL");
         descriptor.addMapping(urlMapping);
-        
-        OneToOneMapping ownerMapping = new OneToOneMapping();
-        ownerMapping.setAttributeName("owner");
-        ownerMapping.setGetMethodName("getOwner");
-        ownerMapping.setSetMethodName("setOwner");
-        ownerMapping.setReferenceClass(Analysis.class);
-        ownerMapping.dontUseIndirection();
-        ownerMapping.addForeignKeyFieldName("KSAT_SITE_TABLE.ANALYSIS_ID",
-            "KSAT_ANALYSIS_TABLE.ID");
-        descriptor.addMapping(ownerMapping);
 
         return descriptor;
     }
@@ -207,16 +198,6 @@ public class AnalysisProject extends Project {
         expressionMapping.setSetMethodName("setExpression");
         expressionMapping.setFieldName("KSAT_KEYWORD_TABLE.EXPRESSION");
         descriptor.addMapping(expressionMapping);
-        
-        OneToOneMapping ownerMapping = new OneToOneMapping();
-        ownerMapping.setAttributeName("owner");
-        ownerMapping.setGetMethodName("getOwner");
-        ownerMapping.setSetMethodName("setOwner");
-        ownerMapping.setReferenceClass(Analysis.class);
-        ownerMapping.dontUseIndirection();
-        ownerMapping.addForeignKeyFieldName("KSAT_KEYWORD_TABLE.ANALYSIS_ID",
-            "KSAT_ANALYSIS_TABLE.ID");
-        descriptor.addMapping(ownerMapping);
 
         return descriptor;
     }

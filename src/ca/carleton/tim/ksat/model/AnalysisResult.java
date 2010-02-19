@@ -63,5 +63,10 @@ public class AnalysisResult {
     public void setRawResults(Node rawResults) {
         this.rawResults = rawResults;
     }
+
+    @Override
+    public String toString() {
+        return "{" + id + "}AnalysisResult";
+    }
     
 }

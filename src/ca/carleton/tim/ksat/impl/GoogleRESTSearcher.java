@@ -23,12 +23,12 @@ package ca.carleton.tim.ksat.impl;
 
 /**
  * 
- * This helper class utilizes the Google Ajax search API in order to search for
+ * This helper class utilizes the Google REST search API in order to search for
  * keywords on websites.
  * 
  * @author mwnorman
  *
  */
-public class GoogleAjaxSearcher {
+public class GoogleRESTSearcher {
 
 }
