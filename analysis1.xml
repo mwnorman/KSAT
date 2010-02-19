@@ -16,10 +16,13 @@
 	create-tables="true"
 	analysis-description="analysis1"
   />
-  -->
   <report-analysis
     report-format="html"
     analysis-description="analysis1"
     report-destination="P:/tim/project/ksat/report.html"
+  />
+  -->
+  <run-analysis
+    analysis-description="analysis1"
   />
 </analysis-model>

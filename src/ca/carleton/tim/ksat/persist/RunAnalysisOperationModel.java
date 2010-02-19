@@ -23,6 +23,9 @@ package ca.carleton.tim.ksat.persist;
 
 import org.eclipse.persistence.sessions.UnitOfWork;
 
+import ca.carleton.tim.ksat.impl.GoogleRESTSearcher;
+import ca.carleton.tim.ksat.model.Analysis;
+
 public class RunAnalysisOperationModel extends AnalysisOperationModel {
 
     public RunAnalysisOperationModel() {
@@ -30,6 +33,10 @@ public class RunAnalysisOperationModel extends AnalysisOperationModel {
     }
 
     public void build(AnalysisBuilder builder, UnitOfWork uow) {
-       
+        Analysis reportingAnalysis = (Analysis)uow.executeQuery("findByDescription",
+            Analysis.class, "analysis1");
+        if (reportingAnalysis != null) {
+            new GoogleRESTSearcher(reportingAnalysis);
+        }
     }
 }
