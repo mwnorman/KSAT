@@ -1,8 +1,3 @@
-package ca.carleton.tim.ksat.json;
-
-import java.io.IOException;
-import java.io.Writer;
-
 /*
 Copyright (c) 2006 JSON.org
 
@@ -26,6 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package ca.carleton.tim.ksat.json;
+
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * JSONWriter provides a quick and convenient way of producing JSON text.

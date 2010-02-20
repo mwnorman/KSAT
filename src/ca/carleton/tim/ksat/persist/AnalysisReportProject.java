@@ -4,7 +4,7 @@
  * It is functionally equivalent to the 2-clause BSD licence,
  * with language "made unnecessary by the Berne convention" removed).
  * 
- * Copyright (c) 2009, Mike Norman
+ * Copyright (c) 2010, Mike Norman
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -27,14 +27,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 //Java extension libraries
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
-//EclipsLink imports
+//EclipeLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
@@ -49,7 +48,7 @@ import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.sessions.Project;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME_QNAME;
 
-//domain-specific imports (KSAT)
+//KSAT imports
 import ca.carleton.tim.ksat.model.AnalysisResult;
 import ca.carleton.tim.ksat.model.KeywordExpression;
 import ca.carleton.tim.ksat.model.Site;

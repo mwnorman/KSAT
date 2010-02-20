@@ -1,6 +1,6 @@
 <analysis-model>
   <properties>
-    <property name="logLevel">off</property>
+    <property name="logLevel">fine</property>
     <!-- 
     <property name="username">user</property>
     <property name="password">password</property>
@@ -16,13 +16,15 @@
 	create-tables="true"
 	analysis-description="analysis1"
   />
+  -->
   <report-analysis
     report-format="html"
     analysis-description="analysis1"
     report-destination="P:/tim/project/ksat/report.html"
   />
-  -->
+  <!--
   <run-analysis
     analysis-description="analysis1"
   />
+  -->
 </analysis-model>

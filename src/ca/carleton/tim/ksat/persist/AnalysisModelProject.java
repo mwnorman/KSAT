@@ -4,7 +4,7 @@
  * It is functionally equivalent to the 2-clause BSD licence,
  * with language "made unnecessary by the Berne convention" removed).
  * 
- * Copyright (c) 2009, Mike Norman
+ * Copyright (c) 2010, Mike Norman
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -21,14 +21,14 @@
  */
 package ca.carleton.tim.ksat.persist;
 
-//Java extension libraries
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
-
 //javase imports
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+
+//Java extension libraries
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 //EclipsLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -211,6 +211,11 @@ public class AnalysisModelProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(RunAnalysisOperationModel.class);
         descriptor.setDefaultRootElement("run-analysis");
+
+        XMLDirectMapping descriptionMapping = new XMLDirectMapping();
+        descriptionMapping.setAttributeName("analysisDescription");
+        descriptionMapping.setXPath("@analysis-description");
+        descriptor.addMapping(descriptionMapping);
         
         return descriptor;
     }

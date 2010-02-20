@@ -4,7 +4,7 @@
  * It is functionally equivalent to the 2-clause BSD licence,
  * with language "made unnecessary by the Berne convention" removed).
  * 
- * Copyright (c) 2009, Mike Norman
+ * Copyright (c) 2010, Mike Norman
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -28,13 +28,15 @@ import ca.carleton.tim.ksat.model.Analysis;
 
 public class RunAnalysisOperationModel extends AnalysisOperationModel {
 
+    protected String analysisDescription;
+    
     public RunAnalysisOperationModel() {
         super();
     }
 
     public void build(AnalysisBuilder builder, UnitOfWork uow) {
         Analysis reportingAnalysis = (Analysis)uow.executeQuery("findByDescription",
-            Analysis.class, "analysis1");
+            Analysis.class, analysisDescription);
         if (reportingAnalysis != null) {
             new GoogleRESTSearcher(reportingAnalysis);
         }
