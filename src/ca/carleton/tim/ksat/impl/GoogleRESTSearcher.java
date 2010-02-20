@@ -24,17 +24,16 @@ package ca.carleton.tim.ksat.impl;
 //javase imports
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import java.util.concurrent.Future;
 
 //KSAT imports
 import ca.carleton.tim.ksat.json.JSONObject;
@@ -53,116 +52,223 @@ import ca.carleton.tim.ksat.model.Site;
 public class GoogleRESTSearcher {
 
     public final static String TIM_REFERER = 
-        "http://cms.sce.carleton.ca/mod/resource/view.php?id=74";
-    public final static int POOL_SIZE = 20;
-    public final static int MAX_WAIT_TIME = 5000;
+        "http://www.carleton.ca/tim/";
+    public final static int POOL_SIZE = 40;
+    public final static int MAX_WAIT_TIME = 1024;
     public final static int TIMEOUT = 30000;
     static Random generator = new Random();
     
     public final static String GOOGLE_SEARCH_API_PREFIX = 
         "http://ajax.googleapis.com/ajax/services/search/web?start=0&lr=lang_en&v=1.0&q=";
     public final static String GOOGLE_SEARCH_API_SITE = "+site%3A";
-    
+    protected ExecutorService threadPool;
+    protected Analysis analysis;
+    protected List<GoogleRESTResult> rESTResults = new ArrayList<GoogleRESTResult>();
+
     public GoogleRESTSearcher(Analysis analysis) {
-        /*
-        ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(POOL_SIZE);
-        for (Site site : analysis.getSites()) {
-            final Site copyOfSite = site;
-            ScheduledFuture<Long> sitePageCountThread = threadPool.schedule(new Callable<Long>() {
-                @Override
-                public Long call() throws Exception {
-                    URL url = new URL(GOOGLE_SEARCH_API_PREFIX + 
-                            GOOGLE_SEARCH_API_SITE + copyOfSite.getUrl());
-                    URLConnection connection = url.openConnection();
-                    connection.setRequestProperty("Referer", TIM_REFERER);
-                    String line;
-                    StringBuilder builder = new StringBuilder();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    while((line = reader.readLine()) != null) {
-                        builder.append(line);
+        this.analysis = analysis;
+        threadPool = Executors.newFixedThreadPool(POOL_SIZE);
+    }
+    
+    public  List<GoogleRESTResult> getRESTResults() {
+        if (!threadPool.isShutdown()) {
+            ArrayList<Callable<GoogleRESTResult>> calls =  new ArrayList<Callable<GoogleRESTResult>>();
+            for (Site site : analysis.getSites()) {
+                String siteUrlString = site.getUrl();
+                boolean reachable = isSiteAlive(siteUrlString);
+                if (reachable) {
+                    long estimatedSitePageCount = getEstimatedSitePageCount(siteUrlString);
+                    for (KeywordExpression expression : analysis.getExpressions()) {
+                        Callable<GoogleRESTResult> nextCall = new GoogleRESTCall(siteUrlString,
+                            estimatedSitePageCount, expression.getExpression(), randomSleepTime());
+                        calls.add(nextCall);
                     }
-                    JSONObject json = new JSONObject(builder.toString());
-                    return json.getJSONObject("responseData").getJSONObject("cursor").getLong("estimatedResultCount");
                 }
-            }, randomSleepTime(), MILLISECONDS);
-            Long sitePageCount = null;
+            }
+            List<Future<GoogleRESTResult>> futureRESTResults = null;
             try {
-                sitePageCount = sitePageCountThread.get(TIMEOUT, MILLISECONDS);
+                futureRESTResults = threadPool.invokeAll(calls);
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
-            if (sitePageCount != null) {
-                System.out.println(copyOfSite.getUrl() + " pageCount= " + sitePageCount);
-                for (KeywordExpression expression : analysis.getExpressions()) {
-                    final KeywordExpression copyOfExpression = expression;
-                    ScheduledFuture<Long> expressionPageCountThread = threadPool.schedule(new Callable<Long>() {
-                        @Override
-                        public Long call() throws Exception {
-                            URL url = new URL(GOOGLE_SEARCH_API_PREFIX + copyOfExpression.getExpression() +
-                                    GOOGLE_SEARCH_API_SITE + copyOfSite.getUrl());
-                            URLConnection connection = url.openConnection();
-                            connection.setRequestProperty("Referer", TIM_REFERER);
-                            String line;
-                            StringBuilder builder = new StringBuilder();
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                            while((line = reader.readLine()) != null) {
-                                builder.append(line);
-                            }
-                            JSONObject json = new JSONObject(builder.toString());
-                            return json.getJSONObject("responseData").getJSONObject("cursor").getLong("estimatedResultCount");
-                        }
-                    }, randomSleepTime(), MILLISECONDS);
-                    Long expressionPageCount = null;
-                    try {
-                        expressionPageCount = expressionPageCountThread.get(TIMEOUT, MILLISECONDS);
+            if (futureRESTResults != null) {
+               for (Future<GoogleRESTResult> futureRESTResult : futureRESTResults) {
+                   try {
+                       GoogleRESTResult rESTResult = futureRESTResult.get();
+                       rESTResults.add(rESTResult);
                     }
                     catch (Exception e) {
                         e.printStackTrace();
                     }
-                    String decodedEpression = copyOfExpression.getExpression();
-                    try {
-                        decodedEpression = URLDecoder.decode(decodedEpression, "UTF-8");
-                    }
-                    catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println(decodedEpression + ": pageCount= " + expressionPageCount);
-                }
+               }
             }
+            threadPool.shutdown();
         }
-        */
-        for (Site site : analysis.getSites()) {
-            System.out.println(site.getUrl());
-            for (KeywordExpression expression : analysis.getExpressions()) {
-                try {
-                    String decodedExpression = expression.getExpression();
-                    decodedExpression = URLDecoder.decode(decodedExpression, "UTF-8");
-                    URL url = new URL(GOOGLE_SEARCH_API_PREFIX + expression.getExpression() +
-                            GOOGLE_SEARCH_API_SITE + site.getUrl());
-                    URLConnection connection = url.openConnection();
-                    connection.setRequestProperty("Referer", TIM_REFERER);
-                    String line;
-                    StringBuilder builder = new StringBuilder();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    while((line = reader.readLine()) != null) {
-                        builder.append(line);
-                    }
-                    JSONObject json = new JSONObject(builder.toString());
-                    JSONObject json2 = json.getJSONObject("responseData").getJSONObject("cursor");
-                    if (json2.has("estimatedResultCount")) {
-                        long l = json2.getLong("estimatedResultCount");
-                        System.out.println("\t" + decodedExpression + ": estimated page count = " + l);
-                    }
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        return rESTResults;
     }
 
     static long randomSleepTime() {
         return generator.nextInt(MAX_WAIT_TIME);
+    }
+    
+    static boolean isSiteAlive(String site) {
+        boolean isSiteAlive = false;
+        HttpURLConnection httpConnection = null;
+        try {
+            URL url = new URL(site);
+            URLConnection connection = url.openConnection();
+            if (connection instanceof HttpURLConnection) {
+                httpConnection = (HttpURLConnection)connection;
+                httpConnection.connect();
+                int response = httpConnection.getResponseCode();
+                switch (response) {
+                    case HttpURLConnection.HTTP_OK:
+                    case HttpURLConnection.HTTP_CREATED:
+                    case HttpURLConnection.HTTP_ACCEPTED:
+                    case HttpURLConnection.HTTP_NOT_AUTHORITATIVE:
+                    case HttpURLConnection.HTTP_NO_CONTENT:
+                    case HttpURLConnection.HTTP_RESET:
+                    case HttpURLConnection.HTTP_PARTIAL:
+                    case 207: //HTTP_MULTI_STATUS
+                        isSiteAlive = true;
+                        break;
+                    default:
+                        isSiteAlive = false;
+                }
+            }
+            else {
+                isSiteAlive = false;
+            }
+        }
+        catch (Exception e) {
+            isSiteAlive = false;
+        }
+        finally {
+            if (httpConnection != null) {
+                httpConnection.disconnect();
+            }
+        }
+        return isSiteAlive;
+    }
+    
+    static long getEstimatedSitePageCount(String site) {
+        long estimatedSitePageCount = 0l;
+        URLConnection connection = null;
+        try {
+            URL url = new URL(GOOGLE_SEARCH_API_PREFIX + GOOGLE_SEARCH_API_SITE + site);
+            connection = url.openConnection();
+            connection.setRequestProperty("Referer", TIM_REFERER);
+            String line;
+            StringBuilder builder = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
+            JSONObject json = new JSONObject(builder.toString());
+            JSONObject json2 = json.getJSONObject("responseData").getJSONObject("cursor");
+            if (json2.has("estimatedResultCount")) {
+                estimatedSitePageCount = json2.getLong("estimatedResultCount");
+            }
+        }
+        catch (Exception e) {
+            estimatedSitePageCount = -1;
+        }
+        finally {
+            if (connection != null && connection instanceof HttpURLConnection) {
+                ((HttpURLConnection)connection).disconnect();
+            }
+        }
+        return estimatedSitePageCount;
+    }
+    
+    public class GoogleRESTResult {
+        String site;
+        String expression;
+        long estimatedSitePageCount;
+        long estimatedPageCount;
+        public GoogleRESTResult(String site, String expression, long estimatedPageCount,
+            long estimatedSitePageCount) {
+            this.site = site;
+            this.expression = expression;
+            this.estimatedPageCount = estimatedPageCount;
+            this.estimatedSitePageCount = estimatedSitePageCount;
+        }
+        public String getSite() {
+            return site;
+        }
+        public String getExpression() {
+            return expression;
+        }
+        public long getEstimatedSitePageCount() {
+            return estimatedSitePageCount;
+        }
+        public long getEstimatedPageCount() {
+            return estimatedPageCount;
+        }
+        @Override
+        public String toString() {
+            return "GoogleRESTResult [estimatedPageCount=" + estimatedPageCount + ", expression="
+                + expression + ", site=" + site + " (estimatedSitePageCount=" +
+                estimatedSitePageCount + ")]";
+        }
+    }
+    
+    class GoogleRESTCall implements Callable<GoogleRESTResult> {
+        String site; // target web-site to run search against
+        long estimatedSitePageCount = 0L;
+        String expression; // search term(s)
+        long delay; // random 0-5 second delay
+        long estimatedPageCount = 0L;
+        public GoogleRESTCall(String site, long estimatedSitePageCount, String expression, long delay) {
+            this.site = site;
+            this.estimatedSitePageCount = estimatedSitePageCount;
+            this.expression = expression;
+            this.delay = delay;
+        }
+        public String getSite() {
+            return site;
+        }
+        public String getExpression() {
+            return expression;
+        }
+        public long getEstimatedSitePageCount() {
+            return estimatedSitePageCount;
+        }
+        public long getEstimatedExpressionPageCount() {
+            return estimatedPageCount;
+        }
+        @Override
+        public GoogleRESTResult call() throws Exception {
+            URLConnection connection = null;
+            try {
+                Thread.sleep(delay);
+                URL url = new URL(GOOGLE_SEARCH_API_PREFIX + expression +
+                    GOOGLE_SEARCH_API_SITE + site);
+                connection = url.openConnection();
+                connection.setRequestProperty("Referer", TIM_REFERER);
+                String line;
+                StringBuilder builder = new StringBuilder();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                while((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
+                JSONObject jsonRoot = new JSONObject(builder.toString());
+                JSONObject jsonResponseDataCursor = 
+                    jsonRoot.getJSONObject("responseData").getJSONObject("cursor");
+                if (jsonResponseDataCursor.has("estimatedResultCount")) {
+                    estimatedPageCount = jsonResponseDataCursor.getLong("estimatedResultCount");
+                }
+            }
+            catch (Exception e) {
+                estimatedPageCount = -1;
+            }
+            finally {
+                if (connection != null && connection instanceof HttpURLConnection) {
+                    ((HttpURLConnection)connection).disconnect();
+                }
+            }
+            return new GoogleRESTResult(site, expression, estimatedPageCount, estimatedSitePageCount);
+        }
     }
 }

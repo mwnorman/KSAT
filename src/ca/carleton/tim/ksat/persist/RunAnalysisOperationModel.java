@@ -21,9 +21,12 @@
  */
 package ca.carleton.tim.ksat.persist;
 
+import java.util.List;
+
 import org.eclipse.persistence.sessions.UnitOfWork;
 
 import ca.carleton.tim.ksat.impl.GoogleRESTSearcher;
+import ca.carleton.tim.ksat.impl.GoogleRESTSearcher.GoogleRESTResult;
 import ca.carleton.tim.ksat.model.Analysis;
 
 public class RunAnalysisOperationModel extends AnalysisOperationModel {
@@ -38,7 +41,11 @@ public class RunAnalysisOperationModel extends AnalysisOperationModel {
         Analysis reportingAnalysis = (Analysis)uow.executeQuery("findByDescription",
             Analysis.class, analysisDescription);
         if (reportingAnalysis != null) {
-            new GoogleRESTSearcher(reportingAnalysis);
+            List<GoogleRESTResult> rESTResults = 
+                new GoogleRESTSearcher(reportingAnalysis).getRESTResults();
+            for (GoogleRESTResult rESTResult : rESTResults) {
+                System.out.println(rESTResult);
+            }
         }
     }
 }
