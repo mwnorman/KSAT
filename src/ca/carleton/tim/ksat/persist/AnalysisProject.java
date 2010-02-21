@@ -22,20 +22,42 @@
 package ca.carleton.tim.ksat.persist;
 
 //javase imports
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
+import org.w3c.dom.Node;
+
+//java eXtension imports
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
 
-//domain imports (KSAT)
+//KSAT imports
 import ca.carleton.tim.ksat.model.Analysis;
 import ca.carleton.tim.ksat.model.AnalysisResult;
 import ca.carleton.tim.ksat.model.KeywordExpression;
@@ -226,14 +248,62 @@ public class AnalysisProject extends Project {
         dateMapping.setFieldName("KSAT_RESULT_TABLE.RUN_DATE");
         descriptor.addMapping(dateMapping);
         
-        /*
         DirectToFieldMapping rawResultMapping = new DirectToFieldMapping();
-        rawResultMapping.setAttributeName("rawResult");
-        rawResultMapping.setGetMethodName("getRawResult");
-        rawResultMapping.setSetMethodName("setRawResult");
+        rawResultMapping.setAttributeName("rawResults");
+        rawResultMapping.setGetMethodName("getRawResults");
+        rawResultMapping.setSetMethodName("setRawResults");
         rawResultMapping.setFieldName("KSAT_RESULT_TABLE.RAW_RESULT");
+        rawResultMapping.setConverter(new SerializedObjectConverter() {
+            @Override
+            public Object convertDataValueToObjectValue(Object fieldValue, Session session)
+                throws DescriptorException {
+                Node n = null;
+                try {
+                    byte[] bytes = null;
+                    bytes = (byte[])((AbstractSession)session).getDatasourcePlatform().convertObject(
+                        fieldValue, ClassConstants.APBYTE);
+                    if ((bytes == null) || (bytes.length == 0)) {
+                        return null;
+                    }
+                    String rawResults = new String(bytes);
+                    Document tmp = 
+                        XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
+                    DocumentFragment fragment = tmp.createDocumentFragment();
+                    DOMResult dr = new DOMResult(fragment);
+                    Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                    Source source = new StreamSource(new StringReader(rawResults));
+                    transformer.transform(source, dr);
+                    n = dr.getNode();
+                }
+                catch (Exception e) {
+                    if (!(e instanceof ConversionException)) {
+                        throw ConversionException.couldNotBeConverted(fieldValue, Node.class, e);
+                    }
+                    throw ConversionException.couldNotBeConverted(mapping, mapping.getDescriptor(),
+                        (ConversionException)e);
+                }
+                return n;
+            }
+            @Override
+            public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
+                byte[] bytes = null;
+                if (attributeValue instanceof Node) {
+                    Node rawResults = (Node)attributeValue;
+                    StringWriter sw = new StringWriter();
+                    try {
+                        Transformer t = TransformerFactory.newInstance().newTransformer();
+                        t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+                        t.transform(new DOMSource(rawResults), new StreamResult(sw));
+                        bytes = sw.toString().getBytes();
+                    }
+                    catch (Exception e) {
+                        // ignore
+                    }
+                }
+                return bytes;
+            }
+        });
         descriptor.addMapping(rawResultMapping);
-        */
         
         OneToOneMapping ownerMapping = new OneToOneMapping();
         ownerMapping.setAttributeName("owner");

@@ -63,6 +63,7 @@ public class NewAnalysisOperationModel extends AnalysisOperationModel {
             }
         }
         Analysis newAnalysis = (Analysis)uow.registerNewObject(new Analysis());
+        uow.assignSequenceNumber(newAnalysis);
         newAnalysis.setDescription(analysisDescription);
         try {
             BufferedReader input = new BufferedReader(new FileReader(sitesFilename));
@@ -70,7 +71,9 @@ public class NewAnalysisOperationModel extends AnalysisOperationModel {
             while ((line = input.readLine()) != null) {
                 line = line.trim();
                 if (line != "" && !line.startsWith("#")) {
+                    // TODO - check for duplicates
                     Site site = (Site)uow.registerNewObject(new Site(line, ""));
+                    uow.assignSequenceNumber(site);
                     newAnalysis.addSite(site);
                 }
             }
@@ -85,9 +88,11 @@ public class NewAnalysisOperationModel extends AnalysisOperationModel {
             while ((line = input.readLine()) != null) {
                 line = line.trim();
                 if (line != "" && !line.startsWith("#")) {
+                    // TODO - check for duplicates
                     KeywordExpression exp = (KeywordExpression)uow.registerNewObject(
                         new KeywordExpression());
                     exp.setExpression(line);
+                    uow.assignSequenceNumber(exp);
                     newAnalysis.addKeywordExpression(exp);
                 }
             }
@@ -96,7 +101,6 @@ public class NewAnalysisOperationModel extends AnalysisOperationModel {
         catch (Exception e) {
             builder.logMessage(SEVERE, "failure reading keyword expressions file", e);
         }
-        uow.assignSequenceNumbers();
     }
 
 }

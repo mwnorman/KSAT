@@ -27,8 +27,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -63,29 +68,35 @@ public class GoogleRESTSearcher {
     public final static String GOOGLE_SEARCH_API_SITE = "+site%3A";
     protected ExecutorService threadPool;
     protected Analysis analysis;
-    protected List<GoogleRESTResult> rESTResults = new ArrayList<GoogleRESTResult>();
+    protected Map<String, SitePageCount> rESTResults = new LinkedHashMap<String, SitePageCount>();
 
     public GoogleRESTSearcher(Analysis analysis) {
         this.analysis = analysis;
         threadPool = Executors.newFixedThreadPool(POOL_SIZE);
     }
     
-    public  List<GoogleRESTResult> getRESTResults() {
+    public  Map<String, SitePageCount> getRESTResults() {
         if (!threadPool.isShutdown()) {
-            ArrayList<Callable<GoogleRESTResult>> calls =  new ArrayList<Callable<GoogleRESTResult>>();
+            ArrayList<Callable<KeywordPageCount>> calls =  new ArrayList<Callable<KeywordPageCount>>();
             for (Site site : analysis.getSites()) {
                 String siteUrlString = site.getUrl();
                 boolean reachable = isSiteAlive(siteUrlString);
                 if (reachable) {
-                    long estimatedSitePageCount = getEstimatedSitePageCount(siteUrlString);
+                    long sitePageCount = getSitePageCount(siteUrlString);
+                    SitePageCount spc = new SitePageCount(site, sitePageCount);
+                    rESTResults.put(siteUrlString, spc);
                     for (KeywordExpression expression : analysis.getExpressions()) {
-                        Callable<GoogleRESTResult> nextCall = new GoogleRESTCall(siteUrlString,
-                            estimatedSitePageCount, expression.getExpression(), randomSleepTime());
+                        Callable<KeywordPageCount> nextCall = new GoogleRESTCall(siteUrlString,
+                            expression, randomSleepTime());
                         calls.add(nextCall);
                     }
                 }
+                else {
+                    SitePageCount spc = new SitePageCount(site, -1); // -1 indicates unreachable
+                    rESTResults.put(siteUrlString, spc);
+                }
             }
-            List<Future<GoogleRESTResult>> futureRESTResults = null;
+            List<Future<KeywordPageCount>> futureRESTResults = null;
             try {
                 futureRESTResults = threadPool.invokeAll(calls);
             }
@@ -93,10 +104,11 @@ public class GoogleRESTSearcher {
                 e.printStackTrace();
             }
             if (futureRESTResults != null) {
-               for (Future<GoogleRESTResult> futureRESTResult : futureRESTResults) {
+               for (Future<KeywordPageCount> futureRESTResult : futureRESTResults) {
                    try {
-                       GoogleRESTResult rESTResult = futureRESTResult.get();
-                       rESTResults.add(rESTResult);
+                       KeywordPageCount pageCount = futureRESTResult.get();
+                       SitePageCount spc = rESTResults.get(pageCount.siteUrlString);
+                       spc.addPageCount(pageCount.expression, pageCount.pageCount);
                     }
                     catch (Exception e) {
                         e.printStackTrace();
@@ -152,8 +164,8 @@ public class GoogleRESTSearcher {
         return isSiteAlive;
     }
     
-    static long getEstimatedSitePageCount(String site) {
-        long estimatedSitePageCount = 0l;
+    static long getSitePageCount(String site) {
+        long sitePageCount = 0l;
         URLConnection connection = null;
         try {
             URL url = new URL(GOOGLE_SEARCH_API_PREFIX + GOOGLE_SEARCH_API_SITE + site);
@@ -168,83 +180,100 @@ public class GoogleRESTSearcher {
             JSONObject json = new JSONObject(builder.toString());
             JSONObject json2 = json.getJSONObject("responseData").getJSONObject("cursor");
             if (json2.has("estimatedResultCount")) {
-                estimatedSitePageCount = json2.getLong("estimatedResultCount");
+                sitePageCount = json2.getLong("estimatedResultCount");
             }
         }
         catch (Exception e) {
-            estimatedSitePageCount = -1;
+            sitePageCount = -1;
         }
         finally {
             if (connection != null && connection instanceof HttpURLConnection) {
                 ((HttpURLConnection)connection).disconnect();
             }
         }
-        return estimatedSitePageCount;
+        return sitePageCount;
     }
     
-    public class GoogleRESTResult {
-        String site;
-        String expression;
-        long estimatedSitePageCount;
-        long estimatedPageCount;
-        public GoogleRESTResult(String site, String expression, long estimatedPageCount,
-            long estimatedSitePageCount) {
+    public class SitePageCount {
+        Site site;
+        long sitePageCount;
+        ArrayList<KeywordPageCount> pageCounts = new ArrayList<KeywordPageCount>();
+        public SitePageCount(Site site, long sitePageCount) {
             this.site = site;
-            this.expression = expression;
-            this.estimatedPageCount = estimatedPageCount;
-            this.estimatedSitePageCount = estimatedSitePageCount;
+            this.sitePageCount = sitePageCount;
         }
-        public String getSite() {
+        public Site getSite() {
             return site;
         }
-        public String getExpression() {
-            return expression;
+        public long getSitePageCount() {
+            return sitePageCount;
         }
-        public long getEstimatedSitePageCount() {
-            return estimatedSitePageCount;
+        public void addPageCount(KeywordExpression expression, long pageCount) {
+            pageCounts.add(new KeywordPageCount(site.getUrl(), expression, pageCount));
         }
-        public long getEstimatedPageCount() {
-            return estimatedPageCount;
+        public List<KeywordPageCount> getPageCounts() {
+            Collections.<KeywordPageCount>sort(pageCounts, new Comparator<KeywordPageCount>(){
+                public int compare(KeywordPageCount o1, KeywordPageCount o2) {
+                    return o1.getExpression().getId() - o2.getExpression().getId();
+                }
+            });
+            return pageCounts;
         }
         @Override
         public String toString() {
-            return "GoogleRESTResult [estimatedPageCount=" + estimatedPageCount + ", expression="
-                + expression + ", site=" + site + " (estimatedSitePageCount=" +
-                estimatedSitePageCount + ")]";
+            return "SitePageCount['" + site.getUrl() + "']=" + sitePageCount;
+        }
+    }
+    public class KeywordPageCount {
+        String siteUrlString;
+        KeywordExpression expression;
+        long pageCount;
+        public KeywordPageCount(String siteUrlString, KeywordExpression expression, long pageCount) {
+            super();
+            this.siteUrlString = siteUrlString;
+            this.expression = expression;
+            this.pageCount = pageCount;
+        }
+        public String getSiteUrlString() {
+            return siteUrlString;
+        }
+        public KeywordExpression getExpression() {
+            return expression;
+        }
+        public long getPageCount() {
+            return pageCount;
+        }
+        @Override
+        public String toString() {
+            String decodedExpression = expression.getExpression();
+            try {
+                decodedExpression = URLDecoder.decode(decodedExpression, "UTF-8");
+            }
+            catch (Exception e) {
+                // ignore
+                decodedExpression = expression.getExpression();
+            }
+            return "KeywordPageCount['" + decodedExpression + "']=" + pageCount;
         }
     }
     
-    class GoogleRESTCall implements Callable<GoogleRESTResult> {
-        String site; // target web-site to run search against
-        long estimatedSitePageCount = 0L;
-        String expression; // search term(s)
+    class GoogleRESTCall implements Callable<KeywordPageCount> {
+        String siteUrlString; // target web-site to run search against
+        KeywordExpression expression; // search term(s)
         long delay; // random 0-5 second delay
-        long estimatedPageCount = 0L;
-        public GoogleRESTCall(String site, long estimatedSitePageCount, String expression, long delay) {
-            this.site = site;
-            this.estimatedSitePageCount = estimatedSitePageCount;
+        long pageCount = 0L;
+        public GoogleRESTCall(String siteUrlString, KeywordExpression expression, long delay) {
+            this.siteUrlString = siteUrlString;
             this.expression = expression;
             this.delay = delay;
         }
-        public String getSite() {
-            return site;
-        }
-        public String getExpression() {
-            return expression;
-        }
-        public long getEstimatedSitePageCount() {
-            return estimatedSitePageCount;
-        }
-        public long getEstimatedExpressionPageCount() {
-            return estimatedPageCount;
-        }
         @Override
-        public GoogleRESTResult call() throws Exception {
+        public KeywordPageCount call() throws Exception {
             URLConnection connection = null;
             try {
                 Thread.sleep(delay);
-                URL url = new URL(GOOGLE_SEARCH_API_PREFIX + expression +
-                    GOOGLE_SEARCH_API_SITE + site);
+                URL url = new URL(GOOGLE_SEARCH_API_PREFIX + expression.getExpression() +
+                    GOOGLE_SEARCH_API_SITE + siteUrlString);
                 connection = url.openConnection();
                 connection.setRequestProperty("Referer", TIM_REFERER);
                 String line;
@@ -257,18 +286,18 @@ public class GoogleRESTSearcher {
                 JSONObject jsonResponseDataCursor = 
                     jsonRoot.getJSONObject("responseData").getJSONObject("cursor");
                 if (jsonResponseDataCursor.has("estimatedResultCount")) {
-                    estimatedPageCount = jsonResponseDataCursor.getLong("estimatedResultCount");
+                    pageCount = jsonResponseDataCursor.getLong("estimatedResultCount");
                 }
             }
             catch (Exception e) {
-                estimatedPageCount = -1;
+                pageCount = -1;
             }
             finally {
                 if (connection != null && connection instanceof HttpURLConnection) {
                     ((HttpURLConnection)connection).disconnect();
                 }
             }
-            return new GoogleRESTResult(site, expression, estimatedPageCount, estimatedSitePageCount);
+            return new KeywordPageCount(siteUrlString, expression, pageCount);
         }
     }
 }

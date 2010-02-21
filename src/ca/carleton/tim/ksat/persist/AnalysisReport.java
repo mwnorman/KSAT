@@ -33,10 +33,18 @@ import ca.carleton.tim.ksat.model.Site;
 
 public class AnalysisReport {
 
+    protected int id;
     protected Analysis reportingAnalysis;
     protected Date dateTime; 
 
     public AnalysisReport() {
+    }
+
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Analysis getReportingAnalysis() {

@@ -63,14 +63,15 @@ public class Site {
         StringBuilder sb = new StringBuilder(80);
         sb.append("{");
         sb.append(id);
-        sb.append("}Site");
+        sb.append("}");
         if (description != null && description.length() > 0) {
-            sb.append("(");
+            sb.append("Site(");
             sb.append(description);
             sb.append(")");
         }
-        sb.append("=");
+        sb.append("'");
         sb.append(url);
+        sb.append("'");
         return sb.toString();
     }
 }

@@ -21,13 +21,31 @@
  */
 package ca.carleton.tim.ksat.persist;
 
-import java.util.List;
+//javase imports
+import java.io.StringReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
 
+//java eXtension imports
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamSource;
+
+//EclipseLink imports
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
+//KSAT imports
 import ca.carleton.tim.ksat.impl.GoogleRESTSearcher;
-import ca.carleton.tim.ksat.impl.GoogleRESTSearcher.GoogleRESTResult;
+import ca.carleton.tim.ksat.impl.GoogleRESTSearcher.KeywordPageCount;
+import ca.carleton.tim.ksat.impl.GoogleRESTSearcher.SitePageCount;
 import ca.carleton.tim.ksat.model.Analysis;
+import ca.carleton.tim.ksat.model.AnalysisResult;
 
 public class RunAnalysisOperationModel extends AnalysisOperationModel {
 
@@ -41,11 +59,61 @@ public class RunAnalysisOperationModel extends AnalysisOperationModel {
         Analysis reportingAnalysis = (Analysis)uow.executeQuery("findByDescription",
             Analysis.class, analysisDescription);
         if (reportingAnalysis != null) {
-            List<GoogleRESTResult> rESTResults = 
-                new GoogleRESTSearcher(reportingAnalysis).getRESTResults();
-            for (GoogleRESTResult rESTResult : rESTResults) {
-                System.out.println(rESTResult);
+            GoogleRESTSearcher googleRESTSearcher = new GoogleRESTSearcher(reportingAnalysis);
+            Map<String, SitePageCount> rESTResults = googleRESTSearcher.getRESTResults();
+            AnalysisResult result = (AnalysisResult)uow.registerNewObject(new AnalysisResult());
+            result.setOwner(reportingAnalysis); 
+            result.setDateTime(new Date(System.currentTimeMillis()));
+            uow.assignSequenceNumber(result);
+            StringBuilder sb = new StringBuilder(200);
+            if (!rESTResults.isEmpty()) {
+                sb.append("<raw-result ");
+                sb.append("id=\"");
+                sb.append(result.getId());
+                sb.append("\"");
+                sb.append(" timestamp=\"");
+                sb.append(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz").format(result.getDateTime()));
+                sb.append("\">");
+                for (Map.Entry<String, SitePageCount> me : rESTResults.entrySet()) {
+                    SitePageCount spc = me.getValue();
+                    sb.append("<site-page-counts site-id=\"");
+                    sb.append(spc.getSite().getId());
+                    sb.append("\" estimated-total-pages=\"");
+                    long sitePageCount = spc.getSitePageCount();
+                    sb.append(sitePageCount);
+                    if (sitePageCount > 0) {
+                        sb.append("\">");
+                        for (KeywordPageCount kpc : spc.getPageCounts()) {
+                            sb.append("<keyword-page-count keyword-id=\"");
+                            sb.append(kpc.getExpression().getId());
+                            sb.append("\">");
+                            sb.append(kpc.getPageCount());
+                            sb.append("</keyword-page-count>");
+                        }
+                        sb.append("</site-page-counts>");
+                    }
+                    else {
+                        sb.append("\"/>");
+                    }
+                }
+                sb.append("</raw-result>");
             }
+            else {
+                sb.append("<raw-result/>");
+            }
+            try {
+                Document tmp = 
+                    XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
+                DocumentFragment fragment = tmp.createDocumentFragment();
+                DOMResult dr = new DOMResult(fragment);
+                Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                Source source = new StreamSource(new StringReader(sb.toString()));
+                transformer.transform(source, dr);
+                result.setRawResults(dr.getNode());
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }  
         }
     }
 }
