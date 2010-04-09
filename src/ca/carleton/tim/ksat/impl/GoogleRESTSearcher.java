@@ -56,15 +56,15 @@ import ca.carleton.tim.ksat.model.Site;
  */
 public class GoogleRESTSearcher {
 
-    public final static String TIM_REFERER = 
-        "http://www.carleton.ca/tim/";
+    public final static String KSAT_REFERER = 
+        "http://github.com/mwnorman/KSAT/";
     public final static int POOL_SIZE = 40;
     public final static int MAX_WAIT_TIME = 1024;
     public final static int TIMEOUT = 30000;
     static Random generator = new Random();
     
     public final static String GOOGLE_SEARCH_API_PREFIX = 
-        "http://ajax.googleapis.com/ajax/services/search/web?start=0&lr=lang_en&v=1.0&q=";
+        "http://ajax.googleapis.com/ajax/services/search/web?start=0&lr=lang_en&v=1.0&safe=off&q=";
     public final static String GOOGLE_SEARCH_API_SITE = "+site%3A";
     protected ExecutorService threadPool;
     protected Analysis analysis;
@@ -170,7 +170,7 @@ public class GoogleRESTSearcher {
         try {
             URL url = new URL(GOOGLE_SEARCH_API_PREFIX + GOOGLE_SEARCH_API_SITE + site);
             connection = url.openConnection();
-            connection.setRequestProperty("Referer", TIM_REFERER);
+            connection.setRequestProperty("Referer", KSAT_REFERER);
             String line;
             StringBuilder builder = new StringBuilder();
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -184,7 +184,7 @@ public class GoogleRESTSearcher {
             }
         }
         catch (Exception e) {
-            sitePageCount = -1;
+            sitePageCount = -2;
         }
         finally {
             if (connection != null && connection instanceof HttpURLConnection) {
@@ -260,7 +260,7 @@ public class GoogleRESTSearcher {
     class GoogleRESTCall implements Callable<KeywordPageCount> {
         String siteUrlString; // target web-site to run search against
         KeywordExpression expression; // search term(s)
-        long delay; // random 0-5 second delay
+        long delay; // random 0-1024 milliseconds delay
         long pageCount = 0L;
         public GoogleRESTCall(String siteUrlString, KeywordExpression expression, long delay) {
             this.siteUrlString = siteUrlString;
@@ -275,7 +275,7 @@ public class GoogleRESTSearcher {
                 URL url = new URL(GOOGLE_SEARCH_API_PREFIX + expression.getExpression() +
                     GOOGLE_SEARCH_API_SITE + siteUrlString);
                 connection = url.openConnection();
-                connection.setRequestProperty("Referer", TIM_REFERER);
+                connection.setRequestProperty("Referer", KSAT_REFERER);
                 String line;
                 StringBuilder builder = new StringBuilder();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));

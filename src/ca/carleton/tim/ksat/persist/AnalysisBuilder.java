@@ -232,6 +232,10 @@ public class AnalysisBuilder {
             logMessage(SEVERE, "failure logging into database", e);
             return;
         }
+        buildOperations();
+    }
+    
+    public void buildOperations() {
         for (AnalysisOperationModel opModel : operations) {
             UnitOfWork uow = session.acquireUnitOfWork();
             opModel.build(this, uow);
@@ -351,6 +355,9 @@ public class AnalysisBuilder {
 
     public DatabaseSession getSession() {
         return session;
+    }
+    public void setSession(DatabaseSession session) {
+        this.session = session;
     }
 
     protected void logMessage(Level level, String message) {

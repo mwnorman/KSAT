@@ -24,6 +24,7 @@ package ca.carleton.tim.ksat.persist;
 //javase imports
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
@@ -72,6 +73,7 @@ public class AnalysisProject extends Project {
         addDescriptor(buildSiteDescriptor());
         addDescriptor(buildKeywordExpressionDescriptor());
         addDescriptor(buildAnalysisResultDescriptor());
+        addDescriptor(buildAnalysisReportDescriptor());
     }
 
     protected ClassDescriptor buildAnalysisDescriptor() {
@@ -192,6 +194,7 @@ public class AnalysisProject extends Project {
         urlMapping.setGetMethodName("getUrl");
         urlMapping.setSetMethodName("setUrl");
         urlMapping.setFieldName("KSAT_SITE_TABLE.URL");
+        urlMapping.getField().setLength(2000);
         descriptor.addMapping(urlMapping);
 
         return descriptor;
@@ -219,6 +222,7 @@ public class AnalysisProject extends Project {
         expressionMapping.setGetMethodName("getExpression");
         expressionMapping.setSetMethodName("setExpression");
         expressionMapping.setFieldName("KSAT_KEYWORD_TABLE.EXPRESSION");
+        expressionMapping.getField().setLength(2000);
         descriptor.addMapping(expressionMapping);
 
         return descriptor;
@@ -246,6 +250,7 @@ public class AnalysisProject extends Project {
         dateMapping.setGetMethodName("getDateTime");
         dateMapping.setSetMethodName("setDateTime");
         dateMapping.setFieldName("KSAT_RESULT_TABLE.RUN_DATE");
+        dateMapping.setAttributeClassification(Timestamp.class);
         descriptor.addMapping(dateMapping);
         
         DirectToFieldMapping rawResultMapping = new DirectToFieldMapping();
@@ -292,6 +297,7 @@ public class AnalysisProject extends Project {
                     StringWriter sw = new StringWriter();
                     try {
                         Transformer t = TransformerFactory.newInstance().newTransformer();
+                        t.setOutputProperty(OutputKeys.INDENT, "no");
                         t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
                         t.transform(new DOMSource(rawResults), new StreamResult(sw));
                         bytes = sw.toString().getBytes();
@@ -314,6 +320,27 @@ public class AnalysisProject extends Project {
         ownerMapping.addForeignKeyFieldName("KSAT_RESULT_TABLE.ANALYSIS_ID",
             "KSAT_ANALYSIS_TABLE.ID");
         descriptor.addMapping(ownerMapping);
+        
+        return descriptor;
+    }
+
+
+    protected ClassDescriptor buildAnalysisReportDescriptor() {
+
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(AnalysisReport.class);
+        descriptor.addTableName("KSAT_REPORT_TABLE");
+        descriptor.addPrimaryKeyFieldName("KSAT_REPORT_TABLE.ID");
+        descriptor.setSequenceNumberFieldName("KSAT_REPORT_TABLE.ID");
+        descriptor.setSequenceNumberName("REPORT_SEQ");
+        descriptor.setAlias("AnalysisReport");
+        
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setGetMethodName("getId");
+        idMapping.setSetMethodName("setId");
+        idMapping.setFieldName("KSAT_REPORT_TABLE.ID");
+        descriptor.addMapping(idMapping);
         
         return descriptor;
     }

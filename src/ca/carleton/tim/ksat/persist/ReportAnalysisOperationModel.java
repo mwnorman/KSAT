@@ -58,11 +58,14 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
         "<xsl:template match=\"/\">" +
           "<html>" +
             "<body>" +
-              "<h2>Anaylsis Report</h2>" +
-              "<table border=\"1\" cellpadding=\"5\" cellspacing=\"2\">" +
-                "<tr>" +
-                  "<th colspan=\"2\" scope=\"colgroup\" bgcolor=\"#ee34df2\">Legend</th>" +
-                "</tr>" +
+              "<h2>Analysis Report</h2>" +
+              "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\">" +
+              "<tr>" +
+              "<th colspan=\"2\" scope=\"colgroup\" bgcolor=\"#2efbdf1\">Legend</th>" +
+              "</tr>" +
+              "<tr>" +
+              "<td width=\"50%\">" +              
+              "<table border=\"1\" cellpadding=\"1\" cellspacing=\"2\">" +
                 "<tr>" +
                   "<th scope=\"col\" align=\"left\" bgcolor=\"#9acd32\">Site</th>" +
                   "<th scope=\"col\" align=\"left\" bgcolor=\"#9acd32\">Url</th>" +
@@ -73,6 +76,10 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
                   "<td><xsl:value-of select=\"text()\"/></td>" +
                 "</tr>" +
               "</xsl:for-each>" +
+              "</table>" + 
+              "</td>" +
+              "<td width=\"50%\">" +   
+              "<table border=\"1\" cellpadding=\"1\" cellspacing=\"2\">" +
                 "<tr>" +
                   "<th scope=\"col\" align=\"left\" bgcolor=\"#9acd32\">Keyword</th>" +
                   "<th scope=\"col\" align=\"left\" bgcolor=\"#9acd32\">Expression</th>" +
@@ -84,8 +91,78 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
                 "</tr>" +
               "</xsl:for-each>" +
               "</table>" +
+              "</td>" +
+              "</tr>" +
+              "</table>" +
+              "<table border=\"1\" cellpadding=\"1\" cellspacing=\"2\">" +
+                "<xsl:variable name=\"numKeywords\" select=\"count(//analysis-report/analysis/keywords/keyword)\"/>" +
+                "<xsl:variable name=\"numKeywordsPlus\" select=\"$numKeywords+1\"/>" +
+                "<colgroup></colgroup>" +
+                "<colgroup span=\"{$numKeywords}/\"></colgroup>" +
+                "<tr>" +
+                  "<th colspan=\"{$numKeywordsPlus}\" scope=\"colgroup\" bgcolor=\"#9acd32\">Results</th>" +
+                "</tr>" +
+                "<xsl:for-each select=\"//analysis-report/analysis/results/result\">" +
+                  "<tr>" +
+                    "<th colspan=\"{$numKeywordsPlus}\" scope=\"colgroup\" bgcolor=\"#9acd32\">" +
+                      "Result <xsl:value-of select=\"@id\"/>" +
+                      " (run time=<xsl:value-of select=\"@timestamp\"/>)</th>" +
+                  "</tr>" +
+                  "<tr>" +
+                    "<th rowspan=\"2\">Site</th>" +
+                    "<th colspan=\"{$numKeywords}\" bgcolor=\"#9acd32\">Page Counts</th>" +
+                  "</tr>" +
+                  "<tr>" +
+                    "<xsl:for-each select=\"//analysis-report/analysis/keywords/keyword\">" +
+                      "<th>keyword <xsl:value-of select=\"@id\"/></th>" +
+                    "</xsl:for-each>" +
+                  "</tr>" +
+                  "<xsl:for-each select=\"//analysis-report/analysis/results/result/site-page-counts\">" +
+                    "<tr>" +
+                      "<xsl:choose>" +
+                        "<xsl:when test=\"@estimated-total-pages='-1'\">" +
+                          "<td bgcolor=\"red\"><xsl:value-of select=\"@site-id\"/> (site not responding)</td>" +
+                            "<xsl:call-template name=\"printEmptyCells\">" +
+                              "<xsl:with-param name=\"i\">" +
+                                "<xsl:value-of select=\"number(1)\"/>" +
+                              "</xsl:with-param>" +
+                              "<xsl:with-param name=\"count\">" +
+                                "<xsl:value-of select=\"$numKeywords\"/>" +
+                              "</xsl:with-param>" +
+                            "</xsl:call-template>" +
+                        "</xsl:when>" +
+                        "<xsl:otherwise>" +
+                          "<td><xsl:value-of select=\"@site-id\"/>" +
+                            " (estimated total number of pages=<xsl:value-of select=\"@estimated-total-pages\"/>)</td>" +
+                          "</xsl:otherwise>" +
+                       "</xsl:choose>" +
+                      "<xsl:for-each select=\"./keyword-page-count\">" +
+                        "<td><xsl:value-of select=\"text()\"/></td>" +
+                      "</xsl:for-each>" +
+                    "</tr>" +
+                  "</xsl:for-each>" +
+                "</xsl:for-each>" +
+              "</table>" +
             "</body>" +
           "</html>" +
+        "</xsl:template>" +
+
+        "<xsl:template name=\"printEmptyCells\">" +
+          "<xsl:param name=\"i\"/>" +
+          "<xsl:param name=\"count\"/>" +
+          "<xsl:if test=\"$i &lt;= $count\">" +
+            "<td><xsl:text disable-output-escaping=\"yes\">&amp;nbsp;</xsl:text></td>" +
+          "</xsl:if>" +
+          "<xsl:if test=\"$i &lt;= $count\">" +
+            "<xsl:call-template name=\"printEmptyCells\">" +
+              "<xsl:with-param name=\"i\">" +
+                "<xsl:value-of select=\"$i + 1\"/>" +
+              "</xsl:with-param>" +
+              "<xsl:with-param name=\"count\">" +
+                "<xsl:value-of select=\"$count\"/>" +
+              "</xsl:with-param>" +
+            "</xsl:call-template>" +
+          "</xsl:if>" +
         "</xsl:template>" +
       "</xsl:stylesheet>";
     
@@ -121,21 +198,32 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
         super();
     }
 
+    public String getReportFormat() {
+        return reportFormat;
+    }
+    public void setReportFormat(String reportFormat) {
+        this.reportFormat = reportFormat;
+    }
+
     public void build(AnalysisBuilder builder, UnitOfWork uow) {
         try {
             Analysis reportingAnalysis = (Analysis)uow.executeQuery("findByDescription",
                 Analysis.class, analysisDescription);
             if (reportingAnalysis != null) {
-                AnalysisResult report = reportingAnalysis.getResults().get(0);
+                AnalysisResult result = reportingAnalysis.getResults().get(0);
+                AnalysisReport analysisReport = (AnalysisReport)uow.registerNewObject(new AnalysisReport());
+                uow.assignSequenceNumber(analysisReport);
+                analysisReport.setDateTime(result.getDateTime());
+                analysisReport.setReportingAnalysis(reportingAnalysis);
                 XMLContext context = new XMLContext(new AnalysisReportProject());
                 XMLMarshaller marshaller = context.createMarshaller();
                 File destination = new File(reportDestination);
                 if (REPORT_XML_FORMAT.equalsIgnoreCase(reportFormat)) {
-                    marshaller.marshal(report, new StreamResult(destination));
+                    marshaller.marshal(analysisReport, new StreamResult(destination));
                 }
                 else if (REPORT_HTML_FORMAT.equalsIgnoreCase(reportFormat)) {
                     Document doc = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
-                    marshaller.marshal(report, doc);
+                    marshaller.marshal(analysisReport, doc);
                     StreamSource xslSource = new StreamSource(new StringReader(HTML_XSL));
                     Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
                     DOMSource domSource = new DOMSource(doc);
@@ -143,7 +231,7 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
                 }
                 else if (REPORT_CSV_FORMAT.equalsIgnoreCase(reportFormat)) {
                     Document doc = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
-                    marshaller.marshal(report, doc);
+                    marshaller.marshal(result, doc);
                     StreamSource xslSource = new StreamSource(new StringReader(CSV_XSL));
                     Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
                     DOMSource domSource = new DOMSource(doc);
@@ -154,5 +242,6 @@ public class ReportAnalysisOperationModel extends AnalysisOperationModel {
         catch (Exception e) {
             e.printStackTrace();
         }
+        uow.revertAndResume();
     }
 }

@@ -11,20 +11,23 @@
   </properties>
   <!--
   <new-analysis
+    sites-filename="P:/tim/project/ksat/sites2.txt"
+    expressions-filename="P:/tim/project/ksat/keywords.txt"
+    analysis-description="analysis2"
+  />
+  <new-analysis
     sites-filename="P:/tim/project/ksat/sites.txt"
-	expressions-filename="P:/tim/project/ksat/keywords.txt"
-	create-tables="true"
-	analysis-description="analysis1"
-  />
-  -->
-  <report-analysis
-    report-format="xml"
+    expressions-filename="P:/tim/project/ksat/keywords.txt"
+    create-tables="true"
     analysis-description="analysis1"
-    report-destination="P:/tim/project/ksat/report.xml"
   />
-  <!--
   <run-analysis
     analysis-description="analysis1"
   />
   -->
+  <report-analysis
+    report-format="html"
+    analysis-description="analysis1"
+    report-destination="P:/tim/project/ksat/report.html"
+  />
 </analysis-model>

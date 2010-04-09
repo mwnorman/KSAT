@@ -21,9 +21,14 @@
  */
 package ca.carleton.tim.ksat.persist;
 
+//javase imports
+import java.util.Enumeration;
+
 //EclipseLink imports
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
@@ -39,6 +44,20 @@ public class AnalysisProjectTablesCreator extends TableCreator {
         addTableDefinition(buildKSAT_SEQUENCE_TABLE());
         addTableDefinition(buildKSAT_ANALYSIS_KEYWORD_TABLE());
         addTableDefinition(buildKSAT_ANALYSIS_SITE_TABLE());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public void replaceTables(DatabaseSession session, SchemaManager schemaManager) {
+        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
+            schemaManager.buildFieldTypes((TableDefinition)enumtr.nextElement());
+        }
+        // do not log stack
+        boolean shouldLogExceptionStackTrace = session.getSessionLog().shouldLogExceptionStackTrace();
+        if (shouldLogExceptionStackTrace) {
+            session.getSessionLog().setShouldLogExceptionStackTrace(false);
+        }
+        schemaManager.replaceDefaultTables();
     }
 
     protected TableDefinition buildKSAT_ANALYSIS_TABLE() {
