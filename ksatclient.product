@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="Keyword Search and Analysis Tool (KSAT)" uid="ca.carleton.tim.ksat" id="ca.carleton.tim.ksat.product" application="ca.carleton.tim.ksat.application" version="1.0.0" useFeatures="false" includeLaunchers="true">
+
+   <aboutInfo>
+      <image path="/KSAT/icons/about.gif"/>
+      <text>
+         %aboutText
+      </text>
+   </aboutInfo>
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+   </launcherArgs>
+
+   <windowImages i64="/KSAT/icons/KSAT.large.png"/>
+
+   <splash
+      location="ca.carleton.tim.ksat" />
+   <launcher name="KSAT">
+      <solaris/>
+      <win useIco="true">
+         <ico path="/KSAT/branding/KSAT64.ico"/>
+         <bmp/>
+      </win>
+   </launcher>
+
+   <vm>
+      <windows>org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</windows>
+   </vm>
+
+   <license>
+        <url>http://www.opensource.org/licenses/isc-license.txt</url>
+        <text>
+   This software is licensed under the terms of the ISC License.
+(ISCL http://www.opensource.org/licenses/isc-license.txt
+It is functionally equivalent to the 2-clause BSD licence,
+with language &quot;made unnecessary by the Berne convention&quot; removed).
+
+Copyright (c) 2010, Mike Norman
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+ 
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot; AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER
+RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE
+USE OR PERFORMANCE OF THIS SOFTWARE.
+         </text>
+   </license>
+
+   <plugins>
+      <plugin id="ca.carleton.tim.ksat" version="1.0.0"/>
+      <plugin id="com.ibm.icu"/>
+      <plugin id="javax.transaction" fragment="true"/>
+      <plugin id="org.eclipse.compare.core"/>
+      <plugin id="org.eclipse.core.commands"/>
+      <plugin id="org.eclipse.core.contenttype"/>
+      <plugin id="org.eclipse.core.databinding"/>
+      <plugin id="org.eclipse.core.databinding.observable"/>
+      <plugin id="org.eclipse.core.databinding.property"/>
+      <plugin id="org.eclipse.core.expressions"/>
+      <plugin id="org.eclipse.core.jobs"/>
+      <plugin id="org.eclipse.core.runtime"/>
+      <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
+      <plugin id="org.eclipse.core.variables"/>
+      <plugin id="org.eclipse.equinox.app"/>
+      <plugin id="org.eclipse.equinox.common"/>
+      <plugin id="org.eclipse.equinox.preferences"/>
+      <plugin id="org.eclipse.equinox.registry"/>
+      <plugin id="org.eclipse.help"/>
+      <plugin id="org.eclipse.jface"/>
+      <plugin id="org.eclipse.jface.databinding"/>
+      <plugin id="org.eclipse.jface.text"/>
+      <plugin id="org.eclipse.osgi"/>
+      <plugin id="org.eclipse.persistence.asm"/>
+      <plugin id="org.eclipse.persistence.core"/>
+      <plugin id="org.eclipse.persistence.jpa.equinox.weaving" fragment="true"/>
+      <plugin id="org.eclipse.persistence.moxy"/>
+      <plugin id="org.eclipse.persistence.oracle" fragment="true"/>
+      <plugin id="org.eclipse.swt"/>
+      <plugin id="org.eclipse.swt.win32.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.text"/>
+      <plugin id="org.eclipse.ui"/>
+      <plugin id="org.eclipse.ui.console"/>
+      <plugin id="org.eclipse.ui.workbench"/>
+      <plugin id="org.eclipse.ui.workbench.texteditor"/>
+   </plugins>
+
+
+</product>

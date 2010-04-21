@@ -68,7 +68,7 @@
 							</th>
 						</tr>
 						<tr>
-							<th rowspan="2">Site</th>
+							<th rowspan="2">Site<br/>(estimated total number of pages)</th>
 							<th colspan="{$numKeywords}" bgcolor="#9acd32">Page Counts</th>
 						</tr>
 						<tr>
@@ -100,7 +100,7 @@
 									<xsl:otherwise>
 										<td>
 											<xsl:value-of select="@site-id" />
-											(estimated total number of pages=
+											(
 											<xsl:value-of select="@estimated-total-pages" />
 											)
 										</td>

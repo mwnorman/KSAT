@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="ca.carleton.tim.ksat.client.KSATApplication">
+         </run>
+      </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="KSAT Perspective"
+            class="ca.carleton.tim.ksat.client.Perspective"
+            id="ca.carleton.tim.ksat.client.perspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="ca.carleton.tim.ksat.client.AnalysesView"
+            icon="icons/analyses.gif"
+            id="ca.carleton.tim.ksat.client.views.analyses"
+            name="Analyses"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+        point="org.eclipse.ui.views">
+        <view
+              class="ca.carleton.tim.ksat.client.SitesView"
+              icon="icons/site.gif"
+              id="ca.carleton.tim.ksat.client.views.sites"
+              name="Sites">
+        </view>
+    </extension>
+    <extension
+        point="org.eclipse.ui.views">
+        <view
+              class="ca.carleton.tim.ksat.client.KeywordsView"
+              icon="icons/keywords.gif"
+              id="ca.carleton.tim.ksat.client.views.keywords"
+              name="Keywords">
+        </view>
+    </extension>
+    <extension
+          point="org.eclipse.ui.views">
+          
+        <view
+              class="ca.carleton.tim.ksat.client.ResultsView"
+              icon="icons/report.gif"
+              id="ca.carleton.tim.ksat.client.views.results"
+              name="Results">
+        </view>
+    </extension>
+   
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="ca.carleton.tim.ksat.application"
+            name="Keyword Search and Analysis Tool (KSAT)">
+         <property
+               name="windowImages"
+               value="icons/KSAT.large.png">
+         </property>
+         <property
+               name="aboutText"
+               value="%aboutText">
+         </property>
+         <property
+               name="aboutImage"
+               value="icons/about.gif">
+         </property>
+         <property
+               name="appName"
+               value="Keyword Search and Analysis Tool (KSAT)">
+         </property>
+      </product>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="ca.carleton.tim.ksat.client.KSATPreferencePage"
+            id="ca.carleton.tim.ksat.client.KSATPreferencePage"
+            name="System Preferences">
+      </page>
+      <page
+            class="ca.carleton.tim.ksat.client.LoggingPreferencePage"
+            id="ca.carleton.tim.ksat.client.LoggingPreferencePage"
+            name="Logging">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="ca.carleton.tim.ksat.client.DBPropertiesPage"
+            id="ca.carleton.tim.ksat.client.dbproperty"
+            name="KSATDBProperties">
+         <enabledWhen>
+            <instanceof
+                  value="ca.carleton.tim.ksat.client.AnalysisDatabase">
+            </instanceof>
+         </enabledWhen>
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="ca.carleton.tim.ksat.client.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+   </extension>
+
+</plugin>

@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ca.carleton.tim.ksat
+Bundle-SymbolicName: ca.carleton.tim.ksat; singleton:=true
+Bundle-Vendor: ca.carleton.tim.ksat
+Bundle-Version: 1.0.0
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.persistence.core,
+ org.eclipse.persistence.moxy,
+ org.eclipse.persistence.asm,
+ org.eclipse.ui.console
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: jlib/mysql-connector-java-5.1.7-bin.jar,
+ .

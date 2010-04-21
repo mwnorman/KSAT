@@ -10,7 +10,6 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-		<!--
 		<buildCommand>
 			<name>org.eclipse.pde.ManifestBuilder</name>
 			<arguments>
@@ -21,12 +20,9 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-		-->
 	</buildSpec>
 	<natures>
-		<!--
 		<nature>org.eclipse.pde.PluginNature</nature>
-		-->
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
 </projectDescription>

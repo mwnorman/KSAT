@@ -22,10 +22,14 @@
 package ca.carleton.tim.ksat.model;
 
 //javase imports
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import org.w3c.dom.Node;
 
 public class AnalysisResult {
+
+    static String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ssZ";
 
 	protected int id;
 	protected Analysis owner;
@@ -66,7 +70,9 @@ public class AnalysisResult {
 
     @Override
     public String toString() {
-        return "{" + id + "}AnalysisResult";
+        SimpleDateFormat sdf = new SimpleDateFormat(DATETIME_FORMAT);
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return "[" + id + "] AnalysisResult run on " + sdf.format(dateTime);
     }
     
 }
