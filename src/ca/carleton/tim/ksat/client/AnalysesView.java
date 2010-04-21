@@ -24,7 +24,6 @@ package ca.carleton.tim.ksat.client;
 //javase imports
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -35,11 +34,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 //Graphics (SWT/JFaces) imports
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -49,8 +44,9 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
 
 //RCP imports
 import org.eclipse.ui.IViewPart;
@@ -77,6 +73,7 @@ public class AnalysesView extends ViewPart {
     public static final String REPORT_HTML_XSL = "ca/carleton/tim/ksat/to_html.xsl";
 
     protected TreeViewer analysesViewer;
+    protected Tree analysesTree;
     protected AnalysisDatabase currentDatabase = null;
 
     public AnalysesView() {
@@ -102,71 +99,9 @@ public class AnalysesView extends ViewPart {
         analysesViewer.setContentProvider(new AnalysesContentProvider(viewSite));
         KSATInvisibleRoot.defaultInstance().parent = viewSite;
         analysesViewer.setInput(viewSite);
+        analysesTree = analysesViewer.getTree();
         
-        // dynamic menu control: depends on which tree element type is selected,
-        // and sometimes what state that item is in
-        final MenuManager mgr = new MenuManager();
-        mgr.setRemoveAllWhenShown(true);
-        mgr.addMenuListener(new IMenuListener() {
-            public void menuAboutToShow(IMenuManager manager) {
-                IStructuredSelection selection = (IStructuredSelection)analysesViewer.getSelection();
-                if (!selection.isEmpty()) {
-                    Object selectedElement = selection.getFirstElement();
-                    if (selectedElement == KSATRoot.defaultInstance()) {
-                        Action a = new Action("Add Database") {};
-                        mgr.add(a);
-                    }
-                    else if (selectedElement instanceof AnalysisDatabase) {
-                        final AnalysisDatabase database = (AnalysisDatabase)selectedElement;
-                        currentDatabase = database;
-                        Action a1 = new Action("") {
-                            @Override
-                            public void runWithEvent(Event event) {
-                                if ("Disconnect".equals(this.getText())) {
-                                    database.getSession().logout();
-                                    database.setAnalyses(new ArrayList<AnalysisAdapter>());
-                                    super.setText("Connect");
-                                }
-                                else {
-                                    database.getSession().login();
-                                    database.getAnalyses();
-                                    super.setText("Disconnect");
-                                }
-                                analysesViewer.refresh(true);
-                                super.runWithEvent(event);
-                            }
-                            @Override
-                            public void setText(String text) {
-                                if (database.isConnected()) {
-                                    super.setText("Disconnect");
-                                }
-                                else {
-                                    super.setText("Connect");
-                                }
-                            }
-                        };
-                        mgr.add(a1);
-                        if (!database.isConnected()) {
-                            Action a2 = new Action("Edit Database Properties ...") {};
-                            mgr.add(a2);
-                            mgr.add(new Separator());
-                            Action a3 = new Action("Remove Database") {};
-                            mgr.add(a3);
-                        }
-                    }
-                    else if (selectedElement instanceof AnalysisAdapter) {
-                        Action a = new Action("Run Analysis ...") {};
-                        mgr.add(a);
-                    }
-                    else if (selectedElement instanceof AnalysisResult) {
-                        Action a = new Action("Export to CSV ...") {};
-                        mgr.add(a);
-                        
-                    }
-                }
-            }
-        });
-        analysesViewer.getControl().setMenu(mgr.createContextMenu(analysesViewer.getControl()));
+        hookContextMenu();
         
         analysesViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
@@ -243,6 +178,18 @@ public class AnalysesView extends ViewPart {
         });
     }
 
+    /**
+     * Setup Context Menu.
+     */
+    private void hookContextMenu() {
+        MenuManager menuManager = new MenuManager ("#PopupMenu");
+        menuManager.setRemoveAllWhenShown (true);
+        Menu menu = menuManager.createContextMenu(analysesViewer.getControl());
+        analysesTree.setMenu(menu);
+        getSite().registerContextMenu(ID, menuManager, analysesViewer);
+    }
+
+    
     @Override
     public void setFocus() {
         analysesViewer.getControl().setFocus();

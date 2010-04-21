@@ -27,12 +27,8 @@ import java.util.List;
 
 //Graphics (JFaces/SWT) imports
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.SWT;
@@ -61,24 +57,19 @@ public class SitesView extends ViewPart {
         listViewer.setLabelProvider(new LabelProvider());
         listViewer.setContentProvider(new ListContentProvider());
         listViewer.setInput(input);
-        final MenuManager mgr = new MenuManager();
-        mgr.setRemoveAllWhenShown(true);
-        mgr.addMenuListener(new IMenuListener() {
-            public void menuAboutToShow(IMenuManager manager) {
-                IStructuredSelection selection = (IStructuredSelection)listViewer.getSelection();
-                if (!selection.isEmpty()) {
-                    selection.getFirstElement();
-                    Action a1 = new Action("Edit Site ...") {};
-                    mgr.add(a1);
-                    mgr.add(new Separator());
-                }
-                Action a2 = new Action("Add Site") {};
-                mgr.add(a2);
-                Action a3 = new Action("Remove Site") {};
-                mgr.add(a3);
-            }
-        });
-        listViewer.getControl().setMenu(mgr.createContextMenu(listViewer.getControl()));
+
+        hookContextMenu(); 
+    }
+    /**
+     * Setup Context Menu.
+     */
+    private void hookContextMenu() {
+        MenuManager menuManager = new MenuManager("#PopupMenu");
+        menuManager.setRemoveAllWhenShown(true);
+        Menu menu = menuManager.createContextMenu(listViewer.getControl());
+        listViewer.getControl().setMenu(menu);
+        menuManager.createContextMenu(listViewer.getControl());
+        getSite().registerContextMenu(ID, menuManager, listViewer);
     }
 
     @Override

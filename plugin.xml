@@ -116,6 +116,297 @@
    </extension>
    <extension
          point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.CreateNewDatabaseHandler"
+            id="ca.carleton.tim.ksat.client.command.CreateNewDatabase"
+            name="CreateNewDatabase">
+      </command>
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.ConnectToDatabaseHandler"
+            id="ca.carleton.tim.ksat.client.command.ConnectToDatabase"
+            name="ConnectToDatabase">
+      </command>
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.EditDatabaseHandler"
+            id="ca.carleton.tim.ksat.client.command.EditDatabase"
+            name="EditDatabase">
+      </command>
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.RemoveDatabaseHandler"
+            id="ca.carleton.tim.ksat.client.command.RemoveDatabase"
+            name="RemoveDatabase">
+      </command>
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.RunAnalysisHandler"
+            id="ca.carleton.tim.ksat.client.command.RunAnalysis"
+            name="RunAnalysis">
+      </command>
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.ExportCSVHandler"
+            id="ca.carleton.tim.ksat.client.command.ExportCSV"
+            name="ExportCSV">
+      </command>
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.EditSiteHandler"
+            id="ca.carleton.tim.ksat.client.command.EditSite"
+            name="ExportSite">
+      </command>
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.AddSiteHandler"
+            id="ca.carleton.tim.ksat.client.command.AddSite"
+            name="AddSite">
+      </command>
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.RemoveSiteHandler"
+            id="ca.carleton.tim.ksat.client.command.RemoveSite"
+            name="RemoveSite">
+      </command>
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.EditKeywordHandler"
+            id="ca.carleton.tim.ksat.client.command.EditKeyword"
+            name="EditKeyword">
+      </command>
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.AddKeywordHandler"
+            id="ca.carleton.tim.ksat.client.command.AddKeyword"
+            name="AddKeyword">
+      </command>
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.RemoveKeywordHandler"
+            id="ca.carleton.tim.ksat.client.command.RemoveKeyword"
+            name="RemoveKeyword">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.CreateNewDatabase"
+              label="Create New Database ..."
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.client.KSATRoot">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.ConnectToDatabase"
+              label="Connect to Database"
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.client.AnalysisDatabase">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.EditDatabase"
+              label="Edit Database Properties..."
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.client.AnalysisDatabase">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.RemoveDatabase"
+              label="Remove Database"
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.client.AnalysisDatabase">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.RunAnalysis"
+              label="Run Analysis ..."
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.client.AnalysisAdapter">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.ExportCSV"
+              label="Export to CSV file ..."
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.model.AnalysisResult">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.EditSite"
+              label="Edit Site"
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.model.Site">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.AddSite"
+              label="Add Site"
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.model.Site">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.RemoveSite"
+              label="Remove Site"
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.model.Site">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.EditKeyword"
+              label="Edit Keyword"
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.model.KeywordExpression">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.AddKeyword"
+              label="Add Keyword"
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.model.KeywordExpression">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.RemoveKeyword"
+              label="Remove Keyword"
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.model.KeywordExpression">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
    </extension>
 
 </plugin>
