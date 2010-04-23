@@ -21,27 +21,20 @@
  */
 package ca.carleton.tim.ksat.client;
 
-import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.IHandler;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 
-public class LoggingPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public class RemoveAnalysisHandler extends AbstractHandler implements IHandler {
 
-    public static final String LOGGING_PREFKEY = "enableConsoleLog";
-    
-    public LoggingPreferencePage() {
-        super(GRID);
-        setPreferenceStore(PlatformUI.getPreferenceStore());
-    }
-    
-    public void createFieldEditors() {
-        addField(new  
-            BooleanFieldEditor(LOGGING_PREFKEY, "enable console log", getFieldEditorParent()));
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+            "Cannot perform command", "Cannot (yet) Remove Analysis");
+        return null;
     }
 
-    public void init(IWorkbench workbench) {
-    }
-    
 }

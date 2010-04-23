@@ -27,13 +27,12 @@ import java.util.List;
 import java.util.Vector;
 
 //RCP imports
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.preferences.DefaultScope;
-import org.eclipse.core.runtime.preferences.IPreferencesService;
-import org.eclipse.core.runtime.preferences.IScopeContext;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 
 //EclipseLink imports
+import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -41,16 +40,6 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 //KSAT domain imports
 import ca.carleton.tim.ksat.model.Analysis;
 import ca.carleton.tim.ksat.persist.AnalysisProject;
-import static ca.carleton.tim.ksat.client.KSATApplication.DB_DRIVER;
-import static ca.carleton.tim.ksat.client.KSATApplication.DB_PASSWORD;
-import static ca.carleton.tim.ksat.client.KSATApplication.DB_PLATFORM;
-import static ca.carleton.tim.ksat.client.KSATApplication.DB_URL;
-import static ca.carleton.tim.ksat.client.KSATApplication.DB_USERNAME;
-import static ca.carleton.tim.ksat.client.KSATApplication.DEFAULT_DB_DRIVER;
-import static ca.carleton.tim.ksat.client.KSATApplication.DEFAULT_DB_PASSWORD;
-import static ca.carleton.tim.ksat.client.KSATApplication.DEFAULT_DB_PLATFORM;
-import static ca.carleton.tim.ksat.client.KSATApplication.DEFAULT_DB_URL;
-import static ca.carleton.tim.ksat.client.KSATApplication.DEFAULT_DB_USERNAME;
 
 public class AnalysisDatabase {
 
@@ -90,63 +79,34 @@ public class AnalysisDatabase {
         this.analyses = analyses;
     }
 
-    public DatabaseSession buildDatabaseSession() {
-        IPreferencesService service = Platform.getPreferencesService();
-        InstanceScope iScope = new InstanceScope();
-        DefaultScope dScope = new DefaultScope();
-        IScopeContext[] scopes = new IScopeContext[2];
-        scopes[0] = dScope;
-        scopes[1] = iScope;
-        String username = 
-            service.getString(KSATApplication.PLUGIN_ID, DB_USERNAME, DEFAULT_DB_USERNAME, scopes);
-        String password = 
-            service.getString(KSATApplication.PLUGIN_ID, DB_PASSWORD, DEFAULT_DB_PASSWORD, scopes);
-        String url = 
-            service.getString(KSATApplication.PLUGIN_ID, DB_URL, DEFAULT_DB_URL, scopes);
-        String driver = 
-            service.getString(KSATApplication.PLUGIN_ID, DB_DRIVER, DEFAULT_DB_DRIVER, scopes);
-        String platformClassname = 
-            service.getString(KSATApplication.PLUGIN_ID, DB_PLATFORM, DEFAULT_DB_PLATFORM, scopes);
+    public DatabaseSession buildDatabaseSession(DatabaseSessionConfig dsc) {
         AnalysisProject analysisProject = new AnalysisProject();
+    	DatabaseLoginConfig loginConfig = (DatabaseLoginConfig)dsc.getLoginConfig();
         DatabaseLogin login = new DatabaseLogin();
-        login.setUserName(username);
-        login.setPassword(password);
-        login.setConnectionString(url);
-        login.setDriverClassName(driver);
-        login.setPlatformClassName(platformClassname);
+        login.setUserName(loginConfig.getUsername());
+        login.setEncryptedPassword(loginConfig.getEncryptedPassword());
+        login.setConnectionString(loginConfig.getConnectionURL());
+        login.setDriverClassName(loginConfig.getDriverClass());
+        login.setPlatformClassName(loginConfig.getPlatformClass());
         login.setDefaultSequence(new TableSequence("", KSAT_SEQUENCE_TABLENAME));
         analysisProject.setDatasourceLogin(login);
         session = analysisProject.createDatabaseSession();
-        session.dontLogMessages();
-        /*
-        String customizerClassName = getCustomizerClassName();
-        if (customizerClassName != null) {
-            SessionCustomizer sessionCustomizer = null;
-            try {
-                Class<SessionCustomizer> customizerClass = null;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    customizerClass = (Class<SessionCustomizer>)AccessController.doPrivileged(
-                        new PrivilegedClassForName(customizerClassName));
-                }
-                else {
-                    customizerClass =
-                        PrivilegedAccessHelper.getClassForName(customizerClassName);
-                }
-                sessionCustomizer = (SessionCustomizer)Helper.getInstanceFromClass(customizerClass);
+        session.setName(dsc.getName());
+        // TODO - figure out logging toggle
+        DefaultSessionLogConfig logConfig = (DefaultSessionLogConfig)dsc.getLogConfig();
+        if (logConfig != null) {
+        	String levelStr = logConfig.getLogLevel();
+            if ("OFF".equalsIgnoreCase(levelStr)) {
+            	session.dontLogMessages();
             }
-            catch (Exception e) {
-                System.err.println("could not instantiate SessionCustomizer " + customizerClassName +
-                    " Exception:" +e);
-            }
-            try {
-                sessionCustomizer.customize(session);
-            }
-            catch (Exception e) {
-                System.err.println("error during session customization: " + e);
+            else {
+            	session.setLogLevel(AbstractSessionLog.translateStringToLoggingLevel(levelStr));
             }
         }
-        */
-        session.login();
+        else {
+        	session.dontLogMessages();
+        }
+        session.login(); // TODO - figure out connect/disconnect toggle
         return session;
     }
 
@@ -156,11 +116,12 @@ public class AnalysisDatabase {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Database ");
+        StringBuilder sb = new StringBuilder();
         if (session != null) {
-            sb.append('(');
-            sb.append(String.format("%1$#x",System.identityHashCode(session)));
-            sb.append(')');
+            sb.append(session.getName());
+        }
+        else {
+            sb.append("<empty Database>");
         }
         return sb.toString();
     }

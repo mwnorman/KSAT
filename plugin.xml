@@ -127,6 +127,11 @@
             name="ConnectToDatabase">
       </command>
       <command
+            defaultHandler="ca.carleton.tim.ksat.client.DisconnectToDatabaseHandler"
+            id="ca.carleton.tim.ksat.client.command.DisconnectToDatabase"
+            name="DisconnectToDatabase">
+      </command>
+      <command
             defaultHandler="ca.carleton.tim.ksat.client.EditDatabaseHandler"
             id="ca.carleton.tim.ksat.client.command.EditDatabase"
             name="EditDatabase">
@@ -135,6 +140,16 @@
             defaultHandler="ca.carleton.tim.ksat.client.RemoveDatabaseHandler"
             id="ca.carleton.tim.ksat.client.command.RemoveDatabase"
             name="RemoveDatabase">
+      </command>
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.CreateNewAnalysisHandler"
+            id="ca.carleton.tim.ksat.client.command.CreateNewAnalysis"
+            name="CreateNewAnalysis">
+      </command>
+      <command
+            defaultHandler="ca.carleton.tim.ksat.client.RemoveAnalysisHandler"
+            id="ca.carleton.tim.ksat.client.command.RemoveAnalysis"
+            name="RemoveAnalysis">
       </command>
       <command
             defaultHandler="ca.carleton.tim.ksat.client.RunAnalysisHandler"
@@ -220,6 +235,25 @@
      <menuContribution
            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
         <command
+              commandId="ca.carleton.tim.ksat.client.command.DisconnectToDatabase"
+              label="Disconnect to Database"
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.client.AnalysisDatabase">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
               commandId="ca.carleton.tim.ksat.client.command.EditDatabase"
               label="Edit Database Properties..."
               style="push">
@@ -258,8 +292,46 @@
      <menuContribution
            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
         <command
+              commandId="ca.carleton.tim.ksat.client.command.CreateNewAnalysis"
+              label="Create New Analysis"
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.client.AnalysisDatabase">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
               commandId="ca.carleton.tim.ksat.client.command.RunAnalysis"
               label="Run Analysis ..."
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                 <with
+                   variable="activeMenuSelection">
+                   <iterate operator="and" ifEmpty="false">
+                      <adapt
+                            type="ca.carleton.tim.ksat.client.AnalysisAdapter">
+                      </adapt>
+                    </iterate>
+                 </with>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.RemoveAnalysis"
+              label="Remove Analysis"
               style="push">
                <visibleWhen
                      checkEnabled="false">
@@ -313,22 +385,11 @@
         </command>
      </menuContribution>
      <menuContribution
-           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+           locationURI="popup:ca.carleton.tim.ksat.client.views.sites?after=additions">
         <command
               commandId="ca.carleton.tim.ksat.client.command.AddSite"
               label="Add Site"
               style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.model.Site">
-                      </adapt>
-                    </iterate>
-                 </with>
-               </visibleWhen>
         </command>
      </menuContribution>
      <menuContribution
@@ -370,22 +431,11 @@
         </command>
      </menuContribution>
      <menuContribution
-           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+           locationURI="popup:ca.carleton.tim.ksat.client.views.keywords?after=additions">
         <command
               commandId="ca.carleton.tim.ksat.client.command.AddKeyword"
               label="Add Keyword"
               style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.model.KeywordExpression">
-                      </adapt>
-                    </iterate>
-                 </with>
-               </visibleWhen>
         </command>
      </menuContribution>
      <menuContribution

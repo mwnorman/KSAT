@@ -22,8 +22,21 @@
 package ca.carleton.tim.ksat.client;
 
 //javase imports
+import java.io.File;
+import java.io.FileWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.osgi.service.datalocation.Location;
+import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject;
+import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
+import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.session.SessionConfig;
+import org.eclipse.persistence.oxm.XMLContext;
 
 public class KSATRoot {
     
@@ -37,6 +50,7 @@ public class KSATRoot {
 
     protected Object parent;
     protected List<AnalysisDatabase> databases = new ArrayList<AnalysisDatabase>();
+    protected SessionConfigs sessionConfigs;
     protected LogConsole logConsole;
     
     public KSATRoot() {
@@ -57,12 +71,37 @@ public class KSATRoot {
         this.logConsole = logConsole;
     }
 
+    @SuppressWarnings("unchecked")
     public List<AnalysisDatabase> getDatabases() {
-        // TODO figure out persistent properties
         if (databases.isEmpty()) {
-            AnalysisDatabase database1 = new AnalysisDatabase();
-            addDatabase(database1);
-            database1.buildDatabaseSession();
+    	    XMLSessionConfigProject sessionConfigProject = new XMLSessionConfigProject();
+    	    XMLContext xc = new XMLContext(sessionConfigProject);
+    	    try {
+                Location instanceLocation = Platform.getInstanceLocation();
+                URL fileURL = FileLocator.toFileURL(instanceLocation.getURL()); 
+                File instanceFile = new File(fileURL.toURI());
+                File ksatSessions = new File(instanceFile, "ksat-sessions.xml");
+                if (!ksatSessions.exists()) {
+                	ksatSessions.createNewFile();
+                	sessionConfigs = new SessionConfigs();
+                	xc.createMarshaller().marshal(sessionConfigs, new FileWriter(ksatSessions));
+                }
+                else {
+                    sessionConfigs = (SessionConfigs)xc.createUnmarshaller().unmarshal(ksatSessions);
+                }
+                for (SessionConfig sc : (Vector<SessionConfig>)sessionConfigs.getSessionConfigs()) {
+                	if (sc instanceof DatabaseSessionConfig) {
+                        AnalysisDatabase database = new AnalysisDatabase();
+                        database.setParent(this);
+                        addDatabase(database);
+                        database.buildDatabaseSession((DatabaseSessionConfig)sc);
+                    }
+                }
+            }
+            catch (Exception e) {
+                // TODO figure out database session failure, logging and treeview stuff
+                e.printStackTrace();
+            }
         }
         return databases;
     }
