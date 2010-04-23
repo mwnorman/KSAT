@@ -28,12 +28,12 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
-public class DisconnectToDatabaseHandler extends AbstractHandler implements IHandler {
+public class RemoveResultHandler extends AbstractHandler implements IHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
         MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-            "Cannot perform command", "Cannot (yet) Disconnect from database");
+            "Cannot perform command", "Cannot (yet) Remove Result");
         return null;
     }
 

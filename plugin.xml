@@ -117,54 +117,44 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.CreateNewDatabaseHandler"
             id="ca.carleton.tim.ksat.client.command.CreateNewDatabase"
             name="CreateNewDatabase">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.ConnectToDatabaseHandler"
             id="ca.carleton.tim.ksat.client.command.ConnectToDatabase"
             name="ConnectToDatabase">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.DisconnectToDatabaseHandler"
-            id="ca.carleton.tim.ksat.client.command.DisconnectToDatabase"
-            name="DisconnectToDatabase">
+            id="ca.carleton.tim.ksat.client.command.DisconnectFromDatabase"
+            name="DisconnectFromDatabase">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.EditDatabaseHandler"
             id="ca.carleton.tim.ksat.client.command.EditDatabase"
             name="EditDatabase">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.RemoveDatabaseHandler"
             id="ca.carleton.tim.ksat.client.command.RemoveDatabase"
             name="RemoveDatabase">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.CreateNewAnalysisHandler"
             id="ca.carleton.tim.ksat.client.command.CreateNewAnalysis"
             name="CreateNewAnalysis">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.RemoveAnalysisHandler"
             id="ca.carleton.tim.ksat.client.command.RemoveAnalysis"
             name="RemoveAnalysis">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.RunAnalysisHandler"
             id="ca.carleton.tim.ksat.client.command.RunAnalysis"
             name="RunAnalysis">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.ExportCSVHandler"
             id="ca.carleton.tim.ksat.client.command.ExportCSV"
             name="ExportCSV">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.EditSiteHandler"
             id="ca.carleton.tim.ksat.client.command.EditSite"
-            name="ExportSite">
+            name="EditSite">
       </command>
       <command
             defaultHandler="ca.carleton.tim.ksat.client.AddSiteHandler"
@@ -172,12 +162,10 @@
             name="AddSite">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.RemoveSiteHandler"
             id="ca.carleton.tim.ksat.client.command.RemoveSite"
             name="RemoveSite">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.EditKeywordHandler"
             id="ca.carleton.tim.ksat.client.command.EditKeyword"
             name="EditKeyword">
       </command>
@@ -187,10 +175,215 @@
             name="AddKeyword">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.RemoveKeywordHandler"
             id="ca.carleton.tim.ksat.client.command.RemoveKeyword"
             name="RemoveKeyword">
       </command>
+      <command
+            id="ca.carleton.tim.ksat.client.command.RemoveResult"
+            name="RemoveResult">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="isRoot">
+            <with variable="selection">
+               <iterate
+                     ifEmpty="false"
+                     operator="and">
+                  <adapt
+                        type="ca.carleton.tim.ksat.client.KSATRoot">
+                  </adapt>
+               </iterate>
+            </with>
+      </definition>
+      <definition
+            id="isDatabase">
+            <with variable="selection">
+               <iterate
+                     ifEmpty="false"
+                     operator="and">
+                  <adapt
+                        type="ca.carleton.tim.ksat.client.AnalysisDatabase">
+                  </adapt>
+               </iterate>
+            </with>
+      </definition>
+      <definition
+            id="isAnalysis">
+            <with variable="selection">
+               <iterate
+                     ifEmpty="false"
+                     operator="and">
+                  <adapt
+                        type="ca.carleton.tim.ksat.client.AnalysisAdapter">
+                  </adapt>
+               </iterate>
+            </with>
+      </definition>
+      <definition
+            id="isResult">
+            <with variable="selection">
+               <iterate
+                     ifEmpty="false"
+                     operator="and">
+                  <adapt
+                        type="ca.carleton.tim.ksat.model.AnalysisResult">
+                  </adapt>
+               </iterate>
+            </with>
+      </definition>
+      <definition
+            id="isSite">
+            <with
+                variable="activeMenuSelection">
+                <iterate operator="and" ifEmpty="false">
+                    <adapt
+                        type="ca.carleton.tim.ksat.model.Site">
+                    </adapt>
+                </iterate>
+            </with>
+      </definition>
+      <definition
+            id="isKeyword">
+            <with
+                variable="activeMenuSelection">
+                <iterate operator="and" ifEmpty="false">
+                    <adapt
+                        type="ca.carleton.tim.ksat.model.KeywordExpression">
+                    </adapt>
+                </iterate>
+            </with>
+      </definition>
+   </extension>
+   <extension
+      point="org.eclipse.ui.handlers">
+      <handler
+         class="ca.carleton.tim.ksat.client.CreateNewDatabaseHandler"
+         commandId="ca.carleton.tim.ksat.client.command.CreateNewDatabase">
+         <activeWhen>
+            <reference
+                  definitionId="isRoot">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
+            class="ca.carleton.tim.ksat.client.ConnectToDatabaseHandler"
+            commandId="ca.carleton.tim.ksat.client.command.ConnectToDatabase">
+         <activeWhen>
+            <reference
+                  definitionId="isDatabase">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
+            class="ca.carleton.tim.ksat.client.DisconnectFromDatabaseHandler"
+            commandId="ca.carleton.tim.ksat.client.command.DisconnectFromDatabase">
+         <activeWhen>
+            <reference
+                  definitionId="isDatabase">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
+            class="ca.carleton.tim.ksat.client.EditDatabaseHandler"
+            commandId="ca.carleton.tim.ksat.client.command.EditDatabase">
+         <activeWhen>
+            <reference
+                  definitionId="isDatabase">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
+            class="ca.carleton.tim.ksat.client.RemoveDatabaseHandler"
+            commandId="ca.carleton.tim.ksat.client.command.RemoveDatabase">
+         <activeWhen>
+            <reference
+                  definitionId="isDatabase">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
+            class="ca.carleton.tim.ksat.client.CreateNewAnalysisHandler"
+            commandId="ca.carleton.tim.ksat.client.command.CreateNewAnalysis">
+         <activeWhen>
+            <reference
+                  definitionId="isDatabase">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
+            class="ca.carleton.tim.ksat.client.RunAnalysisHandler"
+            commandId="ca.carleton.tim.ksat.client.command.RunAnalysis">
+         <activeWhen>
+            <reference
+                  definitionId="isAnalysis">
+            </reference></activeWhen>
+      </handler>
+      <handler
+            class="ca.carleton.tim.ksat.client.RemoveAnalysisHandler"
+            commandId="ca.carleton.tim.ksat.client.command.RemoveAnalysis">
+         <activeWhen>
+            <reference
+                  definitionId="isAnalysis">
+            </reference></activeWhen>
+      </handler>
+      <handler
+            class="ca.carleton.tim.ksat.client.ExportCSVHandler"
+            commandId="ca.carleton.tim.ksat.client.command.ExportCSV">
+         <activeWhen>
+            <reference
+                  definitionId="isResult">
+            </reference></activeWhen>
+      </handler>
+      <handler
+            class="ca.carleton.tim.ksat.client.EditSiteHandler"
+            commandId="ca.carleton.tim.ksat.client.command.EditSite">
+         <activeWhen>
+            <reference
+                  definitionId="isSite">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
+            class="ca.carleton.tim.ksat.client.RemoveSiteHandler"
+            commandId="ca.carleton.tim.ksat.client.command.RemoveSite">
+         <activeWhen>
+            <reference
+                  definitionId="isSite">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
+            class="ca.carleton.tim.ksat.client.EditKeywordHandler"
+            commandId="ca.carleton.tim.ksat.client.command.EditKeyword">
+         <activeWhen>
+            <reference
+                  definitionId="isKeyword">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
+            class="ca.carleton.tim.ksat.client.RemoveKeywordHandler"
+            commandId="ca.carleton.tim.ksat.client.command.RemoveKeyword">
+         <activeWhen>
+            <reference
+                  definitionId="isKeyword">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
+            class="ca.carleton.tim.ksat.client.RemoveResultHandler"
+            commandId="ca.carleton.tim.ksat.client.command.RemoveResult">
+         <activeWhen>
+            <iterate
+                  ifEmpty="false"
+                  operator="or">
+               <instanceof
+                     value="ca.carleton.tim.ksat.client.KSATRoot">
+               </instanceof>
+            </iterate></activeWhen>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -202,14 +395,9 @@
               style="push">
                <visibleWhen
                      checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.client.KSATRoot">
-                      </adapt>
-                    </iterate>
-                 </with>
+                    <reference
+                          definitionId="isRoot">
+                    </reference>
                </visibleWhen>
         </command>
      </menuContribution>
@@ -221,33 +409,23 @@
               style="push">
                <visibleWhen
                      checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.client.AnalysisDatabase">
-                      </adapt>
-                    </iterate>
-                 </with>
+                    <reference
+                          definitionId="isDatabase">
+                    </reference>
                </visibleWhen>
         </command>
      </menuContribution>
      <menuContribution
            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
         <command
-              commandId="ca.carleton.tim.ksat.client.command.DisconnectToDatabase"
-              label="Disconnect to Database"
+              commandId="ca.carleton.tim.ksat.client.command.DisconnectFromDatabase"
+              label="Disconnect from Database"
               style="push">
                <visibleWhen
                      checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.client.AnalysisDatabase">
-                      </adapt>
-                    </iterate>
-                 </with>
+                    <reference
+                          definitionId="isDatabase">
+                    </reference>
                </visibleWhen>
         </command>
      </menuContribution>
@@ -259,14 +437,9 @@
               style="push">
                <visibleWhen
                      checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.client.AnalysisDatabase">
-                      </adapt>
-                    </iterate>
-                 </with>
+                    <reference
+                          definitionId="isDatabase">
+                    </reference>
                </visibleWhen>
         </command>
      </menuContribution>
@@ -278,14 +451,9 @@
               style="push">
                <visibleWhen
                      checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.client.AnalysisDatabase">
-                      </adapt>
-                    </iterate>
-                 </with>
+                    <reference
+                          definitionId="isDatabase">
+                    </reference>
                </visibleWhen>
         </command>
      </menuContribution>
@@ -297,14 +465,9 @@
               style="push">
                <visibleWhen
                      checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.client.AnalysisDatabase">
-                      </adapt>
-                    </iterate>
-                 </with>
+                    <reference
+                          definitionId="isDatabase">
+                    </reference>
                </visibleWhen>
         </command>
      </menuContribution>
@@ -316,14 +479,9 @@
               style="push">
                <visibleWhen
                      checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.client.AnalysisAdapter">
-                      </adapt>
-                    </iterate>
-                 </with>
+                    <reference
+                          definitionId="isAnalysis">
+                    </reference>
                </visibleWhen>
         </command>
      </menuContribution>
@@ -335,14 +493,9 @@
               style="push">
                <visibleWhen
                      checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.client.AnalysisAdapter">
-                      </adapt>
-                    </iterate>
-                 </with>
+                    <reference
+                          definitionId="isAnalysis">
+                    </reference>
                </visibleWhen>
         </command>
      </menuContribution>
@@ -354,14 +507,9 @@
               style="push">
                <visibleWhen
                      checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.model.AnalysisResult">
-                      </adapt>
-                    </iterate>
-                 </with>
+                    <reference
+                          definitionId="isResult">
+                    </reference>
                </visibleWhen>
         </command>
      </menuContribution>
@@ -373,14 +521,9 @@
               style="push">
                <visibleWhen
                      checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.model.Site">
-                      </adapt>
-                    </iterate>
-                 </with>
+                    <reference
+                          definitionId="isSite">
+                    </reference>
                </visibleWhen>
         </command>
      </menuContribution>
@@ -400,14 +543,9 @@
               style="push">
                <visibleWhen
                      checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.model.Site">
-                      </adapt>
-                    </iterate>
-                 </with>
+                    <reference
+                          definitionId="isSite">
+                    </reference>
                </visibleWhen>
         </command>
      </menuContribution>
@@ -419,14 +557,9 @@
               style="push">
                <visibleWhen
                      checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.model.KeywordExpression">
-                      </adapt>
-                    </iterate>
-                 </with>
+                    <reference
+                          definitionId="isKeyword">
+                    </reference>
                </visibleWhen>
         </command>
      </menuContribution>
@@ -446,15 +579,24 @@
               style="push">
                <visibleWhen
                      checkEnabled="false">
-                 <with
-                   variable="activeMenuSelection">
-                   <iterate operator="and" ifEmpty="false">
-                      <adapt
-                            type="ca.carleton.tim.ksat.model.KeywordExpression">
-                      </adapt>
-                    </iterate>
-                 </with>
+                    <reference
+                          definitionId="isKeyword">
+                    </reference>
                </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:ca.carleton.tim.ksat.client.views.analyses?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.RemoveResult"
+              label="Remove Result"
+              style="push">
+           <visibleWhen
+                 checkEnabled="false">
+              <reference
+                    definitionId="isResult">
+              </reference>
+           </visibleWhen>
         </command>
      </menuContribution>
    </extension>
