@@ -22,6 +22,10 @@
 package ca.carleton.tim.ksat.client;
 
 //RCP imports
+import java.io.PrintStream;
+
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
@@ -29,6 +33,7 @@ import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleConstants;
+import org.eclipse.ui.console.MessageConsoleStream;
 
 public class KSATWorkbenchAdvisor extends WorkbenchAdvisor {
 
@@ -46,9 +51,16 @@ public class KSATWorkbenchAdvisor extends WorkbenchAdvisor {
     @Override
     public void initialize(IWorkbenchConfigurer configurer) {
         configurer.setSaveAndRestore(true);
-        LogConsole logConsole = new LogConsole("KSAT Logs",
+        LogConsole logConsole = new LogConsole("Logging Console",
             ConsolePlugin.getDefault().getImageDescriptor(IConsoleConstants.IMG_VIEW_CONSOLE));
         KSATRoot.defaultInstance().setLogConsole(logConsole);
+        IPreferenceStore preferenceStore = PlatformUI.getPreferenceStore();
+        boolean enableLogging = preferenceStore.getBoolean(LoggingPreferencePage.LOGGING_PREFKEY);
+        if (enableLogging) {
+            MessageConsoleStream messageStream = logConsole.getMessageStream();
+            System.setOut(new PrintStream(messageStream));
+            System.setErr(new PrintStream(messageStream));
+        }
         ConsolePlugin.getDefault().getConsoleManager().addConsoles(new IConsole[]{logConsole});
     }
 }

@@ -39,6 +39,7 @@ public class ResultsView extends ViewPart {
     public static final String ID = "ca.carleton.tim.ksat.client.views.results";
 
     protected Browser browser; 
+    protected Text text; 
     
     @Override
     public void createPartControl(Composite parent) {
@@ -54,8 +55,7 @@ public class ResultsView extends ViewPart {
         
         CTabItem sourceXmlTab = new CTabItem(tabFolder, SWT.NONE);
         sourceXmlTab.setText("Source XML");
-        Text text = 
-            new Text(tabFolder, SWT.MULTI | SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        text = new Text(tabFolder, SWT.MULTI | SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
         text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         sourceXmlTab.setControl(text);
     }

@@ -29,6 +29,7 @@ import java.util.Vector;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.ui.IViewSite;
 
 //KSAT domain imports
@@ -55,15 +56,18 @@ public class AnalysesContentProvider implements IStructuredContentProvider, ITre
         }
         else if (parent instanceof AnalysisDatabase) {
             AnalysisDatabase database = (AnalysisDatabase)parent;
-            Vector<Analysis> analyses = database.getSession().readAllObjects(Analysis.class);
-            int len = analyses.size();
-            Object[] children = new Object[len];
-            for (int i = 0; i < len; i++) {
-                AnalysisAdapter analysisAdapter = new AnalysisAdapter(database);
-                analysisAdapter.setAnalysis(analyses.get(i));
-                children[i] = analysisAdapter;
+            DatabaseSession session = database.getSession();
+            if (session.isConnected()) {
+                Vector<Analysis> analyses = session.readAllObjects(Analysis.class);
+                int len = analyses.size();
+                Object[] children = new Object[len];
+                for (int i = 0; i < len; i++) {
+                    AnalysisAdapter analysisAdapter = new AnalysisAdapter(database);
+                    analysisAdapter.setAnalysis(analyses.get(i));
+                    children[i] = analysisAdapter;
+                }
+                return children;
             }
-            return children;
         }
         else if (parent instanceof AnalysisAdapter) {
             AnalysisAdapter analysisAdapter = (AnalysisAdapter)parent;

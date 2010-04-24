@@ -21,20 +21,30 @@
  */
 package ca.carleton.tim.ksat.client;
 
+//javase imports
+import java.util.ArrayList;
+import java.util.List;
+
 //Graphics (SWT/JFaces) imports
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.services.IEvaluationService;
 
 //RCP imports
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 //KSAT domain imports
+import ca.carleton.tim.ksat.model.KeywordExpression;
+import ca.carleton.tim.ksat.model.Site;
 import static ca.carleton.tim.ksat.client.KSATPreferencePage.PROXY_HOST_PREFKEY;
 import static ca.carleton.tim.ksat.client.KSATPreferencePage.PROXY_PORT_PREFKEY;
 
@@ -117,4 +127,51 @@ public class KSATApplication implements IApplication {
 			}
 		});
 	}
+	
+	public static void resetViewsOnDisconnectFromDatabase() {
+        List<IViewPart> views = getViews(AnalysesView.ID, SitesView.ID, KeywordsView.ID, ResultsView.ID);
+        AnalysesView analysesView = (AnalysesView)views.get(0);
+        SitesView sitesView = (SitesView)views.get(1);
+        KeywordsView keywordsView = (KeywordsView)views.get(2);
+        ResultsView resultsView = (ResultsView)views.get(3);
+        sitesView.setSites(new ArrayList<Site>());
+        keywordsView.setKeywords(new ArrayList<KeywordExpression>());
+        analysesView.analysesViewer.refresh(true);
+        sitesView.listViewer.refresh(true);
+        keywordsView.listViewer.refresh(true);
+        resultsView.browser.setText("");
+        resultsView.browser.getParent().layout(true);
+        resultsView.text.setText("");
+        resultsView.text.getParent().layout(true);
+        reevaluateIsConnected(analysesView);
+	}
+	
+	public static void resetViewsOnConnectToDatabase() {
+        List<IViewPart> views = getViews(AnalysesView.ID);
+        AnalysesView analysesView = (AnalysesView)views.get(0);
+        analysesView.analysesViewer.refresh(true);
+        reevaluateIsConnected(analysesView);
+	}
+	
+	static List<IViewPart> getViews(String... viewIds) {
+	    List<IViewPart> views = new ArrayList<IViewPart>();
+        IWorkbenchWindow[] workbenchs = PlatformUI.getWorkbench().getWorkbenchWindows();
+        for (IWorkbenchWindow workbench : workbenchs) {
+            IWorkbenchPage[] pages = workbench.getPages();
+            for (IWorkbenchPage page : pages) {
+                for (String viewId : viewIds) {
+                    IViewPart view = page.findView(viewId);
+                    if (view != null) {
+                        views.add(view);
+                    }
+                }
+            }
+        }
+	    return views;
+	}
+    static void reevaluateIsConnected(IViewPart view) {
+        IEvaluationService service = 
+            (IEvaluationService)view.getSite().getService(IEvaluationService.class);
+        service.requestEvaluation("ca.carleton.tim.ksat.client.isConnected");
+    }
 }

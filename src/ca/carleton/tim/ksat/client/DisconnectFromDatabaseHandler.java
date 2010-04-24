@@ -21,20 +21,26 @@
  */
 package ca.carleton.tim.ksat.client;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 public class DisconnectFromDatabaseHandler extends AbstractHandler implements IHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-            "Cannot perform command", "Cannot (yet) Disconnect from database");
-        return null;
+        IStructuredSelection currentSelection = 
+            (IStructuredSelection)HandlerUtil.getCurrentSelection(event);
+        AnalysisDatabase analysisDatabase = (AnalysisDatabase)currentSelection.getFirstElement();
+        analysisDatabase.getSession().logout();
+        analysisDatabase.setAnalyses(new ArrayList<AnalysisAdapter>());
+        KSATApplication.resetViewsOnDisconnectFromDatabase();
+        return analysisDatabase;
     }
 
 }

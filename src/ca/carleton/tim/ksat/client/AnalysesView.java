@@ -24,6 +24,7 @@ package ca.carleton.tim.ksat.client;
 //javase imports
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.List;
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -40,20 +41,13 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
-
-//RCP imports
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 //EclipseLink imports
@@ -110,21 +104,11 @@ public class AnalysesView extends ViewPart {
                 if (selectedElement instanceof AnalysisAdapter) {
                     // TODO - throttle resetting sites/keywords is same analysis as last time was selected
                     AnalysisAdapter analysisAdapter = (AnalysisAdapter)selectedElement;
-                    IWorkbenchWindow[] workbenchs = PlatformUI.getWorkbench().getWorkbenchWindows();
-                    IViewPart sitesView = null;
-                    IViewPart keywordsView = null;
-                    for (IWorkbenchWindow workbench : workbenchs) {
-                        IWorkbenchPage[] pages = workbench.getPages();
-                        for (IWorkbenchPage page : pages) {
-                            sitesView = page.findView(SitesView.ID);
-                            keywordsView = page.findView(KeywordsView.ID);
-                        }
-                        if (sitesView != null && keywordsView != null) {
-                            break;
-                        }
-                    }
-                    ((SitesView)sitesView).setSites(analysisAdapter.getAnalysis().getSites());
-                    ((KeywordsView)keywordsView).setKeywords(analysisAdapter.getAnalysis().getExpressions());
+                    List<IViewPart> views = KSATApplication.getViews(SitesView.ID, KeywordsView.ID);
+                    SitesView sitesView = (SitesView)views.get(0);
+                    KeywordsView keywordsView = (KeywordsView)views.get(1);
+                    sitesView.setSites(analysisAdapter.getAnalysis().getSites());
+                    keywordsView.setKeywords(analysisAdapter.getAnalysis().getExpressions());
                 }
                 else if (selectedElement instanceof AnalysisResult) {
                     AnalysisResult analysisResult = (AnalysisResult)selectedElement;
@@ -148,26 +132,18 @@ public class AnalysesView extends ViewPart {
                         transformer.transform(domSource, htmlStreamResult);
                         StringWriter xmlStringWriter = new StringWriter();
                         marshaller.marshal(analysisReport, xmlStringWriter);
-                        IViewPart resultsView = null;
-                        IWorkbenchWindow[] workbenchs = PlatformUI.getWorkbench().getWorkbenchWindows();
-                        for (IWorkbenchWindow workbench : workbenchs) {
-                            IWorkbenchPage[] pages = workbench.getPages();
-                            for (IWorkbenchPage page : pages) {
-                                resultsView = page.findView(ResultsView.ID);
-                            }
-                            if (resultsView != null) {
-                                break;
-                            }
+                        List<IViewPart> views = KSATApplication.getViews(ResultsView.ID);
+                        ResultsView resultsView = (ResultsView)views.get(0);
+                        CTabFolder folder = (CTabFolder)resultsView.browser.getParent();
+                        boolean flag = resultsView.browser.setText(htmlStringWriter.toString());
+                        if (!flag) {
+                            System.err.println("aiee!");
                         }
-                        if (resultsView != null) {
-                            Browser browser = ((ResultsView)resultsView).browser;
-                            browser.setText(htmlStringWriter.toString());
-                            CTabFolder folder = (CTabFolder)browser.getParent();
-                            folder.setSelection(0);
-                            folder.forceFocus();
-                            Text text = (Text)folder.getItem(1).getControl();
-                            text.setText(xmlStringWriter.toString());
-                        }
+                        folder.layout(true);
+                        resultsView.text.setText(xmlStringWriter.toString());
+                        resultsView.text.getParent().layout(true);
+                        folder.setSelection(0);
+                        folder.forceFocus();
                     }
                     catch (Exception e) {
                         e.printStackTrace();

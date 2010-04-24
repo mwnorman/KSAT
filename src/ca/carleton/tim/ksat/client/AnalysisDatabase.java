@@ -29,6 +29,7 @@ import java.util.Vector;
 //RCP imports
 
 //EclipseLink imports
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
@@ -36,6 +37,7 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.ui.PlatformUI;
 
 //KSAT domain imports
 import ca.carleton.tim.ksat.model.Analysis;
@@ -92,21 +94,27 @@ public class AnalysisDatabase {
         analysisProject.setDatasourceLogin(login);
         session = analysisProject.createDatabaseSession();
         session.setName(dsc.getName());
-        // TODO - figure out logging toggle
-        DefaultSessionLogConfig logConfig = (DefaultSessionLogConfig)dsc.getLogConfig();
-        if (logConfig != null) {
-        	String levelStr = logConfig.getLogLevel();
-            if ("OFF".equalsIgnoreCase(levelStr)) {
-            	session.dontLogMessages();
-            }
-            else {
-            	session.setLogLevel(AbstractSessionLog.translateStringToLoggingLevel(levelStr));
-            }
+        // KSAT application preferences - global logging toggle
+        IPreferenceStore preferenceStore = PlatformUI.getPreferenceStore();
+        boolean enableLogging = preferenceStore.getBoolean(LoggingPreferencePage.LOGGING_PREFKEY);
+        if (!enableLogging) {
+            session.dontLogMessages();
         }
         else {
-        	session.dontLogMessages();
+            DefaultSessionLogConfig logConfig = (DefaultSessionLogConfig)dsc.getLogConfig();
+            if (logConfig != null) {
+            	String levelStr = logConfig.getLogLevel();
+                if ("OFF".equalsIgnoreCase(levelStr)) {
+                	session.dontLogMessages();
+                }
+                else {
+                	session.setLogLevel(AbstractSessionLog.translateStringToLoggingLevel(levelStr));
+                }
+            }
+            else {
+            	session.dontLogMessages();
+            }
         }
-        session.login(); // TODO - figure out connect/disconnect toggle
         return session;
     }
 

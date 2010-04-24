@@ -29,7 +29,7 @@ import org.eclipse.ui.PlatformUI;
 
 public class LoggingPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-    public static final String LOGGING_PREFKEY = "enableConsoleLog";
+    public static final String LOGGING_PREFKEY = "enableLogging";
     
     public LoggingPreferencePage() {
         super(GRID);
@@ -38,7 +38,7 @@ public class LoggingPreferencePage extends FieldEditorPreferencePage implements 
     
     public void createFieldEditors() {
         addField(new  
-            BooleanFieldEditor(LOGGING_PREFKEY, "enable console log", getFieldEditorParent()));
+            BooleanFieldEditor(LOGGING_PREFKEY, "enable logging", getFieldEditorParent()));
     }
 
     public void init(IWorkbench workbench) {

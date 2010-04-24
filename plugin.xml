@@ -120,7 +120,7 @@
             class="ca.carleton.tim.ksat.client.DbConnectionTester"
             id="ca.carleton.tim.ksat.client.propertyTester.DbConnectionTester"
             namespace="ca.carleton.tim.ksat.client"
-            properties="isConnected,isDisconnected"
+            properties="isConnected"
             type="ca.carleton.tim.ksat.client.AnalysisDatabase">
       </propertyTester>
    </extension>
@@ -232,10 +232,12 @@
                   <adapt
                         type="ca.carleton.tim.ksat.client.AnalysisDatabase">
                   </adapt>
-                  <test
-                        forcePluginActivation="true"
-                        property="ca.carleton.tim.ksat.client.isDisconnected">
-                  </test>
+                  <not>
+                      <test
+                            forcePluginActivation="true"
+                            property="ca.carleton.tim.ksat.client.isConnected">
+                      </test>
+                  </not>
                </iterate>
             </with>
       </definition>
@@ -320,7 +322,7 @@
             commandId="ca.carleton.tim.ksat.client.command.EditDatabase">
          <activeWhen>
             <reference
-                  definitionId="isConnectedDatabase">
+                  definitionId="isDisconnectedDatabase">
             </reference>
          </activeWhen>
       </handler>
@@ -329,7 +331,7 @@
             commandId="ca.carleton.tim.ksat.client.command.RemoveDatabase">
          <activeWhen>
             <reference
-                  definitionId="isConnectedDatabase">
+                  definitionId="isDisconnectedDatabase">
             </reference>
          </activeWhen>
       </handler>
@@ -468,7 +470,7 @@
                <visibleWhen
                      checkEnabled="false">
                     <reference
-                          definitionId="isConnectedDatabase">
+                          definitionId="isDisconnectedDatabase">
                     </reference>
                </visibleWhen>
         </command>
@@ -482,7 +484,7 @@
                <visibleWhen
                      checkEnabled="false">
                     <reference
-                          definitionId="isConnectedDatabase">
+                          definitionId="isDisconnectedDatabase">
                     </reference>
                </visibleWhen>
         </command>

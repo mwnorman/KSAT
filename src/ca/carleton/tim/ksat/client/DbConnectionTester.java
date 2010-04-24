@@ -14,9 +14,6 @@ public class DbConnectionTester extends PropertyTester {
 		if ("isConnected".equals(property)) {
 			return database.isConnected();
 		}
-		else if ("isNotConnected".equals(property)) {
-			return !database.isConnected();
-		}
 		return false;
 	}
 

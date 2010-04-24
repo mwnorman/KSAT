@@ -21,20 +21,79 @@
  */
 package ca.carleton.tim.ksat.client;
 
+//javase imports
+import java.io.File;
+import java.io.InputStream;
+import java.util.List;
+import org.w3c.dom.Document;
+
+//java eXtension imports
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+//Graphics (SWT/JFaces) imports
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.handlers.HandlerUtil;
+
+//RCP imports
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
+
+//EclipseLink imports
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.sessions.UnitOfWork;
+
+//KSAT (domain) imports
+import ca.carleton.tim.ksat.model.AnalysisResult;
+import ca.carleton.tim.ksat.persist.AnalysisReport;
+import ca.carleton.tim.ksat.persist.AnalysisReportProject;
 
 public class ExportCSVHandler extends AbstractHandler implements IHandler {
 
+    public static final String REPORT_CSV_XSL = "ca/carleton/tim/ksat/to_csv.xsl";
+
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-            "Cannot perform command", "Cannot (yet) Export to CSV File");
+        IStructuredSelection currentSelection = 
+            (IStructuredSelection)HandlerUtil.getCurrentSelection(event);
+        AnalysisResult analysisResult = (AnalysisResult)currentSelection.getFirstElement();
+        FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell());
+        String csvFileName = fileDialog.open();
+        if (csvFileName != null) {
+            File csvFile = new File(csvFileName);
+            List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID);
+            AnalysesView analysesView = (AnalysesView)views.get(0);
+            UnitOfWork uow = analysesView.getCurrentDatabase().getSession().acquireUnitOfWork();
+            AnalysisReport analysisReport = (AnalysisReport)uow.registerNewObject(new AnalysisReport());
+            uow.assignSequenceNumber(analysisReport);
+            analysisReport.setDateTime(analysisResult.getDateTime());
+            analysisReport.setReportingAnalysis(analysisResult.getOwner());
+            XMLContext context = new XMLContext(new AnalysisReportProject());
+            XMLMarshaller marshaller = context.createMarshaller();
+            Document doc = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
+            marshaller.marshal(analysisReport, doc);
+            InputStream cvsStream = this.getClass().getClassLoader().getResourceAsStream(REPORT_CSV_XSL);
+            StreamSource xslSource = new StreamSource(cvsStream);
+            try {
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
+                DOMSource domSource = new DOMSource(doc);
+                transformer.transform(domSource, new StreamResult(csvFile));
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            uow.revertAndResume();
+        }
         return null;
     }
-
 }

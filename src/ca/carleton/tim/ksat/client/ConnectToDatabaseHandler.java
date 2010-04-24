@@ -21,20 +21,37 @@
  */
 package ca.carleton.tim.ksat.client;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.handlers.HandlerUtil;
+
+import ca.carleton.tim.ksat.model.Analysis;
 
 public class ConnectToDatabaseHandler extends AbstractHandler implements IHandler {
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-            "Cannot perform command", "Cannot (yet) Connect to Database");
-        return null;
+        IStructuredSelection currentSelection = 
+            (IStructuredSelection)HandlerUtil.getCurrentSelection(event);
+        AnalysisDatabase analysisDatabase = (AnalysisDatabase)currentSelection.getFirstElement();
+        analysisDatabase.getSession().login();
+        Vector<Analysis> analyses = analysisDatabase.getSession().readAllObjects(Analysis.class);
+        List<AnalysisAdapter> analysisAdapters = new ArrayList<AnalysisAdapter>();
+        for (Analysis analysis : analyses ) {
+            AnalysisAdapter analysisAdapter = new AnalysisAdapter(analysisDatabase);
+            analysisAdapter.setAnalysis(analysis);
+        }
+        analysisDatabase.setAnalyses(analysisAdapters);
+        KSATApplication.resetViewsOnConnectToDatabase();
+        return analysisDatabase;
     }
 
 }
