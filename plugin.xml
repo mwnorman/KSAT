@@ -115,6 +115,16 @@
       </initializer>
    </extension>
    <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="ca.carleton.tim.ksat.client.DbConnectionTester"
+            id="ca.carleton.tim.ksat.client.propertyTester.DbConnectionTester"
+            namespace="ca.carleton.tim.ksat.client"
+            properties="isConnected,isDisconnected"
+            type="ca.carleton.tim.ksat.client.AnalysisDatabase">
+      </propertyTester>
+   </extension>
+   <extension
          point="org.eclipse.ui.commands">
       <command
             id="ca.carleton.tim.ksat.client.command.CreateNewDatabase"
@@ -198,7 +208,7 @@
             </with>
       </definition>
       <definition
-            id="isDatabase">
+            id="isConnectedDatabase">
             <with variable="selection">
                <iterate
                      ifEmpty="false"
@@ -206,6 +216,26 @@
                   <adapt
                         type="ca.carleton.tim.ksat.client.AnalysisDatabase">
                   </adapt>
+                  <test
+                        forcePluginActivation="true"
+                        property="ca.carleton.tim.ksat.client.isConnected">
+                  </test>
+               </iterate>
+            </with>
+      </definition>
+      <definition
+            id="isDisconnectedDatabase">
+            <with variable="selection">
+               <iterate
+                     ifEmpty="false"
+                     operator="and">
+                  <adapt
+                        type="ca.carleton.tim.ksat.client.AnalysisDatabase">
+                  </adapt>
+                  <test
+                        forcePluginActivation="true"
+                        property="ca.carleton.tim.ksat.client.isDisconnected">
+                  </test>
                </iterate>
             </with>
       </definition>
@@ -272,7 +302,7 @@
             commandId="ca.carleton.tim.ksat.client.command.ConnectToDatabase">
          <activeWhen>
             <reference
-                  definitionId="isDatabase">
+                  definitionId="isDisconnectedDatabase">
             </reference>
          </activeWhen>
       </handler>
@@ -281,7 +311,7 @@
             commandId="ca.carleton.tim.ksat.client.command.DisconnectFromDatabase">
          <activeWhen>
             <reference
-                  definitionId="isDatabase">
+                  definitionId="isConnectedDatabase">
             </reference>
          </activeWhen>
       </handler>
@@ -290,7 +320,7 @@
             commandId="ca.carleton.tim.ksat.client.command.EditDatabase">
          <activeWhen>
             <reference
-                  definitionId="isDatabase">
+                  definitionId="isConnectedDatabase">
             </reference>
          </activeWhen>
       </handler>
@@ -299,7 +329,7 @@
             commandId="ca.carleton.tim.ksat.client.command.RemoveDatabase">
          <activeWhen>
             <reference
-                  definitionId="isDatabase">
+                  definitionId="isConnectedDatabase">
             </reference>
          </activeWhen>
       </handler>
@@ -308,7 +338,7 @@
             commandId="ca.carleton.tim.ksat.client.command.CreateNewAnalysis">
          <activeWhen>
             <reference
-                  definitionId="isDatabase">
+                  definitionId="isConnectedDatabase">
             </reference>
          </activeWhen>
       </handler>
@@ -410,7 +440,7 @@
                <visibleWhen
                      checkEnabled="false">
                     <reference
-                          definitionId="isDatabase">
+                          definitionId="isDisconnectedDatabase">
                     </reference>
                </visibleWhen>
         </command>
@@ -424,7 +454,7 @@
                <visibleWhen
                      checkEnabled="false">
                     <reference
-                          definitionId="isDatabase">
+                          definitionId="isConnectedDatabase">
                     </reference>
                </visibleWhen>
         </command>
@@ -438,7 +468,7 @@
                <visibleWhen
                      checkEnabled="false">
                     <reference
-                          definitionId="isDatabase">
+                          definitionId="isConnectedDatabase">
                     </reference>
                </visibleWhen>
         </command>
@@ -452,7 +482,7 @@
                <visibleWhen
                      checkEnabled="false">
                     <reference
-                          definitionId="isDatabase">
+                          definitionId="isConnectedDatabase">
                     </reference>
                </visibleWhen>
         </command>
@@ -466,7 +496,7 @@
                <visibleWhen
                      checkEnabled="false">
                     <reference
-                          definitionId="isDatabase">
+                          definitionId="isConnectedDatabase">
                     </reference>
                </visibleWhen>
         </command>
