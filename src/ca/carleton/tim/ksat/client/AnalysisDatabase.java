@@ -141,4 +141,15 @@ public class AnalysisDatabase {
         return false;
     }
 
+    public void connect() {
+        if (session != null && !session.isConnected()) {
+            session.login();
+        }
+    }
+
+    public void disconnect() {
+        if (session != null && session.isConnected()) {
+            session.logout();
+        }
+    }
 }

@@ -48,7 +48,7 @@ public class AnalysisAdapter {
     @Override
     public String toString() {
         if (analysis != null) {
-            return "[" + analysis.getId() + "] " + analysis.getDescription();
+            return analysis.getDescription();
         }
         return super.toString();
     }

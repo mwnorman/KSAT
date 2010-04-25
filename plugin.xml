@@ -163,10 +163,6 @@
             name="ExportCSV">
       </command>
       <command
-            id="ca.carleton.tim.ksat.client.command.EditSite"
-            name="EditSite">
-      </command>
-      <command
             defaultHandler="ca.carleton.tim.ksat.client.AddSiteHandler"
             id="ca.carleton.tim.ksat.client.command.AddSite"
             name="AddSite">
@@ -174,10 +170,6 @@
       <command
             id="ca.carleton.tim.ksat.client.command.RemoveSite"
             name="RemoveSite">
-      </command>
-      <command
-            id="ca.carleton.tim.ksat.client.command.EditKeyword"
-            name="EditKeyword">
       </command>
       <command
             defaultHandler="ca.carleton.tim.ksat.client.AddKeywordHandler"
@@ -369,29 +361,11 @@
             </reference></activeWhen>
       </handler>
       <handler
-            class="ca.carleton.tim.ksat.client.EditSiteHandler"
-            commandId="ca.carleton.tim.ksat.client.command.EditSite">
-         <activeWhen>
-            <reference
-                  definitionId="isSite">
-            </reference>
-         </activeWhen>
-      </handler>
-      <handler
             class="ca.carleton.tim.ksat.client.RemoveSiteHandler"
             commandId="ca.carleton.tim.ksat.client.command.RemoveSite">
          <activeWhen>
             <reference
                   definitionId="isSite">
-            </reference>
-         </activeWhen>
-      </handler>
-      <handler
-            class="ca.carleton.tim.ksat.client.EditKeywordHandler"
-            commandId="ca.carleton.tim.ksat.client.command.EditKeyword">
-         <activeWhen>
-            <reference
-                  definitionId="isKeyword">
             </reference>
          </activeWhen>
       </handler>
@@ -546,20 +520,6 @@
         </command>
      </menuContribution>
      <menuContribution
-           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
-        <command
-              commandId="ca.carleton.tim.ksat.client.command.EditSite"
-              label="Edit Site"
-              style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                    <reference
-                          definitionId="isSite">
-                    </reference>
-               </visibleWhen>
-        </command>
-     </menuContribution>
-     <menuContribution
            locationURI="popup:ca.carleton.tim.ksat.client.views.sites?after=additions">
         <command
               commandId="ca.carleton.tim.ksat.client.command.AddSite"
@@ -577,20 +537,6 @@
                      checkEnabled="false">
                     <reference
                           definitionId="isSite">
-                    </reference>
-               </visibleWhen>
-        </command>
-     </menuContribution>
-     <menuContribution
-           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
-        <command
-              commandId="ca.carleton.tim.ksat.client.command.EditKeyword"
-              label="Edit Keyword"
-              style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                    <reference
-                          definitionId="isKeyword">
                     </reference>
                </visibleWhen>
         </command>

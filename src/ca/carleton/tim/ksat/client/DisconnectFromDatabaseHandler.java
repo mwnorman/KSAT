@@ -37,7 +37,7 @@ public class DisconnectFromDatabaseHandler extends AbstractHandler implements IH
         IStructuredSelection currentSelection = 
             (IStructuredSelection)HandlerUtil.getCurrentSelection(event);
         AnalysisDatabase analysisDatabase = (AnalysisDatabase)currentSelection.getFirstElement();
-        analysisDatabase.getSession().logout();
+        analysisDatabase.disconnect();
         analysisDatabase.setAnalyses(new ArrayList<AnalysisAdapter>());
         KSATApplication.resetViewsOnDisconnectFromDatabase();
         return analysisDatabase;

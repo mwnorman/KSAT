@@ -42,7 +42,7 @@ public class ConnectToDatabaseHandler extends AbstractHandler implements IHandle
         IStructuredSelection currentSelection = 
             (IStructuredSelection)HandlerUtil.getCurrentSelection(event);
         AnalysisDatabase analysisDatabase = (AnalysisDatabase)currentSelection.getFirstElement();
-        analysisDatabase.getSession().login();
+        analysisDatabase.connect();
         Vector<Analysis> analyses = analysisDatabase.getSession().readAllObjects(Analysis.class);
         List<AnalysisAdapter> analysisAdapters = new ArrayList<AnalysisAdapter>();
         for (Analysis analysis : analyses ) {

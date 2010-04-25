@@ -72,7 +72,7 @@ public class AnalysisResult {
     public String toString() {
         SimpleDateFormat sdf = new SimpleDateFormat(DATETIME_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return "[" + id + "] AnalysisResult run on " + sdf.format(dateTime);
+        return "AnalysisResult run on " + sdf.format(dateTime);
     }
     
 }

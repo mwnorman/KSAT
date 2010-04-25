@@ -36,6 +36,8 @@ import javax.xml.transform.stream.StreamSource;
 
 //Graphics (SWT/JFaces) imports
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -48,6 +50,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.console.MessageConsoleStream;
 import org.eclipse.ui.part.ViewPart;
 
 //EclipseLink imports
@@ -69,6 +72,7 @@ public class AnalysesView extends ViewPart {
     protected TreeViewer analysesViewer;
     protected Tree analysesTree;
     protected AnalysisDatabase currentDatabase = null;
+    protected AnalysisAdapter currentAnalysis = null;
 
     public AnalysesView() {
         super();
@@ -78,8 +82,9 @@ public class AnalysesView extends ViewPart {
     public AnalysisDatabase getCurrentDatabase() {
         return currentDatabase;
     }
-    public void setCurrentDatabase(AnalysisDatabase currentDatabase) {
-        this.currentDatabase = currentDatabase;
+
+    public AnalysisAdapter getCurrentAnalysis() {
+        return currentAnalysis;
     }
 
     @Override
@@ -97,6 +102,25 @@ public class AnalysesView extends ViewPart {
         
         hookContextMenu();
         
+        analysesViewer.addDoubleClickListener(new IDoubleClickListener() {
+            @Override
+            public void doubleClick(DoubleClickEvent event) {
+                IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+                Object selectedElement = selection.getFirstElement();
+                if (selectedElement instanceof AnalysisDatabase) {
+                    currentDatabase = (AnalysisDatabase)selectedElement;
+                    if (currentDatabase.isConnected()) {
+                        currentDatabase.disconnect();
+                        KSATApplication.resetViewsOnDisconnectFromDatabase();
+                    }
+                    else {
+                        currentDatabase.connect();
+                        KSATApplication.resetViewsOnConnectToDatabase();
+                    }
+                } 
+            }
+        });
+        
         analysesViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
                 IStructuredSelection selection = (IStructuredSelection)event.getSelection();
@@ -104,6 +128,7 @@ public class AnalysesView extends ViewPart {
                 if (selectedElement instanceof AnalysisAdapter) {
                     // TODO - throttle resetting sites/keywords is same analysis as last time was selected
                     AnalysisAdapter analysisAdapter = (AnalysisAdapter)selectedElement;
+                    currentAnalysis = analysisAdapter;
                     List<IViewPart> views = KSATApplication.getViews(SitesView.ID, KeywordsView.ID);
                     SitesView sitesView = (SitesView)views.get(0);
                     KeywordsView keywordsView = (KeywordsView)views.get(1);
@@ -137,7 +162,10 @@ public class AnalysesView extends ViewPart {
                         CTabFolder folder = (CTabFolder)resultsView.browser.getParent();
                         boolean flag = resultsView.browser.setText(htmlStringWriter.toString());
                         if (!flag) {
-                            System.err.println("aiee!");
+                            MessageConsoleStream messageStream = 
+                                KSATRoot.defaultInstance().getLogConsole().getMessageStream();
+                            messageStream.write("aiee!\n");
+                            messageStream.flush();
                         }
                         folder.layout(true);
                         resultsView.text.setText(xmlStringWriter.toString());
