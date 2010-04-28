@@ -36,16 +36,19 @@ public class ListContentProvider implements IStructuredContentProvider {
     }
     
     public Object[] getElements(Object input) {
-        if (contents != null && contents == input)
+        if (contents != null && contents == input) {
             return contents.toArray();
+        }
         return new Object[0];
     }
     
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-        if (newInput instanceof java.util.List) 
-            contents = (java.util.List)newInput;
-        else
-            contents= null;
+        if (newInput instanceof List) {
+            contents = (List)newInput;
+        }
+        else {
+            contents = null;
+        }
     }
     
     public void dispose() {
