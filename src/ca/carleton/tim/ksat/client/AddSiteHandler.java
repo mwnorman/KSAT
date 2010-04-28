@@ -21,29 +21,30 @@
  */
 package ca.carleton.tim.ksat.client;
 
+//javase imports
 import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
+//Graphics (SWT/JFaces) imports
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.handlers.HandlerUtil;
+
+//RCP imports
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
-import org.eclipse.jface.wizard.IWizard;
-import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.jface.window.Window;
 
-import ca.carleton.tim.ksat.model.Analysis;
+//KSAT domain imports
 import ca.carleton.tim.ksat.model.Site;
 
 public class AddSiteHandler extends AbstractHandler implements IHandler {
 
-	private HashSet<Site> allSitesSet;
+    protected HashSet<Site> additionalSites;
+    protected HashSet<Site> selectedSites = new HashSet<Site>();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -53,37 +54,22 @@ public class AddSiteHandler extends AbstractHandler implements IHandler {
 		AnalysisAdapter currentAnalysis = analysesView.getCurrentAnalysis();
 		List<Site> currentSites = currentAnalysis.getAnalysis().getSites();
 		HashSet<Site> currentSitesSet = new HashSet<Site>(currentSites);
-		Vector<Site> allSitesFromDB = analysesView.getCurrentDatabase().getSession()
-				.readAllObjects(Site.class);
-		allSitesSet = new HashSet<Site>(allSitesFromDB);
-		allSitesSet.removeAll(currentSitesSet);
-
-		AddSitesWizard wizard = new AddSitesWizard(allSitesSet, allSitesFromDB);
-		NonmodalWizardDialog dialog = new NonmodalWizardDialog(HandlerUtil.getActiveShell(event), wizard);
-        dialog.setHelpAvailable(false);
-        dialog.open();
-        List<Site> newSites = dialog.getResults();
-        for (Site newSite : newSites) {
-            currentAnalysis.getAnalysis().addSite(newSite);
+		Vector<Site> allSitesFromDB = 
+		    analysesView.getCurrentDatabase().getSession().readAllObjects(Site.class);
+		additionalSites = new HashSet<Site>(allSitesFromDB);
+		additionalSites.removeAll(currentSitesSet);
+		Shell activeShell = HandlerUtil.getActiveShell(event);
+		AddSitesDialog dialog = new AddSitesDialog(activeShell, this);
+        int status = dialog.open();
+        if (status == Window.OK) {
+            System.identityHashCode(selectedSites);
+            // TODO - add the sites to currentAnalysis, persist to db ...
         }
-
 		return null;
 	}
-    static class NonmodalWizardDialog extends WizardDialog {
-        NonmodalWizardDialog(Shell shell, IWizard wizard) {
-            super(shell, wizard);
-            setShellStyle(SWT.SHELL_TRIM | SWT.CLOSE | SWT.MODELESS | SWT.BORDER | SWT.TITLE | SWT.RESIZE);
-            setBlockOnOpen(false);
-        }
-        List<Site> getResults() {
-            AddSitesWizard addSitesWizard = (AddSitesWizard)getWizard();
-            SitesFromDBPage sitesFromDBPage = (SitesFromDBPage)addSitesWizard.getPages()[0];
-            TableItem[] selections = sitesFromDBPage.table.getSelection();
-            for (TableItem tableItem : selections) {
-                Object data = tableItem.getData();
-            }
-            return null;
-        }
+
+    public void addSelectedSite(Site selectedSite) {
+        selectedSites.add(selectedSite);
     }
 
 }
