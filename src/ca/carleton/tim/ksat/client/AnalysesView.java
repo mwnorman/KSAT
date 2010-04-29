@@ -43,9 +43,11 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IViewPart;
@@ -90,7 +92,8 @@ public class AnalysesView extends ViewPart {
     @Override
     public void createPartControl(Composite parent) {
         parent.setLayout(new FillLayout(SWT.HORIZONTAL));
-        analysesViewer = new TreeViewer(parent, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+        analysesViewer = new TreeViewer(parent, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL
+            | SWT.H_SCROLL);
         analysesViewer.setAutoExpandLevel(3);
         getSite().setSelectionProvider(analysesViewer);
         analysesViewer.setLabelProvider(new AnalysesLabelProvider());
@@ -99,9 +102,9 @@ public class AnalysesView extends ViewPart {
         KSATInvisibleRoot.defaultInstance().parent = viewSite;
         analysesViewer.setInput(viewSite);
         analysesTree = analysesViewer.getTree();
-        
+
         hookContextMenu();
-        
+
         analysesViewer.addDoubleClickListener(new IDoubleClickListener() {
             @Override
             public void doubleClick(DoubleClickEvent event) {
@@ -109,24 +112,29 @@ public class AnalysesView extends ViewPart {
                 Object selectedElement = selection.getFirstElement();
                 if (selectedElement instanceof AnalysisDatabase) {
                     currentDatabase = (AnalysisDatabase)selectedElement;
-                    if (currentDatabase.isConnected()) {
-                        currentDatabase.disconnect();
-                        KSATApplication.resetViewsOnDisconnectFromDatabase();
-                    }
-                    else {
-                        currentDatabase.connect();
-                        KSATApplication.resetViewsOnConnectToDatabase();
-                    }
-                } 
+                    BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+                        public void run() {
+                            if (currentDatabase.isConnected()) {
+                                currentDatabase.disconnect();
+                                KSATApplication.resetViewsOnDisconnectFromDatabase();
+                            }
+                            else {
+                                currentDatabase.connect();
+                                KSATApplication.resetViewsOnConnectToDatabase();
+                            }
+                        }
+                    });
+                }
             }
         });
-        
+
         analysesViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
                 IStructuredSelection selection = (IStructuredSelection)event.getSelection();
                 Object selectedElement = selection.getFirstElement();
                 if (selectedElement instanceof AnalysisAdapter) {
-                    // TODO - throttle resetting sites/keywords is same analysis as last time was selected
+                    // TODO - throttle resetting sites/keywords is same analysis as last time was
+                    // selected
                     AnalysisAdapter analysisAdapter = (AnalysisAdapter)selectedElement;
                     currentAnalysis = analysisAdapter;
                     List<IViewPart> views = KSATApplication.getViews(SitesView.ID, KeywordsView.ID);
@@ -138,19 +146,22 @@ public class AnalysesView extends ViewPart {
                 else if (selectedElement instanceof AnalysisResult) {
                     AnalysisResult analysisResult = (AnalysisResult)selectedElement;
                     UnitOfWork uow = currentDatabase.getSession().acquireUnitOfWork();
-                    AnalysisReport analysisReport = (AnalysisReport)uow.registerNewObject(new AnalysisReport());
+                    AnalysisReport analysisReport = (AnalysisReport)uow
+                        .registerNewObject(new AnalysisReport());
                     uow.assignSequenceNumber(analysisReport);
                     analysisReport.setDateTime(analysisResult.getDateTime());
                     analysisReport.setReportingAnalysis(analysisResult.getOwner());
                     try {
                         XMLContext context = new XMLContext(new AnalysisReportProject());
                         XMLMarshaller marshaller = context.createMarshaller();
-                        Document doc = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
+                        Document doc = XMLPlatformFactory.getInstance().getXMLPlatform()
+                            .createDocument();
                         marshaller.marshal(analysisReport, doc);
-                        InputStream htmlXslStream = 
-                            this.getClass().getClassLoader().getResourceAsStream(REPORT_HTML_XSL);
+                        InputStream htmlXslStream = this.getClass().getClassLoader()
+                            .getResourceAsStream(REPORT_HTML_XSL);
                         StreamSource xslSource = new StreamSource(htmlXslStream);
-                        Transformer transformer = TransformerFactory.newInstance().newTransformer(xslSource);
+                        Transformer transformer = TransformerFactory.newInstance().newTransformer(
+                            xslSource);
                         DOMSource domSource = new DOMSource(doc);
                         StringWriter htmlStringWriter = new StringWriter();
                         StreamResult htmlStreamResult = new StreamResult(htmlStringWriter);
@@ -162,8 +173,8 @@ public class AnalysesView extends ViewPart {
                         CTabFolder folder = (CTabFolder)resultsView.browser.getParent();
                         boolean flag = resultsView.browser.setText(htmlStringWriter.toString());
                         if (!flag) {
-                            MessageConsoleStream messageStream = 
-                                KSATRoot.defaultInstance().getLogConsole().getMessageStream();
+                            MessageConsoleStream messageStream = KSATRoot.defaultInstance()
+                                .getLogConsole().getMessageStream();
                             messageStream.write("aiee!\n");
                             messageStream.flush();
                         }
@@ -186,14 +197,13 @@ public class AnalysesView extends ViewPart {
      * Setup Context Menu.
      */
     private void hookContextMenu() {
-        MenuManager menuManager = new MenuManager ("#PopupMenu");
-        menuManager.setRemoveAllWhenShown (true);
+        MenuManager menuManager = new MenuManager("#PopupMenu");
+        menuManager.setRemoveAllWhenShown(true);
         Menu menu = menuManager.createContextMenu(analysesViewer.getControl());
         analysesTree.setMenu(menu);
         getSite().registerContextMenu(ID, menuManager, analysesViewer);
     }
 
-    
     @Override
     public void setFocus() {
         analysesViewer.getControl().setFocus();
@@ -203,14 +213,18 @@ public class AnalysesView extends ViewPart {
         static class KSATInvisibleRootHelper {
             static KSATInvisibleRoot singleton = new KSATInvisibleRoot();
         }
+
         public static KSATInvisibleRoot defaultInstance() {
             return KSATInvisibleRootHelper.singleton;
         }
+
         Object parent;
         KSATRoot[] children = new KSATRoot[1];
+
         KSATInvisibleRoot() {
             children[0] = KSATRoot.defaultInstance();
             children[0].parent = this;
         }
     }
+
 }

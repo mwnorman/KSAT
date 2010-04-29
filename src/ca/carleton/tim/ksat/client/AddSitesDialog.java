@@ -24,21 +24,27 @@ package ca.carleton.tim.ksat.client;
 //javase imports
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
 //Graphics (SWT/JFaces) imports
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableLayout;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
@@ -54,21 +60,21 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IViewPart;
 
 //KSAT domain imports
 import ca.carleton.tim.ksat.model.Site;
+import static ca.carleton.tim.ksat.client.SitesView.SITE_COLUMN_HEADINGS;
 
 public class AddSitesDialog extends Dialog {
-
-    final static String[] COLUMN_HEADINGS = {"Url", "Description"};
 
     protected CheckboxTableViewer tableViewer;
     protected Table table;
     protected Vector<Site> allSitesFromDB;
     protected HashSet<Site> additionalSites;
-    protected AddSiteHandler addSiteHandler;
+    protected AddSitesHandler addSitesHandler;
     
     public AddSitesDialog(Shell parent) {
         super(parent);
@@ -80,9 +86,9 @@ public class AddSitesDialog extends Dialog {
         init();
     }
     
-    public AddSitesDialog(Shell activeShell, AddSiteHandler addSiteHandler) {
+    public AddSitesDialog(Shell activeShell, AddSitesHandler addSitesHandler) {
         this(activeShell);
-        this.addSiteHandler = addSiteHandler;
+        this.addSitesHandler = addSitesHandler;
     }
 
     @SuppressWarnings("unchecked")
@@ -113,9 +119,32 @@ public class AddSitesDialog extends Dialog {
         outerContainer.setLayoutData(data);
         new Label(outerContainer, SWT.NONE).setText("Available Sites:");
         tableViewer = CheckboxTableViewer.newCheckList(outerContainer, SWT.BORDER | SWT.V_SCROLL | 
-            SWT.MULTI);
-        tableViewer.setColumnProperties(COLUMN_HEADINGS);
-        tableViewer.setLabelProvider(new TableLabelProvider());
+            SWT.MULTI | SWT.FULL_SELECTION);
+        tableViewer.setColumnProperties(SITE_COLUMN_HEADINGS);
+        tableViewer.setLabelProvider(new ITableLabelProvider() {
+            public Image getColumnImage(Object element, int columnIndex) {
+                return null;
+            }
+            public String getColumnText(Object element, int columnIndex) {
+                Site site = (Site)element;
+                switch (columnIndex) {
+                    case 0:
+                        return site.getUrl();
+                    case 1:
+                        return site.getDescription();
+                }
+                return null;
+            }
+            public void addListener(ILabelProviderListener listener) {
+            }
+            public void dispose() {
+            }
+            public boolean isLabelProperty(Object element, String property) {
+                return false;
+            }
+            public void removeListener(ILabelProviderListener listener) {
+            }            
+        });
         table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(false);
@@ -125,18 +154,50 @@ public class AddSitesDialog extends Dialog {
         TableLayout tableLayout = new TableLayout();
         table.setLayout(tableLayout);
         tableLayout.addColumnData(new ColumnWeightData(10, 100, true));
-        TableColumn column = new TableColumn(table, SWT.NONE);
-        column.setText(COLUMN_HEADINGS[0]);
-        column.setAlignment(SWT.LEFT);
+        TableColumn urlColumn = new TableColumn(table, SWT.NONE);
+        urlColumn.setText(SITE_COLUMN_HEADINGS[0]);
+        urlColumn.setAlignment(SWT.LEFT);
         tableLayout.addColumnData(new ColumnWeightData(15, 200, true));
-        column = new TableColumn(table, SWT.NONE);
-        column.setText(COLUMN_HEADINGS[1]);
-        column.setAlignment(SWT.LEFT);
+        TableColumn descColumn = new TableColumn(table, SWT.NONE);
+        descColumn.setText(SITE_COLUMN_HEADINGS[1]);
+        descColumn.setAlignment(SWT.LEFT);
         for (Site s : additionalSites) {
             tableViewer.add(s);
             tableViewer.setChecked(s, true);
             table.setTopIndex(table.getItemCount());
         }
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumn(i).pack();
+        }
+        CellEditor[] editors = new CellEditor[2];
+        editors[1] = new TextCellEditor(table);
+        tableViewer.setCellEditors(editors);
+        tableViewer.setCellModifier(new TableCellModifier());
+        Composite selectComposite = new Composite(outerContainer, SWT.RIGHT);
+        layout = new GridLayout();
+        layout.numColumns = 2;
+        selectComposite.setLayout(layout);
+        data = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.GRAB_HORIZONTAL);
+        data.grabExcessHorizontalSpace = true;
+        outerContainer.setData(data);
+        // Select All button
+        Button selectButton = createButton(selectComposite, IDialogConstants.SELECT_ALL_ID,
+            "Select All", false);
+        SelectionListener selectAllListener = new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                tableViewer.setAllChecked(true);
+            }
+        };
+        selectButton.addSelectionListener(selectAllListener);
+        Button deselectButton = createButton(selectComposite, IDialogConstants.DESELECT_ALL_ID,
+            "Deselect All", false);
+        SelectionListener deselectAllListener = new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                tableViewer.setAllChecked(false);
+            }
+        };
+        deselectButton.addSelectionListener(deselectAllListener);
+
         Composite buttonComposite = new Composite(outerContainer, SWT.NONE);
         FillLayout fillLayout = new FillLayout(SWT.HORIZONTAL);
         fillLayout.spacing = 10;
@@ -161,10 +222,10 @@ public class AddSitesDialog extends Dialog {
                                Site newSite = new Site(line, "");
                                tableViewer.add(newSite);
                                tableViewer.setChecked(newSite, true);
-                               table.setTopIndex(table.getItemCount());
                             }
                         }
                     }
+                    table.setTopIndex(table.getItemCount());
                     input.close();
                 }
                 catch (Exception e1) {
@@ -195,15 +256,16 @@ public class AddSitesDialog extends Dialog {
                 }
             }
         });
+        outerContainer.pack();
         return outerContainer;
     }
 
     @Override
     protected void buttonPressed(int buttonId) {
-        if (buttonId == 0) {
+        if (buttonId == 0) { //Ok
             Object[] checkedElements = tableViewer.getCheckedElements();
             for (Object checkedElement : checkedElements) {
-                addSiteHandler.addSelectedSite((Site)checkedElement);
+                addSitesHandler.addSelectedSite((Site)checkedElement);
             }
         }
         super.buttonPressed(buttonId);
@@ -219,20 +281,42 @@ public class AddSitesDialog extends Dialog {
         }
         return foundSite;
     }
-    
-    class TableLabelProvider extends LabelProvider implements ITableLabelProvider {
-        public Image getColumnImage(Object element, int columnIndex) {
-            return null;
+
+    class TableCellModifier implements ICellModifier {
+        List<String> headings = null;
+        public TableCellModifier() {
+            headings = Arrays.asList(SITE_COLUMN_HEADINGS);
         }
-        public String getColumnText(Object element, int columnIndex) {
-            Site site = (Site)element;
-            switch (columnIndex) {
-                case 0:
-                    return site.getUrl();
-                case 1:
-                    return site.getDescription();
-            }
-            return null;
+        public boolean canModify(Object element, String property) {
+              return true;
+        }
+        public Object getValue(Object element, String property) {
+              Object result = null;
+              Site site = (Site)element;
+              int columnIndex = headings.indexOf(property);
+              switch (columnIndex) {
+              case 0:
+                    result = site.getUrl();
+                    break;
+              case 1:
+                    result = site.getDescription();
+                    break;
+              }
+              return result;
+        }
+        public void modify(Object element, String property, Object value) {
+              int columnIndex = headings.indexOf(property);
+              TableItem tableItem = (TableItem)element;
+              Site site = (Site)tableItem.getData();
+              switch (columnIndex) {
+              case 1:
+                    String v = (String)value;
+                    if (v.length() > 0) {
+                        site.setDescription(v);
+                    }
+                    break;
+              }
+              tableViewer.update(site, null);
         }
     }
 }

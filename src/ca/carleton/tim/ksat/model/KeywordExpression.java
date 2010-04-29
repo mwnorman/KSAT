@@ -55,7 +55,7 @@ public class KeywordExpression {
         catch (Exception e) {
             // ignore
         }
-        return "{" + id + "}'" + decodedExpression +"'";
+        return decodedExpression;
     }
     
 }

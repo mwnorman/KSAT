@@ -163,7 +163,7 @@
             name="ExportCSV">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.AddSiteHandler"
+            defaultHandler="ca.carleton.tim.ksat.client.AddSitesHandler"
             id="ca.carleton.tim.ksat.client.command.AddSite"
             name="AddSite">
       </command>
@@ -523,7 +523,7 @@
            locationURI="popup:ca.carleton.tim.ksat.client.views.sites?after=additions">
         <command
               commandId="ca.carleton.tim.ksat.client.command.AddSite"
-              label="Add Site"
+              label="Add Sites"
               style="push">
         </command>
      </menuContribution>
@@ -545,7 +545,7 @@
            locationURI="popup:ca.carleton.tim.ksat.client.views.keywords?after=additions">
         <command
               commandId="ca.carleton.tim.ksat.client.command.AddKeyword"
-              label="Add Keyword"
+              label="Add Keyword Expressions"
               style="push">
         </command>
      </menuContribution>

@@ -137,7 +137,7 @@ public class KSATApplication implements IApplication {
         sitesView.setSites(new ArrayList<Site>());
         keywordsView.setKeywords(new ArrayList<KeywordExpression>());
         analysesView.analysesViewer.refresh(true);
-        sitesView.listViewer.refresh(true);
+        sitesView.tableViewer.refresh(true);
         keywordsView.listViewer.refresh(true);
         resultsView.browser.setText("");
         resultsView.browser.getParent().layout(true);

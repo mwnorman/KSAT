@@ -41,7 +41,7 @@ import org.eclipse.jface.window.Window;
 //KSAT domain imports
 import ca.carleton.tim.ksat.model.Site;
 
-public class AddSiteHandler extends AbstractHandler implements IHandler {
+public class AddSitesHandler extends AbstractHandler implements IHandler {
 
     protected HashSet<Site> additionalSites;
     protected HashSet<Site> selectedSites = new HashSet<Site>();

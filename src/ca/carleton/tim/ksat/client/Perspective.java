@@ -34,8 +34,8 @@ public class Perspective implements IPerspectiveFactory {
 	    layout.addStandaloneView(AnalysesView.ID, false, IPageLayout.LEFT, 0.4f, editorArea);
         layout.addView(IConsoleConstants.ID_CONSOLE_VIEW, IPageLayout.BOTTOM, 0.75f, editorArea);  
 	    layout.addStandaloneView(ResultsView.ID, false, IPageLayout.LEFT, 0.9f, IPageLayout.ID_EDITOR_AREA);
-	    layout.addStandaloneView(SitesView.ID , false, IPageLayout.BOTTOM, 0.6f, AnalysesView.ID);
-	    layout.addStandaloneView(KeywordsView.ID, false, IPageLayout.RIGHT, 0.5f, SitesView.ID);
+	    layout.addStandaloneView(KeywordsView.ID, true, IPageLayout.BOTTOM, 0.5f, AnalysesView.ID);
+        layout.addStandaloneView(SitesView.ID , true, IPageLayout.BOTTOM, 0.5f, AnalysesView.ID);
 
 	}
 }

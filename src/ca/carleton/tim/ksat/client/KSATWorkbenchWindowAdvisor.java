@@ -55,6 +55,7 @@ public class KSATWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         configurer.setShowCoolBar(false);
         configurer.setShowStatusLine(false);
         configurer.setShowMenuBar(true);
+        configurer.setShowProgressIndicator(true);
     }
 
     public void postWindowOpen() {
