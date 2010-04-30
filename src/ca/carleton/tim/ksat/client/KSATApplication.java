@@ -153,7 +153,7 @@ public class KSATApplication implements IApplication {
         reevaluateIsConnected(analysesView);
 	}
 	
-	static List<IViewPart> getViews(String... viewIds) {
+	public static List<IViewPart> getViews(String... viewIds) {
 	    List<IViewPart> views = new ArrayList<IViewPart>();
         IWorkbenchWindow[] workbenchs = PlatformUI.getWorkbench().getWorkbenchWindows();
         for (IWorkbenchWindow workbench : workbenchs) {

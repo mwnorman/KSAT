@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Vector;
 
 //Graphics (SWT/JFaces) imports
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -39,6 +40,7 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.window.Window;
 
 //KSAT domain imports
+import ca.carleton.tim.ksat.model.Analysis;
 import ca.carleton.tim.ksat.model.Site;
 
 public class AddSitesHandler extends AbstractHandler implements IHandler {
@@ -49,21 +51,29 @@ public class AddSitesHandler extends AbstractHandler implements IHandler {
     @SuppressWarnings("unchecked")
     @Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID);
-		AnalysesView analysesView = (AnalysesView) views.get(0);
-		AnalysisAdapter currentAnalysis = analysesView.getCurrentAnalysis();
-		List<Site> currentSites = currentAnalysis.getAnalysis().getSites();
+		Analysis currentAnalysis = KSATRoot.defaultInstance().getCurrentAnalysis();
+		List<Site> currentSites = currentAnalysis.getSites();
 		HashSet<Site> currentSitesSet = new HashSet<Site>(currentSites);
 		Vector<Site> allSitesFromDB = 
-		    analysesView.getCurrentDatabase().getSession().readAllObjects(Site.class);
+		    KSATRoot.defaultInstance().getCurrentSession().readAllObjects(Site.class);
 		additionalSites = new HashSet<Site>(allSitesFromDB);
 		additionalSites.removeAll(currentSitesSet);
 		Shell activeShell = HandlerUtil.getActiveShell(event);
 		AddSitesDialog dialog = new AddSitesDialog(activeShell, this);
         int status = dialog.open();
         if (status == Window.OK) {
-            System.identityHashCode(selectedSites);
-            // TODO - add the sites to currentAnalysis, persist to db ...
+            List<IViewPart> views = KSATApplication.getViews(SitesView.ID);
+            SitesView sitesView = (SitesView)views.get(0);
+            if (selectedSites.size() > 0) {
+                UnitOfWork uow = KSATRoot.defaultInstance().getCurrentSession().acquireUnitOfWork();
+                Analysis currentAnalysisClone = (Analysis)uow.registerObject(currentAnalysis);
+                Vector<Site> selectedSiteClones = uow.registerAllObjects(selectedSites);
+                for (Site site : selectedSiteClones) {
+                    currentAnalysisClone.addSite(site);
+                }
+                uow.commit();
+                sitesView.setSites(currentAnalysis.getSites());
+            }
         }
 		return null;
 	}

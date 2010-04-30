@@ -62,6 +62,7 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
 //KSAT domain imports
+import ca.carleton.tim.ksat.model.Analysis;
 import ca.carleton.tim.ksat.model.AnalysisResult;
 import ca.carleton.tim.ksat.persist.AnalysisReport;
 import ca.carleton.tim.ksat.persist.AnalysisReportProject;
@@ -74,19 +75,17 @@ public class AnalysesView extends ViewPart {
     protected TreeViewer analysesViewer;
     protected Tree analysesTree;
     protected AnalysisDatabase currentDatabase = null;
-    protected AnalysisAdapter currentAnalysis = null;
 
     public AnalysesView() {
         super();
-        currentDatabase = KSATRoot.defaultInstance().getDatabases().get(0);
+        List<AnalysisDatabase> databases = KSATRoot.defaultInstance().getDatabases();
+        if (databases.size() > 0) {
+            currentDatabase = databases.get(0);
+        }
     }
 
     public AnalysisDatabase getCurrentDatabase() {
         return currentDatabase;
-    }
-
-    public AnalysisAdapter getCurrentAnalysis() {
-        return currentAnalysis;
     }
 
     @Override
@@ -116,10 +115,13 @@ public class AnalysesView extends ViewPart {
                         public void run() {
                             if (currentDatabase.isConnected()) {
                                 currentDatabase.disconnect();
+                                KSATRoot.defaultInstance().setCurrentSession(null);
                                 KSATApplication.resetViewsOnDisconnectFromDatabase();
                             }
                             else {
                                 currentDatabase.connect();
+                                KSATRoot.defaultInstance().
+                                    setCurrentSession(currentDatabase.getSession());
                                 KSATApplication.resetViewsOnConnectToDatabase();
                             }
                         }
@@ -136,12 +138,13 @@ public class AnalysesView extends ViewPart {
                     // TODO - throttle resetting sites/keywords is same analysis as last time was
                     // selected
                     AnalysisAdapter analysisAdapter = (AnalysisAdapter)selectedElement;
-                    currentAnalysis = analysisAdapter;
+                    Analysis currentAnalysis = analysisAdapter.getAnalysis();
+                    KSATRoot.defaultInstance().setCurrentAnalysis(currentAnalysis);
                     List<IViewPart> views = KSATApplication.getViews(SitesView.ID, KeywordsView.ID);
                     SitesView sitesView = (SitesView)views.get(0);
                     KeywordsView keywordsView = (KeywordsView)views.get(1);
-                    sitesView.setSites(analysisAdapter.getAnalysis().getSites());
-                    keywordsView.setKeywords(analysisAdapter.getAnalysis().getExpressions());
+                    sitesView.setSites(currentAnalysis.getSites());
+                    keywordsView.setKeywords(currentAnalysis.getExpressions());
                 }
                 else if (selectedElement instanceof AnalysisResult) {
                     AnalysisResult analysisResult = (AnalysisResult)selectedElement;

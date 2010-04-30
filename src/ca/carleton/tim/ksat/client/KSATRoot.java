@@ -37,6 +37,9 @@ import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.SessionConfig;
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.sessions.DatabaseSession;
+
+import ca.carleton.tim.ksat.model.Analysis;
 
 public class KSATRoot {
     
@@ -50,6 +53,8 @@ public class KSATRoot {
 
     protected Object parent;
     protected List<AnalysisDatabase> databases = new ArrayList<AnalysisDatabase>();
+    protected DatabaseSession currentSession;
+    protected Analysis currentAnalysis;
     protected SessionConfigs sessionConfigs;
     protected LogConsole logConsole;
     
@@ -102,6 +107,9 @@ public class KSATRoot {
                 // TODO figure out database session failure, logging and treeview stuff
                 e.printStackTrace();
             }
+            if (!databases.isEmpty()) {
+                currentSession = databases.get(0).getSession();
+            }
         }
         return databases;
     }
@@ -114,6 +122,20 @@ public class KSATRoot {
     public void removeDatabase(AnalysisDatabase database) {
         databases.remove(database);
         database.setParent(null);
+    }
+
+    public DatabaseSession getCurrentSession() {
+        return currentSession;
+    }
+    public void setCurrentSession(DatabaseSession currentSession) {
+        this.currentSession = currentSession;
+    }
+
+    public Analysis getCurrentAnalysis() {
+        return currentAnalysis;
+    }
+    public void setCurrentAnalysis(Analysis currentAnalysis) {
+        this.currentAnalysis = currentAnalysis;
     }
 
     @Override

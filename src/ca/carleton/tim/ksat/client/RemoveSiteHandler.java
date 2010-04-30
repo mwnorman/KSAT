@@ -21,19 +21,42 @@
  */
 package ca.carleton.tim.ksat.client;
 
+import java.util.List;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IViewPart;
+
+import ca.carleton.tim.ksat.model.Analysis;
+import ca.carleton.tim.ksat.model.Site;
 
 public class RemoveSiteHandler extends AbstractHandler implements IHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-            "Cannot perform command", "Cannot (yet) Remove Site");
+        List<IViewPart> views = KSATApplication.getViews(SitesView.ID);
+        SitesView sitesView = (SitesView)views.get(0);
+        IStructuredSelection selection = (IStructuredSelection)sitesView.getTableViewer().getSelection();
+        Site siteToRemove = (Site)selection.getFirstElement();
+        boolean confirm = MessageDialog.openConfirm(Display.getDefault().getActiveShell(),
+            "Remove Site", "Are you sure you wish to remove Site " + siteToRemove.getUrl()
+            + "?");
+        if (confirm) {
+            Analysis currentAnalysis = KSATRoot.defaultInstance().getCurrentAnalysis();
+            UnitOfWork uow = KSATRoot.defaultInstance().getCurrentSession().acquireUnitOfWork();
+            Analysis currentAnalysisClone = (Analysis)uow.registerObject(currentAnalysis);
+            Site siteToRemoveClone = (Site)uow.registerObject(siteToRemove);
+            currentAnalysisClone.getSites().remove(siteToRemoveClone);
+            uow.commit();
+            sitesView.setSites(currentAnalysis.getSites());
+        }
+       
         return null;
     }
 

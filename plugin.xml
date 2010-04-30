@@ -33,7 +33,7 @@
         point="org.eclipse.ui.views">
         <view
               class="ca.carleton.tim.ksat.client.SitesView"
-              icon="icons/site.gif"
+              icon="icons/sites.gif"
               id="ca.carleton.tim.ksat.client.views.sites"
               name="Sites">
         </view>
