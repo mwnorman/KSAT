@@ -28,13 +28,11 @@ import java.util.List;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -182,7 +180,7 @@ public class SitesView extends ViewPart {
         outerContainer.setData(data);
         if (addSelectDeSelectButtons) {
             // Select All button
-            Button selectButton = createButton(selectComposite, IDialogConstants.SELECT_ALL_ID,
+            Button selectButton = KSATApplication.createButton(selectComposite, IDialogConstants.SELECT_ALL_ID,
                 "Select All", false);
             SelectionListener selectAllListener = new SelectionAdapter() {
                 public void widgetSelected(SelectionEvent e) {
@@ -196,7 +194,7 @@ public class SitesView extends ViewPart {
                 }
             };
             selectButton.addSelectionListener(selectAllListener);
-            Button deselectButton = createButton(selectComposite, IDialogConstants.DESELECT_ALL_ID,
+            Button deselectButton = KSATApplication.createButton(selectComposite, IDialogConstants.DESELECT_ALL_ID,
                 "Deselect All", false);
             SelectionListener deselectAllListener = new SelectionAdapter() {
                 public void widgetSelected(SelectionEvent e) {
@@ -215,29 +213,5 @@ public class SitesView extends ViewPart {
             table.getColumn(i).pack();
         }
         return new TableAndViewer(table, myTableViewer);
-    }
-    
-    public static Button createButton(Composite parent, int id, String label, boolean defaultButton) {
-        ((GridLayout)parent.getLayout()).numColumns++;
-        Button button = new Button(parent, SWT.PUSH);
-        button.setText(label);
-        button.setFont(JFaceResources.getDialogFont());
-        button.setData(new Integer(id));
-        if (defaultButton) {
-            Shell shell = parent.getShell();
-            if (shell != null) {
-                shell.setDefaultButton(button);
-            }
-        }
-        return button;
-    }
-    
-    public static class TableAndViewer {
-        public Table table;
-        public TableViewer tableViewer;
-        public TableAndViewer(Table table, TableViewer tableViewer) {
-            this.table = table;
-            this.tableViewer = tableViewer;
-        }
     }
 }

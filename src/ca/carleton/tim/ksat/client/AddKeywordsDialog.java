@@ -24,9 +24,9 @@ package ca.carleton.tim.ksat.client;
 //javase imports
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Vector;
 
 //Graphics (SWT/JFaces) imports
 import org.eclipse.jface.dialogs.Dialog;
@@ -52,47 +52,42 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
 //KSAT domain imports
-import ca.carleton.tim.ksat.model.Analysis;
-import ca.carleton.tim.ksat.model.Site;
+import ca.carleton.tim.ksat.model.KeywordExpression;
 
-public class AddSitesDialog extends Dialog {
-
-	public static final String AVAILABLE_LABEL = "Available Sites:";
-	public static final String IMPORT_FROM_FILE_LABEL = "Import from file";
-	public static final String ENTER_NEW_LABEL = "New Site URL:";
-	public static final String ENTER_NEW = "enter URL of new site";
+public class AddKeywordsDialog extends Dialog {
+	
+	public static final String AVAILABLE_LABEL = "Available Keyword Expressions:";
+	public static final String IMPORT_FROM_FILE_LABEL = "Import from file:";
+	public static final String ENTER_NEW_LABEL = "New Keyword Expression:";
+	public static final String ENTER_NEW = "enter new keyword expression";
 
     protected CheckboxTableViewer tableViewer;
     protected Table table;
-    protected Vector<Site> allSitesFromDB;
-    protected HashSet<Site> additionalSites;
-    protected AddSitesHandler addSitesHandler;
+    protected List<KeywordExpression> allKeywordsFromDB;
+    protected HashSet<KeywordExpression> additionalKeywords;
+    protected AddKeywordsHandler addKeywordsHandler;
     private DatabaseSession session;
     
-    public AddSitesDialog(Shell parent) {
+    public AddKeywordsDialog(Shell parent) {
         super(parent);
         init();
     }
 
-    public AddSitesDialog(IShellProvider parentShell) {
+    public AddKeywordsDialog(IShellProvider parentShell) {
         super(parentShell);
         init();
     }
     
-    public AddSitesDialog(Shell activeShell, AddSitesHandler addSitesHandler) {
+    public AddKeywordsDialog(Shell activeShell, AddKeywordsHandler addKeywordsHandler,
+        List<KeywordExpression> allKeywordsFromDB, HashSet<KeywordExpression> additionalKeywords) {
         this(activeShell);
-        this.addSitesHandler = addSitesHandler;
+        this.addKeywordsHandler = addKeywordsHandler;
+        this.allKeywordsFromDB = allKeywordsFromDB;
+        this.additionalKeywords = additionalKeywords;
     }
 
-    @SuppressWarnings("unchecked")
     protected void init() {
-        Analysis currentAnalysis = KSATRoot.defaultInstance().getCurrentAnalysis();
-        List<Site> currentSites = currentAnalysis.getSites();
-        HashSet<Site> currentSitesSet = new HashSet<Site>(currentSites);
         session = KSATRoot.defaultInstance().getCurrentSession();
-        allSitesFromDB = session.readAllObjects(Site.class);
-        additionalSites = new HashSet<Site>(allSitesFromDB);
-        additionalSites.removeAll(currentSitesSet);
     }
 
     @Override
@@ -110,12 +105,12 @@ public class AddSitesDialog extends Dialog {
         data.grabExcessHorizontalSpace = true;
         outerContainer.setLayoutData(data);
         new Label(outerContainer, SWT.NONE).setText(AVAILABLE_LABEL);
-        TableAndViewer tAndv = SitesView.buildTable(outerContainer, null, true, session);
-        table = tAndv.table;
-        tableViewer = (CheckboxTableViewer)tAndv.tableViewer;
-        for (Site s : additionalSites) {
-            tableViewer.add(s);
-            tableViewer.setChecked(s, true);
+        TableAndViewer tableAndViewer = KeywordsView.buildTable(outerContainer, null, true, session);
+        table = tableAndViewer.table;
+        tableViewer = (CheckboxTableViewer) tableAndViewer.tableViewer;
+        for (KeywordExpression ke : additionalKeywords) {
+            tableViewer.add(ke);
+            tableViewer.setChecked(ke, true);
             table.setTopIndex(table.getItemCount());
         }
         Composite buttonComposite = new Composite(outerContainer, SWT.NONE);
@@ -130,25 +125,26 @@ public class AddSitesDialog extends Dialog {
                     SWT.OPEN);
                 String sitesFileName = fileDialog.open();
                 try {
-                	if (sitesFileName != null && sitesFileName.length() > 0) {
-	                    FileReader sitesReader = new FileReader(sitesFileName);
-	                    BufferedReader input = new BufferedReader(sitesReader);
-	                    String line = null;
-	                    while ((line = input.readLine()) != null) {
-	                        line = line.trim();
-	                        if (line != "" && !line.startsWith("#")) {
-	                            // already in database ?
-	                            Site siteFromDb = scanForExistingSite(line, allSitesFromDB);
-	                            if (siteFromDb == null) {
-	                               Site newSite = new Site(line, "");
-	                               tableViewer.add(newSite);
-	                               tableViewer.setChecked(newSite, true);
-	                            }
-	                        }
-	                    }
-	                    table.setTopIndex(table.getItemCount());
-	                    input.close();
-                	}
+                    FileReader sitesReader = new FileReader(sitesFileName);
+                    BufferedReader input = new BufferedReader(sitesReader);
+                    String line = null;
+                    while ((line = input.readLine()) != null) {
+                        line = line.trim();
+                        if (line != "" && !line.startsWith("#")) {
+                            // already in database ?
+                            KeywordExpression keFromDb = scanForExistingExpression(line, allKeywordsFromDB);
+                            if (keFromDb == null) {
+                                KeywordExpression newExpression = new KeywordExpression();
+                                // have to encode line
+                                String encLine = URLEncoder.encode(line, "UTL-8");
+                                newExpression.setExpression(encLine);
+                                tableViewer.add(newExpression);
+                                tableViewer.setChecked(newExpression, true);
+                            }
+                        }
+                    }
+                    table.setTopIndex(table.getItemCount());
+                    input.close();
                 }
                 catch (Exception e1) {
                     e1.printStackTrace();
@@ -161,12 +157,20 @@ public class AddSitesDialog extends Dialog {
         text.setText(ENTER_NEW);
         text.addSelectionListener(new SelectionAdapter() {
             public void widgetDefaultSelected(SelectionEvent e) {
-                String newSiteUrl = text.getText();
-                if (!ENTER_NEW.equals(newSiteUrl)) {
-                    Site newSite = new Site(newSiteUrl, "");
-                    tableViewer.add(newSite);
-                    tableViewer.setChecked(newSite, true);
-                    table.setTopIndex(table.getItemCount());
+                String newExpText = text.getText();
+                if (!ENTER_NEW.equals(newExpText)) {
+                    try {
+						KeywordExpression newExpression = new KeywordExpression();
+						// have to encode line
+						String encLine = URLEncoder.encode(newExpText, "UTL-8");
+						newExpression.setExpression(encLine);
+						tableViewer.add(newExpression);
+						tableViewer.setChecked(newExpression, true);
+						table.setTopIndex(table.getItemCount());
+					}
+                    catch (Exception e1) {
+						e1.printStackTrace();
+					}
                 }
             }
         });
@@ -187,21 +191,22 @@ public class AddSitesDialog extends Dialog {
         if (buttonId == 0) { //Ok
             Object[] checkedElements = tableViewer.getCheckedElements();
             for (Object checkedElement : checkedElements) {
-                addSitesHandler.addSelectedSite((Site)checkedElement);
+                addKeywordsHandler.addSelectedExpression((KeywordExpression)checkedElement);
             }
         }
         super.buttonPressed(buttonId);
     }
 
-    protected Site scanForExistingSite(String line, List<Site> allSites) {
-        Site foundSite = null;
-        for (Site site : allSites) {
-            if (site.getUrl().equals(line)) {
-                foundSite = site;
+    protected KeywordExpression scanForExistingExpression(String line,
+    		List<KeywordExpression> allExpressions) {
+    	KeywordExpression foundExpression = null;
+        for (KeywordExpression expression : allExpressions) {
+            if (expression.getExpression().equals(line)) {
+                foundExpression = expression;
                 break;
             }
         }
-        return foundSite;
+        return foundExpression;
     }
   
 }

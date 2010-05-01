@@ -172,9 +172,9 @@
             name="RemoveSite">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.AddKeywordHandler"
-            id="ca.carleton.tim.ksat.client.command.AddKeyword"
-            name="AddKeyword">
+            defaultHandler="ca.carleton.tim.ksat.client.AddKeywordsHandler"
+            id="ca.carleton.tim.ksat.client.command.AddKeywords"
+            name="AddKeywords">
       </command>
       <command
             id="ca.carleton.tim.ksat.client.command.RemoveKeyword"
@@ -544,7 +544,7 @@
      <menuContribution
            locationURI="popup:ca.carleton.tim.ksat.client.views.keywords?after=additions">
         <command
-              commandId="ca.carleton.tim.ksat.client.command.AddKeyword"
+              commandId="ca.carleton.tim.ksat.client.command.AddKeywords"
               label="Add Keyword Expressions"
               style="push">
         </command>

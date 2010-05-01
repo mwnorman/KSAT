@@ -29,7 +29,13 @@ import java.util.List;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -128,7 +134,22 @@ public class KSATApplication implements IApplication {
 		});
 	}
 	
-	public static void resetViewsOnDisconnectFromDatabase() {
+	public static Button createButton(Composite parent, int id, String label, boolean defaultButton) {
+        ((GridLayout)parent.getLayout()).numColumns++;
+        Button button = new Button(parent, SWT.PUSH);
+        button.setText(label);
+        button.setFont(JFaceResources.getDialogFont());
+        button.setData(new Integer(id));
+        if (defaultButton) {
+            Shell shell = parent.getShell();
+            if (shell != null) {
+                shell.setDefaultButton(button);
+            }
+        }
+        return button;
+    }
+
+    public static void resetViewsOnDisconnectFromDatabase() {
         List<IViewPart> views = getViews(AnalysesView.ID, SitesView.ID, KeywordsView.ID, ResultsView.ID);
         AnalysesView analysesView = (AnalysesView)views.get(0);
         SitesView sitesView = (SitesView)views.get(1);
@@ -138,7 +159,7 @@ public class KSATApplication implements IApplication {
         keywordsView.setKeywords(new ArrayList<KeywordExpression>());
         analysesView.analysesViewer.refresh(true);
         sitesView.tableViewer.refresh(true);
-        keywordsView.listViewer.refresh(true);
+        keywordsView.tableViewer.refresh(true);
         resultsView.browser.setText("");
         resultsView.browser.getParent().layout(true);
         resultsView.text.setText("");

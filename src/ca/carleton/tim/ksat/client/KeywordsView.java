@@ -22,17 +22,32 @@
 package ca.carleton.tim.ksat.client;
 
 //javase imports
-import java.util.ArrayList;
+import java.net.URLDecoder;
 import java.util.List;
 
 //Graphics (JFaces/SWT) imports
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ICheckable;
+import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.TableLayout;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 
 //RCP imports
 import org.eclipse.ui.part.ViewPart;
@@ -44,19 +59,19 @@ public class KeywordsView extends ViewPart {
 
     public static final String ID = "ca.carleton.tim.ksat.client.views.keywords";
     
-    protected List<KeywordExpression> input = new ArrayList<KeywordExpression>();
-    protected ListViewer listViewer;
+    protected Table table;
+    protected TableViewer tableViewer;
     
     public KeywordsView() {
     }
 
     @Override
     public void createPartControl(Composite parent) {
-        parent.setLayout(new FillLayout(SWT.HORIZONTAL));
-        listViewer = new ListViewer(parent, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-        listViewer.setLabelProvider(new LabelProvider());
-        listViewer.setContentProvider(new ListContentProvider());
-        listViewer.setInput(input);
+        DatabaseSession currentSession = KSATRoot.defaultInstance().getCurrentSession();
+        TableAndViewer tAndv = buildTable(parent, 
+            new TableViewer(parent, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI), false, currentSession);
+        table = tAndv.table;
+        tableViewer = tAndv.tableViewer;
         hookContextMenu(); 
     }
     /**
@@ -65,10 +80,10 @@ public class KeywordsView extends ViewPart {
     private void hookContextMenu() {
         MenuManager menuManager = new MenuManager("#PopupMenu");
         menuManager.setRemoveAllWhenShown(true);
-        Menu menu = menuManager.createContextMenu(listViewer.getControl());
-        listViewer.getControl().setMenu(menu);
-        menuManager.createContextMenu(listViewer.getControl());
-        getSite().registerContextMenu(ID, menuManager, listViewer);
+        Menu menu = menuManager.createContextMenu(tableViewer.getControl());
+        tableViewer.getControl().setMenu(menu);
+        menuManager.createContextMenu(tableViewer.getControl());
+        getSite().registerContextMenu(ID, menuManager, tableViewer);
     }
 
     @Override
@@ -76,9 +91,105 @@ public class KeywordsView extends ViewPart {
     }
 
     public void setKeywords(List<KeywordExpression> expressions) {
-        input.clear();
-        input.addAll(expressions);
-        listViewer.refresh();
+        table.clearAll();
+        tableViewer.refresh();
+        tableViewer.add(expressions.toArray());
+        table.setTopIndex(table.getItemCount());
     }
 
+    static public TableAndViewer buildTable(Composite outerContainer, TableViewer tableViewer,
+        boolean addSelectDeSelectButtons, DatabaseSession currentSession) {
+        final Table table;
+        final TableViewer myTableViewer;
+        GridLayout layout = new GridLayout(1, false);
+        layout.verticalSpacing = 10;
+        outerContainer.setLayout(layout);
+        GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+        data.grabExcessHorizontalSpace = true;
+        outerContainer.setLayoutData(data);
+        if (tableViewer == null) {
+            myTableViewer = CheckboxTableViewer.newCheckList(outerContainer, SWT.BORDER | 
+                SWT.V_SCROLL | SWT.MULTI);
+            tableViewer = myTableViewer;
+        }
+        else {
+            myTableViewer = tableViewer;
+        }
+        tableViewer.setLabelProvider(new ITableLabelProvider() {
+            public Image getColumnImage(Object element, int columnIndex) {
+                return null;
+            }
+            public String getColumnText(Object element, int columnIndex) {
+            	String columnText = "";
+                KeywordExpression ke = (KeywordExpression)element;
+                try {
+                	columnText = URLDecoder.decode(ke.getExpression(), "UTF-8");
+				} catch (Exception e) { 
+					e.printStackTrace();
+				}
+				return columnText;
+            }
+            public void addListener(ILabelProviderListener listener) {
+            }
+            public void dispose() {
+            }
+            public boolean isLabelProperty(Object element, String property) {
+                return false;
+            }
+            public void removeListener(ILabelProviderListener listener) {
+            }            
+        });
+        table = tableViewer.getTable();
+        table.setHeaderVisible(true);
+        table.setLinesVisible(false);
+        data = new GridData(SWT.FILL, SWT.FILL, true, false);
+        data.heightHint = 300;
+        table.setLayoutData(data);
+        TableLayout tableLayout = new TableLayout();
+        table.setLayout(tableLayout);
+        tableLayout.addColumnData(new ColumnWeightData(10, 100, true));
+        Composite selectComposite = new Composite(outerContainer, SWT.RIGHT);
+        layout = new GridLayout();
+        layout.numColumns = 2;
+        selectComposite.setLayout(layout);
+        data = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.GRAB_HORIZONTAL);
+        data.grabExcessHorizontalSpace = true;
+        outerContainer.setData(data);
+        if (addSelectDeSelectButtons) {
+            // Select All button
+            Button selectButton = KSATApplication.createButton(selectComposite,
+                IDialogConstants.SELECT_ALL_ID, "Select All", false);
+            SelectionListener selectAllListener = new SelectionAdapter() {
+                public void widgetSelected(SelectionEvent e) {
+                    if (myTableViewer instanceof ICheckable) {
+                        TableItem[] children = table.getItems();
+                        for (int i = 0; i < children.length; i++) {
+                            TableItem item = children[i];
+                            item.setChecked(true);
+                        }
+                    }
+                }
+            };
+            selectButton.addSelectionListener(selectAllListener);
+            Button deselectButton = KSATApplication.createButton(selectComposite,
+                IDialogConstants.DESELECT_ALL_ID, "Deselect All", false);
+            SelectionListener deselectAllListener = new SelectionAdapter() {
+                public void widgetSelected(SelectionEvent e) {
+                    if (myTableViewer instanceof ICheckable) {
+                        TableItem[] children = table.getItems();
+                        for (int i = 0; i < children.length; i++) {
+                            TableItem item = children[i];
+                            item.setChecked(false);
+                        }
+                    }
+                }
+            };
+            deselectButton.addSelectionListener(deselectAllListener);
+        }
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumn(i).pack();
+        }
+        return new TableAndViewer(table, myTableViewer);
+    }
+    
 }
