@@ -65,6 +65,10 @@ public class KeywordsView extends ViewPart {
     public KeywordsView() {
     }
 
+    public TableViewer getTableViewer() {
+        return tableViewer;
+    }
+
     @Override
     public void createPartControl(Composite parent) {
         DatabaseSession currentSession = KSATRoot.defaultInstance().getCurrentSession();

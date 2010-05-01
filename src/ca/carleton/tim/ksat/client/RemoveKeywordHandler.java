@@ -21,19 +21,51 @@
  */
 package ca.carleton.tim.ksat.client;
 
+import java.net.URLDecoder;
+import java.util.List;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IViewPart;
+
+import ca.carleton.tim.ksat.model.Analysis;
+import ca.carleton.tim.ksat.model.KeywordExpression;
 
 public class RemoveKeywordHandler extends AbstractHandler implements IHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-            "Cannot perform command", "Cannot (yet) Remove Keyword");
+        List<IViewPart> views = KSATApplication.getViews(KeywordsView.ID);
+        KeywordsView keywordsView = (KeywordsView)views.get(0);
+        IStructuredSelection selection = (IStructuredSelection)keywordsView.getTableViewer().getSelection();
+        KeywordExpression keywordToRemove = (KeywordExpression)selection.getFirstElement();
+        String decodedExpression = "";
+		try {
+			decodedExpression = URLDecoder.decode(keywordToRemove.getExpression(), "UTF-8");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+        boolean confirm = MessageDialog.openConfirm(Display.getDefault().getActiveShell(),
+            "Remove Keyword Expression", "Are you sure you wish to remove Expression\n" + 
+            decodedExpression + "?");
+        if (confirm) {
+            Analysis currentAnalysis = KSATRoot.defaultInstance().getCurrentAnalysis();
+            UnitOfWork uow = KSATRoot.defaultInstance().getCurrentSession().acquireUnitOfWork();
+            Analysis currentAnalysisClone = (Analysis)uow.registerObject(currentAnalysis);
+            KeywordExpression keywordToRemoveClone = 
+            	(KeywordExpression)uow.registerObject(keywordToRemove);
+            currentAnalysisClone.removeKeywordExpression(keywordToRemoveClone);
+            uow.commit();
+            keywordsView.setKeywords(currentAnalysis.getExpressions());
+        }
+       
         return null;
     }
 
