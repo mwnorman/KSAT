@@ -21,19 +21,41 @@
  */
 package ca.carleton.tim.ksat.client;
 
+import java.util.List;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.jface.window.Window;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.handlers.HandlerUtil;
+
+import ca.carleton.tim.ksat.model.Analysis;
 
 public class CreateNewAnalysisHandler extends AbstractHandler implements IHandler {
 
-    @Override
+	@Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-            "Cannot perform command", "Cannot (yet) Create New Analysis");
+		Shell activeShell = HandlerUtil.getActiveShell(event);
+		CreateNewAnalysisDialog dialog = new CreateNewAnalysisDialog(activeShell,
+			"Create New Analysis","Enter name of new Analysis","", this);
+        int status = dialog.open();
+    	String name = dialog.getValue();
+        if (status == Window.OK && name != null && name.length() > 0) {
+            Analysis newAnalysis = new Analysis();
+            UnitOfWork uow = KSATRoot.defaultInstance().getCurrentSession().acquireUnitOfWork();
+        	Analysis newAnalysisClone = (Analysis) uow.registerNewObject(newAnalysis);
+        	newAnalysisClone.setDescription(name);
+        	uow.commit();
+            List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID);
+            AnalysesView analysesView = (AnalysesView)views.get(0);
+        	AnalysisAdapter analysisAdapter = new AnalysisAdapter(analysesView.getCurrentDatabase());
+        	analysisAdapter.setAnalysis(newAnalysis);
+        	KSATRoot.defaultInstance().setCurrentAnalysis(newAnalysis);
+        }
         return null;
     }
 

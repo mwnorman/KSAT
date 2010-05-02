@@ -136,7 +136,7 @@ public class AddKeywordsDialog extends Dialog {
                             if (keFromDb == null) {
                                 KeywordExpression newExpression = new KeywordExpression();
                                 // have to encode line
-                                String encLine = URLEncoder.encode(line, "UTL-8");
+                                String encLine = URLEncoder.encode(line, "UTF-8");
                                 newExpression.setExpression(encLine);
                                 tableViewer.add(newExpression);
                                 tableViewer.setChecked(newExpression, true);
@@ -162,7 +162,7 @@ public class AddKeywordsDialog extends Dialog {
                     try {
 						KeywordExpression newExpression = new KeywordExpression();
 						// have to encode line
-						String encLine = URLEncoder.encode(newExpText, "UTL-8");
+						String encLine = URLEncoder.encode(newExpText, "UTF-8");
 						newExpression.setExpression(encLine);
 						tableViewer.add(newExpression);
 						tableViewer.setChecked(newExpression, true);

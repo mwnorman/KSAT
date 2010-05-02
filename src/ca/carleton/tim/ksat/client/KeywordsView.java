@@ -148,6 +148,7 @@ public class KeywordsView extends ViewPart {
         table.setLinesVisible(false);
         data = new GridData(SWT.FILL, SWT.FILL, true, false);
         data.heightHint = 300;
+        data.widthHint = 500;
         table.setLayoutData(data);
         TableLayout tableLayout = new TableLayout();
         table.setLayout(tableLayout);
