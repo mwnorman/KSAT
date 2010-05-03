@@ -21,17 +21,26 @@
  */
 package ca.carleton.tim.ksat.client;
 
+//javase imports
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+//Graphics (SWT/JFace) imports
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.handlers.HandlerUtil;
+
+//RCP imports
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
+//KSAT domain imports
 import ca.carleton.tim.ksat.model.Analysis;
 
 public class ConnectToDatabaseHandler extends AbstractHandler implements IHandler {
@@ -39,18 +48,26 @@ public class ConnectToDatabaseHandler extends AbstractHandler implements IHandle
     @SuppressWarnings("unchecked")
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
+    	Shell activeShell = HandlerUtil.getActiveShell(event);
         IStructuredSelection currentSelection = 
             (IStructuredSelection)HandlerUtil.getCurrentSelection(event);
         AnalysisDatabase analysisDatabase = (AnalysisDatabase)currentSelection.getFirstElement();
-        analysisDatabase.connect();
-        Vector<Analysis> analyses = analysisDatabase.getSession().readAllObjects(Analysis.class);
-        List<AnalysisAdapter> analysisAdapters = new ArrayList<AnalysisAdapter>();
-        for (Analysis analysis : analyses ) {
-            AnalysisAdapter analysisAdapter = new AnalysisAdapter(analysisDatabase);
-            analysisAdapter.setAnalysis(analysis);
-        }
-        analysisDatabase.setAnalyses(analysisAdapters);
-        KSATApplication.resetViewsOnConnectToDatabase();
+        try {
+			analysisDatabase.connect();
+	        Vector<Analysis> analyses = analysisDatabase.getSession().readAllObjects(Analysis.class);
+	        List<AnalysisAdapter> analysisAdapters = new ArrayList<AnalysisAdapter>();
+	        for (Analysis analysis : analyses ) {
+	            AnalysisAdapter analysisAdapter = new AnalysisAdapter(analysisDatabase);
+	            analysisAdapter.setAnalysis(analysis);
+	        }
+	        analysisDatabase.setAnalyses(analysisAdapters);
+	        KSATApplication.resetViewsOnConnectToDatabase();
+		}
+        catch (Exception e) {
+			Status status = new Status(IStatus.ERROR, AnalysesView.ID, e.getMessage(), e);
+    		ErrorDialog.openError(activeShell, "Error connection to Database", "Problem connecting to Database", status);
+			e.printStackTrace();
+		}
         return analysisDatabase;
     }
 

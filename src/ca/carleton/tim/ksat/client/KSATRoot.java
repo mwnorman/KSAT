@@ -55,7 +55,6 @@ public class KSATRoot {
     protected Object parent = null;
     protected List<AnalysisDatabase> databases = new ArrayList<AnalysisDatabase>();
     protected AnalysisDatabase currentDatabase = null;
-
     protected SessionConfigs sessionConfigs = null;
     protected LogConsole logConsole = null;
     
@@ -136,7 +135,14 @@ public class KSATRoot {
         return currentDatabase.getSession();
     }
 
-    @Override
+    protected SessionConfigs getSessionConfigs() {
+		return sessionConfigs;
+	}
+	protected void setSessionConfigs(SessionConfigs sessionConfigs) {
+		this.sessionConfigs = sessionConfigs;
+	}
+
+	@Override
     public String toString() {
         return "KSAT";
     }
