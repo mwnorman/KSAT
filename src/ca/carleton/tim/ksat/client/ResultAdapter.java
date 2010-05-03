@@ -21,15 +21,36 @@
  */
 package ca.carleton.tim.ksat.client;
 
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.Table;
+//KSAT imports
+import ca.carleton.tim.ksat.model.AnalysisResult;
 
-public class TableAndViewer {
+public class ResultAdapter {
 
-    public Table table;
-    public TableViewer tableViewer;
-    public TableAndViewer(Table table, TableViewer tableViewer) {
-        this.table = table;
-        this.tableViewer = tableViewer;
+    protected AnalysisResult result;
+    protected AnalysisAdapter parent;
+   
+    public ResultAdapter(AnalysisAdapter parent) {
+        super();
+        this.parent = parent;
     }
+    
+    public AnalysisResult getResult() {
+        return result;
+    }
+    public void setResult(AnalysisResult result) {
+        this.result = result;
+    }
+
+    public AnalysisAdapter getParent() {
+        return parent;
+    }
+
+    @Override
+    public String toString() {
+        if (result != null) {
+            return result.toString();
+        }
+        return super.toString();
+    }
+
 }
