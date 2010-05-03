@@ -55,9 +55,10 @@ public class RunAnalysisHandler extends AbstractHandler implements IHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        KSATRoot root = KSATRoot.defaultInstance();
-        final Analysis currentAnalysis = root.getCurrentAnalysis();
-        final UnitOfWork uow = root.getCurrentSession().acquireUnitOfWork();
+		List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID);
+        AnalysesView analysesView = (AnalysesView)views.get(0);
+        final Analysis currentAnalysis = analysesView.getCurrentAnalysis();
+        final UnitOfWork uow = KSATRoot.defaultInstance().getCurrentSession().acquireUnitOfWork();
         final Analysis currAnalysisClone = (Analysis) uow.registerObject(currentAnalysis);
         final GoogleRESTSearcher googleRESTSearcher = new GoogleRESTSearcher(currAnalysisClone);
         BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
@@ -123,8 +124,6 @@ public class RunAnalysisHandler extends AbstractHandler implements IHandler {
             }
         });
         uow.release();
-		List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID);
-        AnalysesView analysesView = (AnalysesView)views.get(0);
 		analysesView.analysesViewer.refresh(true);
         return null;
     }

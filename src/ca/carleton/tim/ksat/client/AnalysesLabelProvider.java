@@ -25,9 +25,6 @@ package ca.carleton.tim.ksat.client;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-//KSAT domain imports
-import ca.carleton.tim.ksat.model.AnalysisResult;
-
 public class AnalysesLabelProvider extends LabelProvider {
 
     @Override
@@ -42,7 +39,7 @@ public class AnalysesLabelProvider extends LabelProvider {
     @Override
     public Image getImage(Object element) {
         String imageKey = "analyses";
-        if (element instanceof AnalysisResult) {
+        if (element instanceof ResultAdapter) {
             imageKey = "report";
         }
         else if (element == KSATRoot.defaultInstance()) {

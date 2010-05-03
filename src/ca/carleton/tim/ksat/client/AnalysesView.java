@@ -74,21 +74,30 @@ public class AnalysesView extends ViewPart {
 
     protected TreeViewer analysesViewer;
     protected Tree analysesTree;
-    protected AnalysisDatabase currentDatabase = null;
+    protected KSATRoot root;
+    protected AnalysisAdapter currentAdapter = null;
 
     public AnalysesView() {
         super();
-        List<AnalysisDatabase> databases = KSATRoot.defaultInstance().getDatabases();
-        if (databases.size() > 0) {
-            currentDatabase = databases.get(0);
-        }
+        root = KSATRoot.defaultInstance();
     }
 
-    public AnalysisDatabase getCurrentDatabase() {
-        return currentDatabase;
-    }
+    protected AnalysisAdapter getCurrentAdapter() {
+		return currentAdapter;
+	}
+	protected void setCurrentAdapter(AnalysisAdapter currentAdapter) {
+		this.currentAdapter = currentAdapter;
+	}
 
-    @Override
+	public Analysis getCurrentAnalysis() {
+    	if (currentAdapter != null) {
+    		return currentAdapter.getAnalysis();
+    	}
+		return null;
+	}
+
+
+	@Override
     public void createPartControl(Composite parent) {
         parent.setLayout(new FillLayout(SWT.HORIZONTAL));
         analysesViewer = new TreeViewer(parent, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL
@@ -110,18 +119,16 @@ public class AnalysesView extends ViewPart {
                 IStructuredSelection selection = (IStructuredSelection)event.getSelection();
                 Object selectedElement = selection.getFirstElement();
                 if (selectedElement instanceof AnalysisDatabase) {
-                    currentDatabase = (AnalysisDatabase)selectedElement;
+                	final AnalysisDatabase selectedDatabase = (AnalysisDatabase)selectedElement;
+            		root.setCurrentDatabase(selectedDatabase);
                     BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
                         public void run() {
-                            if (currentDatabase.isConnected()) {
-                                currentDatabase.disconnect();
-                                KSATRoot.defaultInstance().setCurrentSession(null);
+                            if (selectedDatabase.isConnected()) {
+                                selectedDatabase.disconnect();
                                 KSATApplication.resetViewsOnDisconnectFromDatabase();
                             }
                             else {
-                                currentDatabase.connect();
-                                KSATRoot.defaultInstance().
-                                    setCurrentSession(currentDatabase.getSession());
+                                selectedDatabase.connect();
                                 KSATApplication.resetViewsOnConnectToDatabase();
                             }
                         }
@@ -132,23 +139,29 @@ public class AnalysesView extends ViewPart {
 
         analysesViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
+                List<IViewPart> views = 
+                	KSATApplication.getViews(SitesView.ID, KeywordsView.ID, ResultsView.ID);
+                SitesView sitesView = (SitesView)views.get(0);
+                KeywordsView keywordsView = (KeywordsView)views.get(1);
+                ResultsView resultsView = (ResultsView)views.get(2);
                 IStructuredSelection selection = (IStructuredSelection)event.getSelection();
                 Object selectedElement = selection.getFirstElement();
                 if (selectedElement instanceof AnalysisAdapter) {
-                    // TODO - throttle resetting sites/keywords is same analysis as last time was
-                    // selected
                     AnalysisAdapter analysisAdapter = (AnalysisAdapter)selectedElement;
-                    Analysis currentAnalysis = analysisAdapter.getAnalysis();
-                    KSATRoot.defaultInstance().setCurrentAnalysis(currentAnalysis);
-                    List<IViewPart> views = KSATApplication.getViews(SitesView.ID, KeywordsView.ID);
-                    SitesView sitesView = (SitesView)views.get(0);
-                    KeywordsView keywordsView = (KeywordsView)views.get(1);
-                    sitesView.setSites(currentAnalysis.getSites());
-                    keywordsView.setKeywords(currentAnalysis.getExpressions());
+                    if (currentAdapter != analysisAdapter) {
+                    	currentAdapter = analysisAdapter;
+	                    sitesView.setSites(currentAdapter.getAnalysis().getSites());
+	                    keywordsView.setKeywords(currentAdapter.getAnalysis().getExpressions());
+	                    resultsView.browser.setText("");
+	                    resultsView.browser.getParent().layout(true);
+	                    resultsView.text.setText("");
+	                    resultsView.text.getParent().layout(true);
+                    }
                 }
-                else if (selectedElement instanceof AnalysisResult) {
-                    AnalysisResult analysisResult = (AnalysisResult)selectedElement;
-                    UnitOfWork uow = currentDatabase.getSession().acquireUnitOfWork();
+                else if (selectedElement instanceof ResultAdapter) {
+                	ResultAdapter resultAdapter = (ResultAdapter)selectedElement;
+                	AnalysisResult analysisResult = resultAdapter.getResult();
+                    UnitOfWork uow = root.getCurrentDatabase().getSession().acquireUnitOfWork();
                     AnalysisReport analysisReport = (AnalysisReport)uow
                         .registerNewObject(new AnalysisReport());
                     uow.assignSequenceNumber(analysisReport);
@@ -171,8 +184,6 @@ public class AnalysesView extends ViewPart {
                         transformer.transform(domSource, htmlStreamResult);
                         StringWriter xmlStringWriter = new StringWriter();
                         marshaller.marshal(analysisReport, xmlStringWriter);
-                        List<IViewPart> views = KSATApplication.getViews(ResultsView.ID);
-                        ResultsView resultsView = (ResultsView)views.get(0);
                         CTabFolder folder = (CTabFolder)resultsView.browser.getParent();
                         boolean flag = resultsView.browser.setText(htmlStringWriter.toString());
                         if (!flag) {
@@ -191,6 +202,11 @@ public class AnalysesView extends ViewPart {
                         e.printStackTrace();
                     }
                     uow.revertAndResume();
+                    if (!resultAdapter.getParent().equals(currentAdapter)) {
+                    	currentAdapter = resultAdapter.getParent();
+	                    sitesView.setSites(currentAdapter.getAnalysis().getSites());
+	                    keywordsView.setKeywords(currentAdapter.getAnalysis().getExpressions());
+                    }
                 }
             }
         });

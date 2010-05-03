@@ -40,15 +40,16 @@ public class RemoveSiteHandler extends AbstractHandler implements IHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        List<IViewPart> views = KSATApplication.getViews(SitesView.ID);
-        SitesView sitesView = (SitesView)views.get(0);
+        List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID, SitesView.ID);
+        AnalysesView analysesView = (AnalysesView)views.get(0);
+        SitesView sitesView = (SitesView)views.get(1);
         IStructuredSelection selection = (IStructuredSelection)sitesView.getTableViewer().getSelection();
         Site siteToRemove = (Site)selection.getFirstElement();
         boolean confirm = MessageDialog.openConfirm(Display.getDefault().getActiveShell(),
             "Remove Site", "Are you sure you wish to remove Site " + siteToRemove.getUrl()
             + "?");
         if (confirm) {
-            Analysis currentAnalysis = KSATRoot.defaultInstance().getCurrentAnalysis();
+            Analysis currentAnalysis = analysesView.getCurrentAnalysis();
             UnitOfWork uow = KSATRoot.defaultInstance().getCurrentSession().acquireUnitOfWork();
             Analysis currentAnalysisClone = (Analysis)uow.registerObject(currentAnalysis);
             Site siteToRemoveClone = (Site)uow.registerObject(siteToRemove);
@@ -56,7 +57,6 @@ public class RemoveSiteHandler extends AbstractHandler implements IHandler {
             uow.commit();
             sitesView.setSites(currentAnalysis.getSites());
         }
-       
         return null;
     }
 

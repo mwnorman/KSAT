@@ -96,19 +96,6 @@
       </page>
    </extension>
    <extension
-         point="org.eclipse.ui.propertyPages">
-      <page
-            class="ca.carleton.tim.ksat.client.DBPropertiesPage"
-            id="ca.carleton.tim.ksat.client.dbproperty"
-            name="KSATDBProperties">
-         <enabledWhen>
-            <instanceof
-                  value="ca.carleton.tim.ksat.client.AnalysisDatabase">
-            </instanceof>
-         </enabledWhen>
-      </page>
-   </extension>
-   <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="ca.carleton.tim.ksat.client.PreferenceInitializer">

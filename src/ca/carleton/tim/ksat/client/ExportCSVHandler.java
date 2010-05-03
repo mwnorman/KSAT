@@ -24,7 +24,6 @@ package ca.carleton.tim.ksat.client;
 //javase imports
 import java.io.File;
 import java.io.InputStream;
-import java.util.List;
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -39,7 +38,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 //RCP imports
@@ -67,16 +65,15 @@ public class ExportCSVHandler extends AbstractHandler implements IHandler {
     public Object execute(ExecutionEvent event) throws ExecutionException {
         IStructuredSelection currentSelection = 
             (IStructuredSelection)HandlerUtil.getCurrentSelection(event);
-        AnalysisResult analysisResult = (AnalysisResult)currentSelection.getFirstElement();
+        ResultAdapter resultAdapter = (ResultAdapter)currentSelection.getFirstElement();
+        AnalysisResult analysisResult = resultAdapter.getResult();
         FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
         fileDialog.setOverwrite(true);
         fileDialog.setFilterExtensions(new String[]{"*.csv"});
         String csvFileName = fileDialog.open();
         if (csvFileName != null) {
             File csvFile = new File(csvFileName);
-            List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID);
-            AnalysesView analysesView = (AnalysesView)views.get(0);
-            UnitOfWork uow = analysesView.getCurrentDatabase().getSession().acquireUnitOfWork();
+            UnitOfWork uow = KSATRoot.defaultInstance().getCurrentSession().acquireUnitOfWork();
             AnalysisReport analysisReport = (AnalysisReport)uow.registerNewObject(new AnalysisReport());
             uow.assignSequenceNumber(analysisReport);
             analysisReport.setDateTime(analysisResult.getDateTime());

@@ -25,12 +25,16 @@ package ca.carleton.tim.ksat.client;
 import java.util.List;
 import java.util.Vector;
 
-//RCP imports
+//Graphics (SWT/JFace) imports
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.persistence.sessions.DatabaseSession;
+
+//RCP imports
 import org.eclipse.ui.IViewSite;
+
+//EclipseLink imports
+import org.eclipse.persistence.sessions.DatabaseSession;
 
 //KSAT domain imports
 import ca.carleton.tim.ksat.client.AnalysesView.KSATInvisibleRoot;
@@ -72,7 +76,14 @@ public class AnalysesContentProvider implements IStructuredContentProvider, ITre
         else if (parent instanceof AnalysisAdapter) {
             AnalysisAdapter analysisAdapter = (AnalysisAdapter)parent;
             List<AnalysisResult> results = analysisAdapter.getAnalysis().getResults();
-            return results.toArray();
+            int len = results.size();
+            Object[] children = new Object[len];
+            for (int i = 0; i < len; i++) {
+            	ResultAdapter resultAdapter = new ResultAdapter(analysisAdapter);
+            	resultAdapter.setResult(results.get(i));
+                children[i] = resultAdapter;
+            }
+            return children;
         }
         return null;
     }
@@ -87,8 +98,8 @@ public class AnalysesContentProvider implements IStructuredContentProvider, ITre
         else if (element instanceof AnalysisAdapter) {
             return ((AnalysisAdapter)element).getParent();
         }
-        else if (element instanceof AnalysisResult) {
-            return ((AnalysisResult)element).getOwner();
+        else if (element instanceof ResultAdapter) {
+            return ((ResultAdapter)element).getParent();
         }
         return null;
     }

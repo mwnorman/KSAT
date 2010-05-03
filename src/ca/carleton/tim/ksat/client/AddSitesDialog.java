@@ -32,7 +32,6 @@ import java.util.Vector;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.window.IShellProvider;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -67,7 +66,7 @@ public class AddSitesDialog extends Dialog {
     protected Vector<Site> allSitesFromDB;
     protected HashSet<Site> additionalSites;
     protected AddSitesHandler addSitesHandler;
-    private DatabaseSession session;
+	protected Analysis currentAnalysis;
     
     public AddSitesDialog(Shell parent) {
         super(parent);
@@ -79,18 +78,17 @@ public class AddSitesDialog extends Dialog {
         init();
     }
     
-    public AddSitesDialog(Shell activeShell, AddSitesHandler addSitesHandler) {
+    public AddSitesDialog(Shell activeShell, Analysis currentAnalysis, AddSitesHandler addSitesHandler) {
         this(activeShell);
+		this.currentAnalysis = currentAnalysis;
         this.addSitesHandler = addSitesHandler;
     }
 
     @SuppressWarnings("unchecked")
     protected void init() {
-        Analysis currentAnalysis = KSATRoot.defaultInstance().getCurrentAnalysis();
         List<Site> currentSites = currentAnalysis.getSites();
         HashSet<Site> currentSitesSet = new HashSet<Site>(currentSites);
-        session = KSATRoot.defaultInstance().getCurrentSession();
-        allSitesFromDB = session.readAllObjects(Site.class);
+        allSitesFromDB = KSATRoot.defaultInstance().getCurrentSession().readAllObjects(Site.class);
         additionalSites = new HashSet<Site>(allSitesFromDB);
         additionalSites.removeAll(currentSitesSet);
     }
@@ -110,7 +108,8 @@ public class AddSitesDialog extends Dialog {
         data.grabExcessHorizontalSpace = true;
         outerContainer.setLayoutData(data);
         new Label(outerContainer, SWT.NONE).setText(AVAILABLE_LABEL);
-        TableAndViewer tAndv = SitesView.buildTable(outerContainer, null, true, session);
+        TableAndViewer tAndv = SitesView.buildTable(outerContainer, null, true,
+        	KSATRoot.defaultInstance().getCurrentSession());
         table = tAndv.table;
         tableViewer = (CheckboxTableViewer)tAndv.tableViewer;
         for (Site s : additionalSites) {

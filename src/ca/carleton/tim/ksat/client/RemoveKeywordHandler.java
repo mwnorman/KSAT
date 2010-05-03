@@ -41,8 +41,9 @@ public class RemoveKeywordHandler extends AbstractHandler implements IHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        List<IViewPart> views = KSATApplication.getViews(KeywordsView.ID);
-        KeywordsView keywordsView = (KeywordsView)views.get(0);
+        List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID, KeywordsView.ID);
+        AnalysesView analysesView = (AnalysesView)views.get(0);
+        KeywordsView keywordsView = (KeywordsView)views.get(1);
         IStructuredSelection selection = (IStructuredSelection)keywordsView.getTableViewer().getSelection();
         KeywordExpression keywordToRemove = (KeywordExpression)selection.getFirstElement();
         String decodedExpression = "";
@@ -56,7 +57,7 @@ public class RemoveKeywordHandler extends AbstractHandler implements IHandler {
             "Remove Keyword Expression", "Are you sure you wish to remove Expression\n" + 
             decodedExpression + "?");
         if (confirm) {
-            Analysis currentAnalysis = KSATRoot.defaultInstance().getCurrentAnalysis();
+            Analysis currentAnalysis = analysesView.getCurrentAnalysis();
             UnitOfWork uow = KSATRoot.defaultInstance().getCurrentSession().acquireUnitOfWork();
             Analysis currentAnalysisClone = (Analysis)uow.registerObject(currentAnalysis);
             KeywordExpression keywordToRemoveClone = 

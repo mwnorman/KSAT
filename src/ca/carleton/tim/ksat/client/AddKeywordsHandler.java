@@ -51,7 +51,9 @@ public class AddKeywordsHandler extends AbstractHandler implements IHandler {
     @SuppressWarnings("unchecked")
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        Analysis currentAnalysis = KSATRoot.defaultInstance().getCurrentAnalysis();
+    	List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID, KeywordsView.ID);
+    	AnalysesView analysesView = (AnalysesView)views.get(0);
+        Analysis currentAnalysis = analysesView.getCurrentAnalysis();
         List<KeywordExpression> currentKeywords = currentAnalysis.getExpressions();
         List<KeywordExpression> allKeywordsFromDB = 
             KSATRoot.defaultInstance().getCurrentSession().readAllObjects(KeywordExpression.class);
@@ -62,8 +64,7 @@ public class AddKeywordsHandler extends AbstractHandler implements IHandler {
             additionalKeywords);
         int status = dialog.open();
         if (status == Window.OK) {
-            List<IViewPart> views = KSATApplication.getViews(KeywordsView.ID);
-            KeywordsView keywordsView = (KeywordsView)views.get(0);
+            KeywordsView keywordsView = (KeywordsView)views.get(1);
             if (selectedKeywords.size() > 0) {
                 UnitOfWork uow = KSATRoot.defaultInstance().getCurrentSession().acquireUnitOfWork();
                 Analysis currentAnalysisClone = (Analysis)uow.registerObject(currentAnalysis);

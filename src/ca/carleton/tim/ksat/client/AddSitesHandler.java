@@ -45,30 +45,24 @@ import ca.carleton.tim.ksat.model.Site;
 
 public class AddSitesHandler extends AbstractHandler implements IHandler {
 
-    protected HashSet<Site> additionalSites;
     protected HashSet<Site> selectedSites = new HashSet<Site>();
 
     @SuppressWarnings("unchecked")
     @Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		Analysis currentAnalysis = KSATRoot.defaultInstance().getCurrentAnalysis();
-		List<Site> currentSites = currentAnalysis.getSites();
-		HashSet<Site> currentSitesSet = new HashSet<Site>(currentSites);
-		Vector<Site> allSitesFromDB = 
-		    KSATRoot.defaultInstance().getCurrentSession().readAllObjects(Site.class);
-		additionalSites = new HashSet<Site>(allSitesFromDB);
-		additionalSites.removeAll(currentSitesSet);
+    	List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID, SitesView.ID);
+    	AnalysesView analysesView = (AnalysesView)views.get(0);
+        Analysis currentAnalysis = analysesView.getCurrentAnalysis();
+        SitesView sitesView = (SitesView)views.get(1);
 		Shell activeShell = HandlerUtil.getActiveShell(event);
-		AddSitesDialog dialog = new AddSitesDialog(activeShell, this);
+		AddSitesDialog dialog = new AddSitesDialog(activeShell, currentAnalysis, this);
         int status = dialog.open();
         if (status == Window.OK) {
-            List<IViewPart> views = KSATApplication.getViews(SitesView.ID);
-            SitesView sitesView = (SitesView)views.get(0);
             if (selectedSites.size() > 0) {
                 UnitOfWork uow = KSATRoot.defaultInstance().getCurrentSession().acquireUnitOfWork();
                 Analysis currentAnalysisClone = (Analysis)uow.registerObject(currentAnalysis);
-                Vector<Site> selectedSiteClones = uow.registerAllObjects(selectedSites);
-                for (Site site : selectedSiteClones) {
+                Vector<Site> selectedSitesClone = uow.registerAllObjects(selectedSites);
+                for (Site site : selectedSitesClone) {
                     currentAnalysisClone.addSite(site);
                 }
                 uow.commit();

@@ -45,16 +45,17 @@ public class CreateNewAnalysisHandler extends AbstractHandler implements IHandle
         int status = dialog.open();
     	String name = dialog.getValue();
         if (status == Window.OK && name != null && name.length() > 0) {
+        	KSATRoot root = KSATRoot.defaultInstance();
             Analysis newAnalysis = new Analysis();
-            UnitOfWork uow = KSATRoot.defaultInstance().getCurrentSession().acquireUnitOfWork();
+            UnitOfWork uow = root.getCurrentSession().acquireUnitOfWork();
         	Analysis newAnalysisClone = (Analysis) uow.registerNewObject(newAnalysis);
         	newAnalysisClone.setDescription(name);
         	uow.commit();
             List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID);
             AnalysesView analysesView = (AnalysesView)views.get(0);
-        	AnalysisAdapter analysisAdapter = new AnalysisAdapter(analysesView.getCurrentDatabase());
-        	analysisAdapter.setAnalysis(newAnalysis);
-        	KSATRoot.defaultInstance().setCurrentAnalysis(newAnalysis);
+        	AnalysisAdapter newAdapter = new AnalysisAdapter(root.getCurrentDatabase());
+        	newAdapter.setAnalysis(newAnalysis);
+        	analysesView.setCurrentAdapter(newAdapter);
         }
         return null;
     }

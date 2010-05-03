@@ -29,17 +29,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+//RCP imports
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.service.datalocation.Location;
+
+//EclipseLink imports
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.SessionConfig;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sessions.DatabaseSession;
-
-import ca.carleton.tim.ksat.model.Analysis;
 
 public class KSATRoot {
     
@@ -51,12 +52,12 @@ public class KSATRoot {
         return KSATRootHelper.singleton;
     }
 
-    protected Object parent;
+    protected Object parent = null;
     protected List<AnalysisDatabase> databases = new ArrayList<AnalysisDatabase>();
-    protected DatabaseSession currentSession;
-    protected Analysis currentAnalysis;
-    protected SessionConfigs sessionConfigs;
-    protected LogConsole logConsole;
+    protected AnalysisDatabase currentDatabase = null;
+
+    protected SessionConfigs sessionConfigs = null;
+    protected LogConsole logConsole = null;
     
     public KSATRoot() {
         super();
@@ -108,7 +109,7 @@ public class KSATRoot {
                 e.printStackTrace();
             }
             if (!databases.isEmpty()) {
-                currentSession = databases.get(0).getSession();
+                currentDatabase = databases.get(0);
             }
         }
         return databases;
@@ -124,18 +125,15 @@ public class KSATRoot {
         database.setParent(null);
     }
 
-    public DatabaseSession getCurrentSession() {
-        return currentSession;
-    }
-    public void setCurrentSession(DatabaseSession currentSession) {
-        this.currentSession = currentSession;
-    }
+    public AnalysisDatabase getCurrentDatabase() {
+		return currentDatabase;
+	}
+	public void setCurrentDatabase(AnalysisDatabase currentDatabase) {
+		this.currentDatabase = currentDatabase;
+	}
 
-    public Analysis getCurrentAnalysis() {
-        return currentAnalysis;
-    }
-    public void setCurrentAnalysis(Analysis currentAnalysis) {
-        this.currentAnalysis = currentAnalysis;
+	public DatabaseSession getCurrentSession() {
+        return currentDatabase.getSession();
     }
 
     @Override
