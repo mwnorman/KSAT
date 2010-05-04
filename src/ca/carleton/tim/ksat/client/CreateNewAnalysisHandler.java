@@ -56,6 +56,7 @@ public class CreateNewAnalysisHandler extends AbstractHandler implements IHandle
         	AnalysisAdapter newAdapter = new AnalysisAdapter(root.getCurrentDatabase());
         	newAdapter.setAnalysis(newAnalysis);
         	analysesView.setCurrentAdapter(newAdapter);
+        	analysesView.analysesViewer.refresh(true);
         }
         return null;
     }

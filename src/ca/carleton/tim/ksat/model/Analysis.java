@@ -21,12 +21,11 @@
  */
 package ca.carleton.tim.ksat.model;
 
+//javase imports
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.carleton.tim.ksat.persist.AnalysisBuilder;
-
-public class Analysis extends AnalysisBuilder {
+public class Analysis {
 	
 	public int id;
 	public String description;

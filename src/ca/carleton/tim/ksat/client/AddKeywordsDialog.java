@@ -24,6 +24,8 @@ package ca.carleton.tim.ksat.client;
 //javase imports
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +33,6 @@ import java.util.List;
 //Graphics (SWT/JFaces) imports
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -70,12 +71,6 @@ public class AddKeywordsDialog extends Dialog {
     
     public AddKeywordsDialog(Shell parent) {
         super(parent);
-        init();
-    }
-
-    public AddKeywordsDialog(IShellProvider parentShell) {
-        super(parentShell);
-        init();
     }
     
     public AddKeywordsDialog(Shell activeShell, AddKeywordsHandler addKeywordsHandler,
@@ -84,6 +79,7 @@ public class AddKeywordsDialog extends Dialog {
         this.addKeywordsHandler = addKeywordsHandler;
         this.allKeywordsFromDB = allKeywordsFromDB;
         this.additionalKeywords = additionalKeywords;
+        init();
     }
 
     protected void init() {
@@ -135,9 +131,8 @@ public class AddKeywordsDialog extends Dialog {
                             KeywordExpression keFromDb = scanForExistingExpression(line, allKeywordsFromDB);
                             if (keFromDb == null) {
                                 KeywordExpression newExpression = new KeywordExpression();
-                                // have to encode line
-                                String encLine = URLEncoder.encode(line, "UTF-8");
-                                newExpression.setExpression(encLine);
+                                // don't URL encode - accept as is
+                                newExpression.setExpression(line);
                                 tableViewer.add(newExpression);
                                 tableViewer.setChecked(newExpression, true);
                             }
@@ -161,8 +156,8 @@ public class AddKeywordsDialog extends Dialog {
                 if (!ENTER_NEW.equals(newExpText)) {
                     try {
 						KeywordExpression newExpression = new KeywordExpression();
-						// have to encode line
-						String encLine = URLEncoder.encode(newExpText, "UTF-8");
+                        // have to encode line
+                        String encLine = URLEncoder.encode(newExpText, "UTF-8");
 						newExpression.setExpression(encLine);
 						tableViewer.add(newExpression);
 						tableViewer.setChecked(newExpression, true);
@@ -197,11 +192,19 @@ public class AddKeywordsDialog extends Dialog {
         super.buttonPressed(buttonId);
     }
 
-    protected KeywordExpression scanForExistingExpression(String line,
-    		List<KeywordExpression> allExpressions) {
+    protected KeywordExpression scanForExistingExpression(String line, 
+    	List<KeywordExpression> allExpressions) {
+    	
     	KeywordExpression foundExpression = null;
+    	String dLine;
+		try {
+			dLine = URLDecoder.decode(line, "UTF-8");
+		}catch (UnsupportedEncodingException e) {
+			dLine = line;		
+		}
         for (KeywordExpression expression : allExpressions) {
-            if (expression.getExpression().equals(line)) {
+        	String expr = expression.getExpression();
+        	if (expr.equals(line) || expr.equals(dLine) ) {
                 foundExpression = expression;
                 break;
             }

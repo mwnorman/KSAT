@@ -30,8 +30,9 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 import ca.carleton.tim.ksat.model.Analysis;
 import ca.carleton.tim.ksat.model.Site;
@@ -40,14 +41,14 @@ public class RemoveSiteHandler extends AbstractHandler implements IHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
+        Shell activeShell = HandlerUtil.getActiveShell(event);
         List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID, SitesView.ID);
         AnalysesView analysesView = (AnalysesView)views.get(0);
         SitesView sitesView = (SitesView)views.get(1);
         IStructuredSelection selection = (IStructuredSelection)sitesView.getTableViewer().getSelection();
         Site siteToRemove = (Site)selection.getFirstElement();
-        boolean confirm = MessageDialog.openConfirm(Display.getDefault().getActiveShell(),
-            "Remove Site", "Are you sure you wish to remove Site " + siteToRemove.getUrl()
-            + "?");
+        boolean confirm = MessageDialog.openConfirm(activeShell, "Remove Site",
+        	"Are you sure you wish to remove Site " + siteToRemove.getUrl() + " ?");
         if (confirm) {
             Analysis currentAnalysis = analysesView.getCurrentAnalysis();
             UnitOfWork uow = KSATRoot.defaultInstance().getCurrentSession().acquireUnitOfWork();

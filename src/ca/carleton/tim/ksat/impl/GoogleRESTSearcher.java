@@ -40,6 +40,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 //KSAT imports
 import ca.carleton.tim.ksat.json.JSONObject;
 import ca.carleton.tim.ksat.model.Analysis;
@@ -75,7 +77,7 @@ public class GoogleRESTSearcher {
         threadPool = Executors.newFixedThreadPool(POOL_SIZE);
     }
     
-    public  Map<String, SitePageCount> getRESTResults() {
+    public  Map<String, SitePageCount> getRESTResults(IProgressMonitor monitor) {
         if (!threadPool.isShutdown()) {
             ArrayList<Callable<KeywordPageCount>> calls =  new ArrayList<Callable<KeywordPageCount>>();
             for (Site site : analysis.getSites()) {
@@ -95,15 +97,20 @@ public class GoogleRESTSearcher {
                     SitePageCount spc = new SitePageCount(site, -1); // -1 indicates unreachable
                     rESTResults.put(siteUrlString, spc);
                 }
+                if (monitor.isCanceled()) {
+                	break;
+                }
             }
             List<Future<KeywordPageCount>> futureRESTResults = null;
             try {
-                futureRESTResults = threadPool.invokeAll(calls);
+            	if (!monitor.isCanceled()) {
+            		futureRESTResults = threadPool.invokeAll(calls);
+            	}
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
-            if (futureRESTResults != null) {
+            if (futureRESTResults != null && !monitor.isCanceled()) {
                for (Future<KeywordPageCount> futureRESTResult : futureRESTResults) {
                    try {
                        KeywordPageCount pageCount = futureRESTResult.get();
@@ -112,6 +119,9 @@ public class GoogleRESTSearcher {
                     }
                     catch (Exception e) {
                         e.printStackTrace();
+                    }
+                    if (monitor.isCanceled()) {
+                    	break;
                     }
                }
             }

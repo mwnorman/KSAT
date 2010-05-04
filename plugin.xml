@@ -138,6 +138,10 @@
             name="CreateNewAnalysis">
       </command>
       <command
+            id="ca.carleton.tim.ksat.client.command.CreateTables"
+            name="CreateTables">
+      </command>
+      <command
             id="ca.carleton.tim.ksat.client.command.RemoveAnalysis"
             name="RemoveAnalysis">
       </command>
@@ -324,6 +328,15 @@
          </activeWhen>
       </handler>
       <handler
+            class="ca.carleton.tim.ksat.client.CreateTablesHandler"
+            commandId="ca.carleton.tim.ksat.client.command.CreateTables">
+         <activeWhen>
+            <reference
+                  definitionId="isConnectedDatabase">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
             class="ca.carleton.tim.ksat.client.RunAnalysisHandler"
             commandId="ca.carleton.tim.ksat.client.command.RunAnalysis">
          <activeWhen>
@@ -455,6 +468,20 @@
         <command
               commandId="ca.carleton.tim.ksat.client.command.CreateNewAnalysis"
               label="Create New Analysis"
+              style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                    <reference
+                          definitionId="isConnectedDatabase">
+                    </reference>
+               </visibleWhen>
+        </command>
+     </menuContribution>
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.CreateTables"
+              label="Create Tables"
               style="push">
                <visibleWhen
                      checkEnabled="false">

@@ -36,8 +36,8 @@ import javax.xml.transform.stream.StreamSource;
 //Graphics (SWT/JFaces) imports
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 //RCP imports
@@ -63,11 +63,12 @@ public class ExportCSVHandler extends AbstractHandler implements IHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
+        Shell activeShell = HandlerUtil.getActiveShell(event);
         IStructuredSelection currentSelection = 
             (IStructuredSelection)HandlerUtil.getCurrentSelection(event);
         ResultAdapter resultAdapter = (ResultAdapter)currentSelection.getFirstElement();
         AnalysisResult analysisResult = resultAdapter.getResult();
-        FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
+        FileDialog fileDialog = new FileDialog(activeShell, SWT.SAVE);
         fileDialog.setOverwrite(true);
         fileDialog.setFilterExtensions(new String[]{"*.csv"});
         String csvFileName = fileDialog.open();

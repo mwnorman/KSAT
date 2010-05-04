@@ -65,8 +65,8 @@ public class ConnectToDatabaseHandler extends AbstractHandler implements IHandle
 		}
         catch (Exception e) {
 			Status status = new Status(IStatus.ERROR, AnalysesView.ID, e.getMessage(), e);
-    		ErrorDialog.openError(activeShell, "Error connection to Database", "Problem connecting to Database", status);
-			e.printStackTrace();
+    		ErrorDialog.openError(activeShell, "Error connecting to Database", 
+    				"Error connecting to Database", status);
 		}
         return analysisDatabase;
     }

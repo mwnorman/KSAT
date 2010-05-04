@@ -31,8 +31,9 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 import ca.carleton.tim.ksat.model.Analysis;
 import ca.carleton.tim.ksat.model.KeywordExpression;
@@ -41,6 +42,7 @@ public class RemoveKeywordHandler extends AbstractHandler implements IHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
+        Shell activeShell = HandlerUtil.getActiveShell(event);
         List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID, KeywordsView.ID);
         AnalysesView analysesView = (AnalysesView)views.get(0);
         KeywordsView keywordsView = (KeywordsView)views.get(1);
@@ -53,9 +55,8 @@ public class RemoveKeywordHandler extends AbstractHandler implements IHandler {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-        boolean confirm = MessageDialog.openConfirm(Display.getDefault().getActiveShell(),
-            "Remove Keyword Expression", "Are you sure you wish to remove Expression\n" + 
-            decodedExpression + "?");
+        boolean confirm = MessageDialog.openConfirm(activeShell, "Remove Keyword Expression",
+        	"Are you sure you wish to remove Expression\n" + decodedExpression + "?");
         if (confirm) {
             Analysis currentAnalysis = analysesView.getCurrentAnalysis();
             UnitOfWork uow = KSATRoot.defaultInstance().getCurrentSession().acquireUnitOfWork();

@@ -31,7 +31,6 @@ import java.util.Vector;
 //Graphics (SWT/JFaces) imports
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -70,18 +69,13 @@ public class AddSitesDialog extends Dialog {
     
     public AddSitesDialog(Shell parent) {
         super(parent);
-        init();
-    }
-
-    public AddSitesDialog(IShellProvider parentShell) {
-        super(parentShell);
-        init();
     }
     
     public AddSitesDialog(Shell activeShell, Analysis currentAnalysis, AddSitesHandler addSitesHandler) {
         this(activeShell);
 		this.currentAnalysis = currentAnalysis;
         this.addSitesHandler = addSitesHandler;
+        init();
     }
 
     @SuppressWarnings("unchecked")

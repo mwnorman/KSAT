@@ -26,14 +26,16 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 public class RemoveResultHandler extends AbstractHandler implements IHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-            "Cannot perform command", "Cannot (yet) Remove Result");
+        Shell activeShell = HandlerUtil.getActiveShell(event);
+        MessageDialog.openInformation(activeShell, "Cannot perform command",
+        	"Cannot (yet) Remove Result");
         return null;
     }
 
