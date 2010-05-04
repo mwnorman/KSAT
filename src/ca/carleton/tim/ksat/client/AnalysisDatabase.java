@@ -45,8 +45,10 @@ import ca.carleton.tim.ksat.persist.AnalysisProject;
 
 public class AnalysisDatabase {
 
-    //public static final String CUSTOMIZER_KEY = "customizerClassName";
     public static final String KSAT_SEQUENCE_TABLENAME = "KSAT_SEQUENCE_TABLE";
+    public static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
+    public static final String PLATFORM_CLASS = 
+    	"org.eclipse.persistence.platform.database.MySQLPlatform";
     
     protected KSATRoot parent;
     protected DatabaseSession session;
@@ -88,8 +90,8 @@ public class AnalysisDatabase {
         login.setUserName(loginConfig.getUsername());
         login.setEncryptedPassword(loginConfig.getEncryptedPassword());
         login.setConnectionString(loginConfig.getConnectionURL());
-        login.setDriverClassName(loginConfig.getDriverClass());
-        login.setPlatformClassName(loginConfig.getPlatformClass());
+        login.setDriverClassName(DRIVER_CLASS);
+        login.setPlatformClassName(PLATFORM_CLASS);
         login.setDefaultSequence(new TableSequence("", KSAT_SEQUENCE_TABLENAME));
         analysisProject.setDatasourceLogin(login);
         session = analysisProject.createDatabaseSession();

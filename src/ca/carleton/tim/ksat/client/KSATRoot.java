@@ -132,7 +132,10 @@ public class KSATRoot {
 	}
 
 	public DatabaseSession getCurrentSession() {
-        return currentDatabase.getSession();
+		if (currentDatabase != null) {
+			return currentDatabase.getSession();
+		}
+		return null;
     }
 
     protected SessionConfigs getSessionConfigs() {
