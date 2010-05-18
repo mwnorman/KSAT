@@ -8,7 +8,6 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.persistence.core,
- org.eclipse.persistence.moxy,
  org.eclipse.persistence.asm,
  org.eclipse.ui.console,
  org.eclipse.core.expressions
