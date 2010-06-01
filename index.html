@@ -44,9 +44,22 @@
     </div>
 
     <h2>Dependencies</h2>
-<p>Java 6 runtime
+<p>
+Java runtime (I recommend <a href="http://java.sun.com/javase/6">Java 6</a> since Java 5 is
+<a href="http://java.sun.com/products/archive/eol.policy.html">end-of-life'd)</a><br />
+A MySQL 5.n database (see <a href="http://dev.mysql.com/downloads/mysql">the MySQL downloads page for the installers for your platform).</a><br />
+Craig Buckler published a very nice <a href="http://www.sitepoint.com/blogs/2009/03/24/how-to-install-mysql">
+How-to about installing MySQL</a>.
+<p>
+KSAT should not use the <tt>root</tt> account - a separate user account should be setup:
 
-MySQL 5.n</p>
+<pre>
+CREATE DATABASE db;
+CREATE USER user IDENTIFIED BY PASSWORD 'password';
+GRANT ALL ON db.* TO 'user'@'localhost';
+GRANT ALL ON db.* TO 'user'@'%'; -- # support remote logins
+</pre>
+
 <h2>Install</h2>
 <p>workin' on em!</p>
 <h2>License</h2>
