@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+     <title>
+       
+       KSAT
+     </title>
+     <meta name="author" content="Mike Norman" />
+     
+     <link rel="stylesheet" href="/stylesheets/syntax.css" type="text/css" />
+     <link rel="stylesheet" href="/stylesheets/default.css" type="text/css" />
+     
+  </head>
+  <body>
+    <a href="http://github.com/mwnorman/KSAT"><img style="position: absolute; top: 0; left: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png" alt="Fork me on GitHub" /></a>
+    <div id="site">
+      <h1><a href="/">Keyword Search and Analysis Tool</a></h1>
+      <div class="clear"></div>
+      <div id="sidebar" class="vcard">
+        <h3>Contact Mike Norman</h3>
+        <dl id="contact">
+          <dt>Email</dt>
+          <dd class="email"><a href="mailto:mwnorman@gmail.com">mwnorman@gmail.com</a></dd>
+          <dt>Twitter</dt>
+          <dd><a href="http://twitter.com/foobar3">Twitter</a></dd>
+          <dt>LinkedIn</dt>
+          <dd><a href="http://ca.linkedin.com/pub/michael-norman/1/96a/204">LinkedIn</a></dd>
+        </dl>
+      </div>
+      <div id="content">
+        <div id="home">
+
+  <h2>Dependencies</h2>
+<p>
+Java runtime (I recommend <a href="http://java.sun.com/javase/6">Java 6</a> since Java 5 is
+<a href="http://java.sun.com/products/archive/eol.policy.html">end-of-life'd</a>)
+<p>
+A MySQL 5.n database (see <a href="http://dev.mysql.com/downloads/mysql">the MySQL downloads page for the installers for your platform).</a>Craig Buckler published a very nice <a href="http://www.sitepoint.com/blogs/2009/03/24/how-to-install-mysql">
+How-to about installing MySQL</a>.
+<p>
+KSAT should not use the <tt>root</tt> account - a separate user account should be setup:
+
+<pre>
+CREATE DATABASE db;
+CREATE USER user IDENTIFIED BY PASSWORD 'password';
+GRANT ALL ON db.* TO 'user'@'localhost';
+GRANT ALL ON db.* TO 'user'@'%'; -- # support remote logins
+</pre>
+
+<h2>Downloads</h2>
+You can download this project in either
+<a href="http://github.com/mwnorman/KSAT/zipball/master">zip</a> or
+<a href="http://github.com/mwnorman/KSAT/tarball/master">tar</a> formats.
+
+<h2>Installers</h2>
+<p><a href="http://github.com/downloads/mwnorman/KSAT/ksat.zip">Win32 installer zip</a></p>
+
+<h2>License</h2>
+<p><a href="http://www.opensource.org/licenses/isc-license.txt">ISCL - a 'new' BSD-style license</a>
+  
+  <h2>Posts</h2>
+  <ul class="posts">
+    
+      <li>
+        <a href="/2009/06/01/my-first-KSAT-post.html">My first KSAT post</a>
+        <p>A blog is born.</p>
+      </li>
+    
+  </ul>
+</div>
+      </div>
+      <div class="clear"></div>
+    </div>
+  </body>
+</html>

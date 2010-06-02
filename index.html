@@ -1,54 +1,15 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+---
+layout: default
+---
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<div id="home">
 
-	<title>Keyword Search and Analysis Tool (KSAT)</title>
-	
-	<style type="text/css">
-		body {
-  		margin-top: 1.0em;
-  		background-color: #6deb8a;
-		  font-family: "Helvetica,Arial,FreeSans";
-  		color: #000000;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-		h1 { font-size: 3.8em; color: #921475; margin-bottom: 3px; }
-		h1 .small { font-size: 0.4em; }
-		h1 a { text-decoration: none }
-		h2 { font-size: 1.5em; color: #921475; }
-    h3 { text-align: center; color: #921475; }
-    a { color: #921475; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-		pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-	</style>
-	
-</head>
-
-<body>
-  <a href="http://github.com/mwnorman/KSAT"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-
-  <div id="container">
-    <h1><a href="http://github.com/mwnorman/KSAT">Keyword Search and Analysis Tool (KSAT)</a></h1>
-
-    <div class="description">
-      Statistical analysis of Google search terms 
-    </div>
-
-    <h2>Dependencies</h2>
+  <h2>Dependencies</h2>
 <p>
 Java runtime (I recommend <a href="http://java.sun.com/javase/6">Java 6</a> since Java 5 is
-<a href="http://java.sun.com/products/archive/eol.policy.html">end-of-life'd)</a><br />
-A MySQL 5.n database (see <a href="http://dev.mysql.com/downloads/mysql">the MySQL downloads page for the installers for your platform).</a><br />
-Craig Buckler published a very nice <a href="http://www.sitepoint.com/blogs/2009/03/24/how-to-install-mysql">
+<a href="http://java.sun.com/products/archive/eol.policy.html">end-of-life'd</a>)
+<p>
+A MySQL 5.n database (see <a href="http://dev.mysql.com/downloads/mysql">the MySQL downloads page for the installers for your platform).</a>Craig Buckler published a very nice <a href="http://www.sitepoint.com/blogs/2009/03/24/how-to-install-mysql">
 How-to about installing MySQL</a>.
 <p>
 KSAT should not use the <tt>root</tt> account - a separate user account should be setup:
@@ -60,32 +21,24 @@ GRANT ALL ON db.* TO 'user'@'localhost';
 GRANT ALL ON db.* TO 'user'@'%'; -- # support remote logins
 </pre>
 
-<h2>Install</h2>
-<p>workin' on em!</p>
-<h2>License</h2>
-<p>ISCL - http://www.opensource.org/licenses/isc-license.txt
+<h2>Downloads</h2>
+You can download this project in either
+<a href="http://github.com/mwnorman/KSAT/zipball/master">zip</a> or
+<a href="http://github.com/mwnorman/KSAT/tarball/master">tar</a> formats.
 
-</p>
-<h2>Author</h2>
-<p>Mike Norman (mwnorman@gmail.com)
-<br/>
-<br/>      </p>
-<h2>Contact</h2>
-<p>Mike Norman (mwnorman@gmail.com)
-<br/>      </p>
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/mwnorman/KSAT/zipball/master">zip</a> or
-      <a href="http://github.com/mwnorman/KSAT/tarball/master">tar</a> formats.
-      <br>A windows launcher is available:
-      <a href="http://github.com/downloads/mwnorman/KSAT/ksat.zip">ksat.zip</a>
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/mwnorman/KSAT</pre>
-    </p>
-	<img src="KSAT.screen-capture5.png"/>
-  </div>
-</body>
-</html>
+<h2>Installers</h2>
+<p><a href="http://github.com/downloads/mwnorman/KSAT/ksat.zip">Win32 installer zip</a></p>
+
+<h2>License</h2>
+<p><a href="http://www.opensource.org/licenses/isc-license.txt">ISCL - a 'new' BSD-style license</a>
+  
+  <h2>Posts</h2>
+  <ul class="posts">
+    {% for post in site.posts %}
+      <li>
+        <a href="{{ post.url }}">{{ post.title }}</a>
+        <p>{{ post.summary }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
