@@ -38,8 +38,7 @@ You can download the source to this project in either
   <ul class="posts">
     {% for post in site.posts %}
       <li>
-        <a href="{{ post.url }}">{{ post.title }}</a>
-        <p>{{ post.summary }}</p>
+        <a href="_site{{ post.url }}">{{ post.title }}</a>
       </li>
     {% endfor %}
   </ul>
