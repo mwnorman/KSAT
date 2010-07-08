@@ -1,0 +1,45 @@
+---
+layout: default
+---
+
+<div id="home">
+
+  <h2>Dependencies</h2>
+<p>
+Java runtime (I recommend <a href="http://java.sun.com/javase/6">Java 6</a> since Java 5 is
+<a href="http://java.sun.com/products/archive/eol.policy.html">end-of-life'd</a>)
+<p>
+A MySQL 5.n database (see <a href="http://dev.mysql.com/downloads/mysql">the MySQL downloads page for the installers for your platform).</a>Craig Buckler published a very nice <a href="http://www.sitepoint.com/blogs/2009/03/24/how-to-install-mysql">
+How-to about installing MySQL</a>.
+<p>
+KSAT should not use the <tt>root</tt> account - a separate user account should be setup:
+
+<pre>
+CREATE DATABASE db;
+CREATE USER user IDENTIFIED BY PASSWORD 'password';
+GRANT ALL ON db.* TO 'user'@'localhost';
+GRANT ALL ON db.* TO 'user'@'%'; -- # support remote logins
+</pre>
+
+<h2>Source archives</h2>
+You can download the source to this project in either
+<a href="http://github.com/mwnorman/KSAT/zipball/master">zip</a> or
+<a href="http://github.com/mwnorman/KSAT/tarball/master">tar</a> formats.
+
+<h2>Installers</h2>
+<p><a href="http://github.com/downloads/mwnorman/KSAT/ksat.win32.win32.x86.zip">Win32 installer zip</a></p>
+<p><a href="http://github.com/downloads/mwnorman/KSAT/ksat.macosx.cocoa.x86_64.zip">Mac OSX installer zip</a></p>
+<p><a href="http://github.com/downloads/mwnorman/KSAT/ksat.linux.gtk.x86.zip">Linux installer zip</a></p>
+
+<h2>License</h2>
+<p><a href="http://www.opensource.org/licenses/isc-license.txt">ISCL ('new' BSD-style license)</a>
+  
+  <h2>Posts</h2>
+  <ul class="posts">
+    {% for post in site.posts limit:5 %}
+      <li>
+        <a href="{{ post.url }}">{{ post.title }}</a>&nbsp;&nbsp;<em>Posted on {{ post.date | date_to_long_string }}.</em>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
