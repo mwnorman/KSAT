@@ -38,7 +38,7 @@ You can download the source to this project in either
   <ul class="posts">
     {% for post in site.posts limit:5 %}
       <li>
-        <a href="{{ url_root }}{{ post.url }}">{{ post.title }}</a>&nbsp;&nbsp;<em>Posted on {{ post.date | date_to_long_string }}.</em>
+        <a href="KSAT{{ post.url }}">{{ post.title }}</a>&nbsp;&nbsp;<em>Posted on {{ post.date | date_to_long_string }}.</em>
       </li>
     {% endfor %}
   </ul>
