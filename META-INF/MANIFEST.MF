@@ -7,11 +7,11 @@ Bundle-Version: 1.0.0
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
+ org.eclipse.ui.console,
+ org.eclipse.ui.net,
  org.eclipse.persistence.core,
  org.eclipse.persistence.asm,
- org.eclipse.ui.console,
  org.eclipse.core.expressions,
- org.eclipse.ui.net,
  org.eclipse.equinox.security
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: jlib/derby.jar,

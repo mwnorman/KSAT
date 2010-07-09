@@ -49,6 +49,7 @@ public class CreateTablesHandler extends AbstractHandler {
             	new SchemaManager(KSATRoot.defaultInstance().getCurrentSession());
             try {
                 schemaManager.replaceDefaultTables(true, true);
+                KSATApplication.resetViewsOnConnectToDatabase();
             }
             catch (Exception e) {
     			Status status = new Status(IStatus.ERROR, AnalysesView.ID, e.getMessage(), e);

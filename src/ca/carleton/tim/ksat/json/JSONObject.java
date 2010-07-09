@@ -85,7 +85,7 @@ import java.util.TreeSet;
  * @author JSON.org
  * @version 2009-03-06
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class JSONObject {
 
     /**

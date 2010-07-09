@@ -28,8 +28,10 @@ import java.util.Vector;
 
 //Graphics (SWT/JFace) imports
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 //RCP imports
@@ -54,6 +56,14 @@ public class ConnectToDatabaseHandler extends AbstractHandler implements IHandle
         AnalysisDatabase analysisDatabase = (AnalysisDatabase)currentSelection.getFirstElement();
         try {
 			analysisDatabase.connect();
+        }
+        catch (Exception e) {
+        	Status status = new Status(IStatus.ERROR, AnalysesView.ID, e.getMessage(), e);
+    		ErrorDialog.openError(activeShell, "Error connecting to Database", 
+				"Error connecting to Database", status);
+	        return analysisDatabase;
+		}
+        try {
 	        Vector<Analysis> analyses = analysisDatabase.getSession().readAllObjects(Analysis.class);
 	        List<AnalysisAdapter> analysisAdapters = new ArrayList<AnalysisAdapter>();
 	        for (Analysis analysis : analyses ) {
@@ -64,10 +74,19 @@ public class ConnectToDatabaseHandler extends AbstractHandler implements IHandle
 	        KSATApplication.resetViewsOnConnectToDatabase();
 		}
         catch (Exception e) {
-			Status status = new Status(IStatus.ERROR, AnalysesView.ID, e.getMessage(), e);
-    		ErrorDialog.openError(activeShell, "Error connecting to Database", 
-    				"Error connecting to Database", status);
-		}
+        	if (!e.getMessage().contains("KSAT_ANALYSIS_TABLE")) {
+				Status status = new Status(IStatus.ERROR, AnalysesView.ID, e.getMessage(), e);
+	    		ErrorDialog.openError(activeShell, "Error reading from Database", 
+    				"Error reading from Database", status);
+    		}
+        	else {
+	    		MessageDialog.openInformation(activeShell, "First time connecting to Database", 
+    				"First time connecting to Database, no KSAT tables");
+            	List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID);
+                AnalysesView analysesView = (AnalysesView)views.get(0);
+                KSATApplication.reevaluateIsConnected(analysesView);
+        	}
+	}
         return analysisDatabase;
     }
 

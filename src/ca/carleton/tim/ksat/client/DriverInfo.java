@@ -21,27 +21,10 @@
  */
 package ca.carleton.tim.ksat.client;
 
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Text;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DbProperties {
-
-	protected Text databaseNameText;
-	protected Text userNameText;
-	protected Text urlText;
-	protected Text driverText;
-	protected Text platformText;
-	protected Text passwordText;
-	protected Combo logLevelCombo;
-	
-    public DbProperties(Text databaseNameText, Text userNameText, Text urlText, Text driverText,
-    	Text platformText, Text passwordText, Combo logLevelCombo) {
-		this.databaseNameText = databaseNameText;
-		this.userNameText = userNameText;
-		this.urlText = urlText;
-		this.driverText = driverText;
-		this.platformText = platformText;
-		this.passwordText = passwordText;
-		this.logLevelCombo = logLevelCombo;
-    }
+public class DriverInfo {
+	String driverClass;
+	List<String> jarFilePaths = new ArrayList<String>();
 }

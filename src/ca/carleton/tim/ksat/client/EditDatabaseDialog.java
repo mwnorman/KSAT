@@ -85,6 +85,8 @@ public class EditDatabaseDialog extends Dialog {
 	        	editDatabaseHandler.setDatabaseName(dbProperties.databaseNameText.getText());
 	    		editDatabaseHandler.setUserName(dbProperties.userNameText.getText());
 	    		editDatabaseHandler.setUrl(dbProperties.urlText.getText());
+	    		editDatabaseHandler.setDriver(dbProperties.driverText.getText());
+	    		editDatabaseHandler.setPlatform(dbProperties.platformText.getText());
 	    		editDatabaseHandler.setPassword(dbProperties.passwordText.getText());
 	    		int index = dbProperties.logLevelCombo.getSelectionIndex();
 	    		String item = dbProperties.logLevelCombo.getItem(index);

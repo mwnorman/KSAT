@@ -21,27 +21,23 @@
  */
 package ca.carleton.tim.ksat.client;
 
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Text;
+//RCP imports
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jface.dialogs.MessageDialog;
 
-public class DbProperties {
+//Graphics (SWT/JFaces) imports
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.handlers.HandlerUtil;
 
-	protected Text databaseNameText;
-	protected Text userNameText;
-	protected Text urlText;
-	protected Text driverText;
-	protected Text platformText;
-	protected Text passwordText;
-	protected Combo logLevelCombo;
-	
-    public DbProperties(Text databaseNameText, Text userNameText, Text urlText, Text driverText,
-    	Text platformText, Text passwordText, Combo logLevelCombo) {
-		this.databaseNameText = databaseNameText;
-		this.userNameText = userNameText;
-		this.urlText = urlText;
-		this.driverText = driverText;
-		this.platformText = platformText;
-		this.passwordText = passwordText;
-		this.logLevelCombo = logLevelCombo;
-    }
+public class AddJarHandler extends AbstractHandler {
+
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+    	Shell activeShell = HandlerUtil.getActiveShell(event);
+    	MessageDialog.openInformation(activeShell, "AddJarHandler", "AddJarHandler");
+		return null;
+	}
+
 }

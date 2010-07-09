@@ -35,7 +35,11 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 //Graphics (SWT/JFaces) imports
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -115,7 +119,7 @@ public class AnalysesView extends ViewPart {
 
         analysesViewer.addDoubleClickListener(new IDoubleClickListener() {
             @Override
-            public void doubleClick(DoubleClickEvent event) {
+            public void doubleClick(final DoubleClickEvent event) {
                 IStructuredSelection selection = (IStructuredSelection)event.getSelection();
                 Object selectedElement = selection.getFirstElement();
                 if (selectedElement instanceof AnalysisDatabase) {
@@ -128,8 +132,36 @@ public class AnalysesView extends ViewPart {
                                 KSATApplication.resetViewsOnDisconnectFromDatabase();
                             }
                             else {
-                                selectedDatabase.connect();
-                                KSATApplication.resetViewsOnConnectToDatabase();
+                                try {
+                                	selectedDatabase.connect();
+                                }
+                                catch (Exception e) {
+                                	Status status = new Status(IStatus.ERROR, AnalysesView.ID, e.getMessage(), e);
+                            		ErrorDialog.openError(event.getViewer().getControl().getShell(),
+                            				"Error connecting to Database", 
+                        				"Error connecting to Database", status);
+                        	        return;
+                        		}
+                                try {
+                        	        selectedDatabase.getSession().readAllObjects(Analysis.class);
+                        	        KSATApplication.resetViewsOnConnectToDatabase();
+                        		}
+                                catch (Exception e) {
+                                	if (!e.getMessage().contains("KSAT_ANALYSIS_TABLE")) {
+                        				Status status = new Status(IStatus.ERROR, AnalysesView.ID, e.getMessage(), e);
+                        	    		ErrorDialog.openError(event.getViewer().getControl().getShell(),
+                        	    			"Error reading from Database",
+                        	    			"Error reading from Database", status);
+                            		}
+                                	else {
+                        	    		MessageDialog.openInformation(event.getViewer().getControl().getShell(),
+                        	    			"First time connecting to Database", 
+                            				"First time connecting to Database, no KSAT tables");
+                                    	List<IViewPart> views = KSATApplication.getViews(AnalysesView.ID);
+                                        AnalysesView analysesView = (AnalysesView)views.get(0);
+                                        KSATApplication.reevaluateIsConnected(analysesView);
+                                	}
+                        	}
                             }
                         }
                     });

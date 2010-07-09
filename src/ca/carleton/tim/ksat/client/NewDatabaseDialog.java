@@ -76,9 +76,7 @@ public class NewDatabaseDialog extends Dialog {
     protected void buttonPressed(int buttonId) {
         if (buttonId == 0) { //Ok
         	if (dbProperties.databaseNameText.getText().length() == 0 ||
-        		dbProperties.userNameText.getText().length() == 0 ||
-        		dbProperties.urlText.getText().length() == 0 ||
-        		dbProperties.passwordText.getText().length() == 0) {
+        		dbProperties.urlText.getText().length() == 0) {
         		IStatus status = new Status(IStatus.ERROR, AnalysesView.ID, "empty database property");
         		ErrorDialog.openError(activeShell, "Invalid Database Properties", 
         				"All Database Properties must be specified", status);
@@ -89,6 +87,8 @@ public class NewDatabaseDialog extends Dialog {
 	        	newDatabaseHandler.setDatabaseName(dbProperties.databaseNameText.getText());
 	    		newDatabaseHandler.setUserName(dbProperties.userNameText.getText());
 	    		newDatabaseHandler.setUrl(dbProperties.urlText.getText());
+	    		newDatabaseHandler.setDriverClass(dbProperties.driverText.getText());
+	    		newDatabaseHandler.setPlatformClass(dbProperties.platformText.getText());
 	    		newDatabaseHandler.setPassword(dbProperties.passwordText.getText());
 	    		int index = dbProperties.logLevelCombo.getSelectionIndex();
 	    		String item = dbProperties.logLevelCombo.getItem(index);
@@ -127,6 +127,14 @@ public class NewDatabaseDialog extends Dialog {
         urlLabel.setText("Database URL:");
         Text urlText = new Text(outerContainer, SWT.BORDER);
         urlText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        Label driverLabel = new Label(outerContainer, SWT.NONE);
+        driverLabel.setText("Database Driver class:");
+        Text driverText = new Text(outerContainer, SWT.BORDER);
+        driverText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        Label platformLabel = new Label(outerContainer, SWT.NONE);
+        platformLabel.setText("Database Platform class:");
+        Text platformText = new Text(outerContainer, SWT.BORDER);
+        platformText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         Label logLabel = new Label(outerContainer, SWT.NONE);
         logLabel.setText("Logging Level");
         Combo logLevelCombo = new Combo(outerContainer, SWT.DROP_DOWN | SWT.READ_ONLY);
@@ -139,11 +147,14 @@ public class NewDatabaseDialog extends Dialog {
         	databaseNameText.setText(session.getName());
         	userNameText.setText(login.getUserName());
         	urlText.setText(login.getDatabaseURL());
+        	driverText.setText(login.getDriverClassName());
+        	platformText.setText(login.getPlatformClassName());
         	int logLevel = session.getLogLevel();
         	logLevelCombo.setText(AbstractSessionLog.translateLoggingLevelToString(logLevel));
         }
         outerContainer.pack();
-        return new DbProperties(databaseNameText, userNameText, urlText, passwordText, logLevelCombo);
+        return new DbProperties(databaseNameText, userNameText, urlText, driverText, platformText, 
+        	passwordText, logLevelCombo);
     }
 
 }

@@ -51,9 +51,11 @@ import ca.carleton.tim.ksat.persist.AnalysisProject;
 
 public class CreateNewDatabaseHandler extends AbstractHandler {
 
-	protected String databaseName;
+    protected String databaseName;
     protected String userName;
     protected String url;
+    protected String driverClass;
+    protected String platformClass;
     protected String password;
     protected String logLevel;
     
@@ -70,15 +72,15 @@ public class CreateNewDatabaseHandler extends AbstractHandler {
         	loginConfig.setUsername(userName);
         	loginConfig.setPassword(password);
         	loginConfig.setConnectionURL(url);
-        	loginConfig.setDriverClass(AnalysisDatabase.DRIVER_CLASS);
-        	loginConfig.setPlatformClass(AnalysisDatabase.PLATFORM_CLASS);
+        	loginConfig.setDriverClass(driverClass);
+        	loginConfig.setPlatformClass(platformClass);
             DatabaseLogin login = new DatabaseLogin();
             login.bindAllParameters();
             login.setUserName(userName);
             login.setPassword(password);
             login.setConnectionString(url);
-            login.setDriverClassName(AnalysisDatabase.DRIVER_CLASS);
-            login.setPlatformClassName(AnalysisDatabase.PLATFORM_CLASS);
+            login.setDriverClassName(driverClass);
+            login.setPlatformClassName(platformClass);
             login.setDefaultSequence(new TableSequence("", AnalysisDatabase.KSAT_SEQUENCE_TABLENAME));
             analysisProject.setDatasourceLogin(login);
             DatabaseSession session = analysisProject.createDatabaseSession();
@@ -134,6 +136,14 @@ public class CreateNewDatabaseHandler extends AbstractHandler {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public void setDriverClass(String driverClass) {
+		this.driverClass = driverClass;
+	}
+
+	public void setPlatformClass(String platformClass) {
+		this.platformClass = platformClass;
 	}
 
 	public void setPassword(String password) {

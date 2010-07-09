@@ -52,9 +52,11 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 public class EditDatabaseHandler extends AbstractHandler implements IHandler {
 
-	protected String databaseName;
+    protected String databaseName;
     protected String userName;
     protected String url;
+    protected String driver;
+    protected String platform;
     protected String password;
     protected String logLevel;
     
@@ -134,6 +136,14 @@ public class EditDatabaseHandler extends AbstractHandler implements IHandler {
 
 	public void setLogLevel(String logLevel) {
 		this.logLevel = logLevel;
+	}
+
+	public void setDriver(String driver) {
+		this.driver = driver;
+	}
+
+	public void setPlatform(String platform) {
+		this.platform = platform;
 	}
 
 }

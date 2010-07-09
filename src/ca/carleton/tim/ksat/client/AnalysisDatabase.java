@@ -26,10 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-//RCP imports
+//Graphics (SWT/JFaces) imports
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.ui.PlatformUI;
 
 //EclipseLink imports
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
@@ -37,7 +38,6 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.ui.PlatformUI;
 
 //KSAT domain imports
 import ca.carleton.tim.ksat.model.Analysis;
@@ -46,9 +46,6 @@ import ca.carleton.tim.ksat.persist.AnalysisProject;
 public class AnalysisDatabase {
 
     public static final String KSAT_SEQUENCE_TABLENAME = "KSAT_SEQUENCE_TABLE";
-    public static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
-    public static final String PLATFORM_CLASS = 
-    	"org.eclipse.persistence.platform.database.MySQLPlatform";
     
     protected KSATRoot parent;
     protected DatabaseSession session;
@@ -90,8 +87,8 @@ public class AnalysisDatabase {
         login.setUserName(loginConfig.getUsername());
         login.setEncryptedPassword(loginConfig.getEncryptedPassword());
         login.setConnectionString(loginConfig.getConnectionURL());
-        login.setDriverClassName(DRIVER_CLASS);
-        login.setPlatformClassName(PLATFORM_CLASS);
+        login.setDriverClassName(loginConfig.getDriverClass());
+        login.setPlatformClassName(loginConfig.getPlatformClass());
         login.setDefaultSequence(new TableSequence("", KSAT_SEQUENCE_TABLENAME));
         analysisProject.setDatasourceLogin(login);
         session = analysisProject.createDatabaseSession();

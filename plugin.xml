@@ -89,6 +89,13 @@
             id="ca.carleton.tim.ksat.client.LoggingPreferencePage"
             name="Logging">
       </page>
+      <!--
+      <page
+            class="ca.carleton.tim.ksat.client.JDBCDriversPreferencePage"
+            id="ca.carleton.tim.ksat.client.JDBCDriversPreferencePage"
+            name="JDBC Drivers">
+      </page>
+      -->
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
@@ -169,6 +176,10 @@
       <command
             id="ca.carleton.tim.ksat.client.command.RemoveResult"
             name="RemoveResult">
+      </command>
+      <command
+            id="ca.carleton.tim.ksat.client.command.AddJar"
+            name="AddJar">
       </command>
    </extension>
    <extension
@@ -261,6 +272,17 @@
                 <iterate operator="and" ifEmpty="false">
                     <adapt
                         type="ca.carleton.tim.ksat.model.KeywordExpression">
+                    </adapt>
+                </iterate>
+            </with>
+      </definition>
+      <definition
+            id="isDriverInfo">
+            <with
+                variable="activeMenuSelection">
+                <iterate operator="and" ifEmpty="false">
+                    <adapt
+                        type="ca.carleton.tim.ksat.client.DriverInfo">
                     </adapt>
                 </iterate>
             </with>
@@ -384,6 +406,10 @@
                      value="ca.carleton.tim.ksat.client.KSATRoot">
                </instanceof>
             </iterate></activeWhen>
+      </handler>
+      <handler
+         class="ca.carleton.tim.ksat.client.AddJarHandler"
+         commandId="ca.carleton.tim.ksat.client.command.AddJar">
       </handler>
    </extension>
    <extension
@@ -586,6 +612,22 @@
            </visibleWhen>
         </command>
      </menuContribution>
+     <!--
+     <menuContribution
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="ca.carleton.tim.ksat.client.command.AddJar"
+              label="Add Additional Jar"
+              style="push">
+           <visibleWhen
+                 checkEnabled="false">
+              <reference
+                    definitionId="isDriverInfo">
+              </reference>
+           </visibleWhen>
+        </command>
+     </menuContribution>
+     -->
    </extension>
 
 </plugin>

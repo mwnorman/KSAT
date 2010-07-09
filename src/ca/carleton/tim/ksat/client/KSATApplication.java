@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 //Graphics (SWT/JFaces) imports
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
@@ -51,8 +50,6 @@ import org.eclipse.equinox.app.IApplicationContext;
 //KSAT domain imports
 import ca.carleton.tim.ksat.model.KeywordExpression;
 import ca.carleton.tim.ksat.model.Site;
-import static ca.carleton.tim.ksat.client.KSATPreferencePage.PROXY_HOST_PREFKEY;
-import static ca.carleton.tim.ksat.client.KSATPreferencePage.PROXY_PORT_PREFKEY;
 
 /**
  * This class controls all aspects of the application's execution
@@ -60,18 +57,6 @@ import static ca.carleton.tim.ksat.client.KSATPreferencePage.PROXY_PORT_PREFKEY;
 public class KSATApplication implements IApplication {
 
     public static final String PLUGIN_ID = "ca.carleton.tim.ksat";
-
-    public static final String DB_USERNAME = "db.user";
-    public static final String DEFAULT_DB_USERNAME = "user";
-    public static final String DB_PASSWORD = "db.pwd";
-    public static final String DEFAULT_DB_PASSWORD = "password";
-    public static final String DB_URL = "db.url";
-    public static final String DEFAULT_DB_URL = "jdbc:mysql://localhost:3306/db";
-    public static final String DB_DRIVER = "db.driver";
-    public static final String DEFAULT_DB_DRIVER = "com.mysql.jdbc.Driver";
-    public static final String DB_PLATFORM = "db.platform";
-    public static final String DEFAULT_DB_PLATFORM =
-        "org.eclipse.persistence.platform.database.MySQLPlatform";
     
     public static ImageRegistry IMAGE_REGISTRY;
     static {
@@ -96,17 +81,7 @@ public class KSATApplication implements IApplication {
         imageDesc = 
             AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/db.gif");//$NON-NLS-1$
         IMAGE_REGISTRY.put("disconnecteddb", imageDesc.createImage());
-
-        // weird timing, but ...
-        IPreferenceStore preferenceStore = PlatformUI.getPreferenceStore();
-        String proxyHost = preferenceStore.getString(PROXY_HOST_PREFKEY);
-        if (proxyHost != null && proxyHost.length() > 0) {
-            String proxyPort = preferenceStore.getString(PROXY_PORT_PREFKEY);
-            if (proxyPort != null && proxyHost.length() > 0) {
-                System.setProperty(PROXY_HOST_PREFKEY, proxyHost);
-                System.setProperty(PROXY_PORT_PREFKEY, proxyPort);
-            }
-        }
+        
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new KSATWorkbenchAdvisor());
 			if (returnCode == PlatformUI.RETURN_RESTART)
