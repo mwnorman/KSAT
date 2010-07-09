@@ -85,11 +85,6 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="ca.carleton.tim.ksat.client.KSATPreferencePage"
-            id="ca.carleton.tim.ksat.client.KSATPreferencePage"
-            name="System Preferences">
-      </page>
-      <page
             class="ca.carleton.tim.ksat.client.LoggingPreferencePage"
             id="ca.carleton.tim.ksat.client.LoggingPreferencePage"
             name="Logging">

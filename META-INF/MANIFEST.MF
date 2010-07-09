@@ -10,7 +10,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.persistence.core,
  org.eclipse.persistence.asm,
  org.eclipse.ui.console,
- org.eclipse.core.expressions
+ org.eclipse.core.expressions,
+ org.eclipse.ui.net,
+ org.eclipse.equinox.security
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-ClassPath: jlib/mysql-connector-java-5.1.7-bin.jar,
+Bundle-ClassPath: jlib/derby.jar,
+ jlib/mysql-connector-java-5.1.7-bin.jar,
  .

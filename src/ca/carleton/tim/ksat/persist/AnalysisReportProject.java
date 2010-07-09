@@ -57,7 +57,7 @@ public class AnalysisReportProject extends Project {
 
     protected NamespaceResolver ns;
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes"})
     public AnalysisReportProject() {
         setName("AnalysisReportProject");
 

@@ -46,7 +46,7 @@ public class AnalysisProjectTablesCreator extends TableCreator {
         addTableDefinition(buildKSAT_ANALYSIS_SITE_TABLE());
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes"})
     @Override
     public void replaceTables(DatabaseSession session, SchemaManager schemaManager) {
         for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
