@@ -1,6 +1,0 @@
----
-layout: post
-title: My first KSAT post
----
-
-This is my first blog post specifically related to KSAT.
