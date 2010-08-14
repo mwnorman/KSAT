@@ -105,9 +105,9 @@ public class JDBCDriversPreferencePage extends PreferencePage implements IWorkbe
 		composite.setLayout(layout);
 		composite.setLayoutData(gridData);
 		composite.setFont(font);
-		tableViewer = new TableViewer(composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | 
-				SWT.MULTI | SWT.FULL_SELECTION);
-		table = tableViewer.getTable();
+		table = new Table(composite, SWT.CHECK | SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL | 
+			SWT.V_SCROLL | SWT.BORDER);
+		tableViewer = new TableViewer(table);
 		TableLayout tableLayout = new TableLayout();
 		table.setLayout(tableLayout);
 		table.setHeaderVisible(true);
@@ -221,75 +221,6 @@ public class JDBCDriversPreferencePage extends PreferencePage implements IWorkbe
 					info.jarFilePaths.add(jarFilePath);
 		        	tableViewer.add(info);
 		            table.setTopIndex(table.getItemCount());
-		            /*
-		            try {
-		            	Manifest manifest = new Manifest();
-		        		Attributes attrs = manifest.getMainAttributes();
-		        		attrs.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-		        		attrs.putValue(Constants.BUNDLE_MANIFESTVERSION, "2");
-		        		attrs.putValue(Constants.FRAGMENT_HOST, KSATApplication.PLUGIN_ID);
-		        		attrs.putValue(Constants.BUNDLE_NAME, "OTFBundle-" + driverClass);
-		        		attrs.putValue(Constants.BUNDLE_SYMBOLICNAME, "OTFBundle-" + driverClass);
-		        		attrs.putValue(Constants.BUNDLE_DESCRIPTION, "On-The-Fly driver bundle for " +
-		        			driverClass);
-		        		attrs.putValue(Constants.BUNDLE_CLASSPATH, info.jarFileName);
-        				String driverPackage = driverClass.substring(0, driverClass.lastIndexOf('.'));
-		        		attrs.putValue(Constants.EXPORT_PACKAGE, driverPackage);
-		        		attrs.putValue(Constants.IMPORT_PACKAGE, driverPackage);
-		        		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		        		JarOutputStream jos = new JarOutputStream(baos, manifest);
-		        		jos.flush();
-		        		jos.close();
-		        		ByteArrayInputStream bias = new ByteArrayInputStream(baos.toByteArray());
-		            	BundleContext bundleContext = InternalPlatform.getDefault().getBundleContext();
-		        		Bundle otfBundle = bundleContext.installBundle(
-		        			"inmemory://onthefly-" + driverClass, bias);
-		        		Bundle ksatBundle = null;
-		        		for (Bundle bundle :bundleContext.getBundles()) {
-		        			if (bundle.getSymbolicName().startsWith(KSATApplication.PLUGIN_ID)) {
-		        				ksatBundle = bundle;
-		        				break;
-		        			}
-		        		}
-		        		Bundle[] otfBundles = new Bundle[]{ksatBundle,otfBundle};
-		                ServiceReference packageAdminRef = bundleContext.getServiceReference(
-		                		PackageAdmin.class.getName());
-		                PackageAdmin packageAdmin = null;
-		                if (packageAdminRef != null) {
-		                    packageAdmin = (PackageAdmin)bundleContext.getService(packageAdminRef);
-		                    if (packageAdmin == null) {
-		                        return;
-		                    }
-		                    final boolean[] flag = new boolean[]{false};
-		                    FrameworkListener listener = new FrameworkListener() {
-		                        public void frameworkEvent(FrameworkEvent event) {
-		                            if (event.getType() == FrameworkEvent.PACKAGES_REFRESHED)
-		                                synchronized (flag) {
-		                                    flag[0] = true;
-		                                    flag.notifyAll();
-		                                }
-		                        }
-		                    };
-		                    bundleContext.addFrameworkListener(listener);
-		                    packageAdmin.refreshPackages(otfBundles);
-		                    synchronized (flag) {
-		                        while (!flag[0]) {
-		                            try {
-		                                flag.wait();
-		                            } catch (InterruptedException e) {
-		                            }
-		                        }
-		                    }
-		                    bundleContext.removeFrameworkListener(listener);
-		                    bundleContext.ungetService(packageAdminRef);
-		                }
-		        		Class<?> loadedClass = Thread.currentThread().getContextClassLoader().loadClass(driverClass);
-		        		System.out.println(loadedClass);
-		            }
-		            catch (Exception e) {
-		            	e.printStackTrace();
-		            }
-		            */
 		        }
 			}
 		});
