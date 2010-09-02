@@ -65,6 +65,7 @@ public class KSATApplication implements IApplication {
 
 	public Object start(IApplicationContext context) throws Exception {
 		Display display = PlatformUI.createDisplay();
+		
         IMAGE_REGISTRY = new ImageRegistry(display);
         ImageDescriptor imageDesc = 
             AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/root.gif");//$NON-NLS-1$
@@ -81,6 +82,12 @@ public class KSATApplication implements IApplication {
         imageDesc = 
             AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/db.gif");//$NON-NLS-1$
         IMAGE_REGISTRY.put("disconnecteddb", imageDesc.createImage());
+        imageDesc = 
+            AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/ok_st_obj.gif");//$NON-NLS-1$
+        IMAGE_REGISTRY.put("okDriver", imageDesc.createImage());
+        imageDesc = 
+            AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/disabled_co.gif");//$NON-NLS-1$
+        IMAGE_REGISTRY.put("errorDriver", imageDesc.createImage());
         
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new KSATWorkbenchAdvisor());

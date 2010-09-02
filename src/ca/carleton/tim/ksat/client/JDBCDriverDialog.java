@@ -21,22 +21,40 @@
  */
 package ca.carleton.tim.ksat.client;
 
-//RCP imports
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.jface.dialogs.MessageDialog;
+//javase imports
 
 //Graphics (SWT/JFaces) imports
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.handlers.HandlerUtil;
 
-public class AddJarHandler extends AbstractHandler {
+//KSAT domain imports
+
+public class JDBCDriverDialog extends Dialog {
+	
+	public enum Mode { CREATE, MODIFY, COPY }
+
+    public JDBCDriverDialog(Shell parent) {
+        super(parent);
+    }
+
+    public JDBCDriverDialog(Shell parent, Mode modify, JDBCDriver dv) {
+		this(parent);
+	}
+
+	@Override
+    protected void setShellStyle(int newShellStyle) {
+        super.setShellStyle(SWT.RESIZE | getShellStyle());
+    }
 
     @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-    	Shell activeShell = HandlerUtil.getActiveShell(event);
-    	MessageDialog.openInformation(activeShell, "AddJarHandler", "AddJarHandler");
+    protected Control createDialogArea(Composite parent) {
+        return null;
+    }
+
+	public JDBCDriver getDriver() {
 		return null;
 	}
 

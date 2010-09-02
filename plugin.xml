@@ -89,13 +89,11 @@
             id="ca.carleton.tim.ksat.client.LoggingPreferencePage"
             name="Logging">
       </page>
-      <!--
       <page
             class="ca.carleton.tim.ksat.client.JDBCDriversPreferencePage"
             id="ca.carleton.tim.ksat.client.JDBCDriversPreferencePage"
             name="JDBC Drivers">
       </page>
-      -->
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
@@ -176,10 +174,6 @@
       <command
             id="ca.carleton.tim.ksat.client.command.RemoveResult"
             name="RemoveResult">
-      </command>
-      <command
-            id="ca.carleton.tim.ksat.client.command.AddJar"
-            name="AddJar">
       </command>
    </extension>
    <extension
@@ -406,10 +400,6 @@
                      value="ca.carleton.tim.ksat.client.KSATRoot">
                </instanceof>
             </iterate></activeWhen>
-      </handler>
-      <handler
-         class="ca.carleton.tim.ksat.client.AddJarHandler"
-         commandId="ca.carleton.tim.ksat.client.command.AddJar">
       </handler>
    </extension>
    <extension
