@@ -19,22 +19,25 @@
  * USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
-package ca.carleton.tim.ksat.client;
+package ca.carleton.tim.ksat.client.expressions;
 
-//javase imports
-import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.core.expressions.PropertyTester;
 
-import ca.carleton.tim.ksat.utils.FileUtil;
+import ca.carleton.tim.ksat.client.AnalysisDatabase;
 
-public class DriverInfo {
-	
-	protected String driverClass;
-	protected List<String> jarFilePaths = new ArrayList<String>();
-	
-	
-	protected void addJarPath(String jarPath) {
-		String nPath = FileUtil.normalize(jarPath);
-		jarFilePaths.add(nPath);
+public class DbConnectionTester extends PropertyTester {
+
+	public DbConnectionTester() {
 	}
+
+	@Override
+	public boolean test(Object receiver, String property, Object[] args,
+			Object expectedValue) {
+		AnalysisDatabase database = (AnalysisDatabase)receiver;
+		if ("isConnected".equals(property)) {
+			return database.isConnected();
+		}
+		return false;
+	}
+
 }

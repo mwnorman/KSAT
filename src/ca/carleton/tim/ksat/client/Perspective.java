@@ -26,6 +26,11 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
 
+import ca.carleton.tim.ksat.client.views.AnalysesView;
+import ca.carleton.tim.ksat.client.views.KeywordsView;
+import ca.carleton.tim.ksat.client.views.ResultsView;
+import ca.carleton.tim.ksat.client.views.SitesView;
+
 public class Perspective implements IPerspectiveFactory {
 
 	public void createInitialLayout(IPageLayout layout) {

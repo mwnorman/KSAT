@@ -22,7 +22,7 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="ca.carleton.tim.ksat.client.AnalysesView"
+            class="ca.carleton.tim.ksat.client.views.AnalysesView"
             icon="icons/analyses.gif"
             id="ca.carleton.tim.ksat.client.views.analyses"
             name="Analyses"
@@ -32,7 +32,7 @@
    <extension
         point="org.eclipse.ui.views">
         <view
-              class="ca.carleton.tim.ksat.client.SitesView"
+              class="ca.carleton.tim.ksat.client.views.SitesView"
               icon="icons/sites.gif"
               id="ca.carleton.tim.ksat.client.views.sites"
               name="Sites">
@@ -41,7 +41,7 @@
     <extension
         point="org.eclipse.ui.views">
         <view
-              class="ca.carleton.tim.ksat.client.KeywordsView"
+              class="ca.carleton.tim.ksat.client.views.KeywordsView"
               icon="icons/keywords.gif"
               id="ca.carleton.tim.ksat.client.views.keywords"
               name="Keywords">
@@ -51,7 +51,7 @@
           point="org.eclipse.ui.views">
           
         <view
-              class="ca.carleton.tim.ksat.client.ResultsView"
+              class="ca.carleton.tim.ksat.client.views.ResultsView"
               icon="icons/report.gif"
               id="ca.carleton.tim.ksat.client.views.results"
               name="Results">
@@ -85,26 +85,28 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="ca.carleton.tim.ksat.client.LoggingPreferencePage"
+            class="ca.carleton.tim.ksat.client.preferences.LoggingPreferencePage"
             id="ca.carleton.tim.ksat.client.LoggingPreferencePage"
             name="Logging">
       </page>
       <page
-            class="ca.carleton.tim.ksat.client.JDBCDriversPreferencePage"
+            class="ca.carleton.tim.ksat.client.preferences.JDBCDriversPreferencePage"
             id="ca.carleton.tim.ksat.client.JDBCDriversPreferencePage"
             name="JDBC Drivers">
       </page>
    </extension>
+   <!--
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="ca.carleton.tim.ksat.client.PreferenceInitializer">
+            class="ca.carleton.tim.ksat.client.preferences.PreferenceInitializer">
       </initializer>
    </extension>
+   -->
    <extension
          point="org.eclipse.core.expressions.propertyTesters">
       <propertyTester
-            class="ca.carleton.tim.ksat.client.DbConnectionTester"
+            class="ca.carleton.tim.ksat.client.expressions.DbConnectionTester"
             id="ca.carleton.tim.ksat.client.propertyTester.DbConnectionTester"
             namespace="ca.carleton.tim.ksat.client"
             properties="isConnected"
@@ -154,7 +156,7 @@
             name="ExportCSV">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.AddSitesHandler"
+            defaultHandler="ca.carleton.tim.ksat.client.handlers.AddSitesHandler"
             id="ca.carleton.tim.ksat.client.command.AddSite"
             name="AddSite">
       </command>
@@ -163,7 +165,7 @@
             name="RemoveSite">
       </command>
       <command
-            defaultHandler="ca.carleton.tim.ksat.client.AddKeywordsHandler"
+            defaultHandler="ca.carleton.tim.ksat.client.handlers.AddKeywordsHandler"
             id="ca.carleton.tim.ksat.client.command.AddKeywords"
             name="AddKeywords">
       </command>
@@ -285,7 +287,7 @@
    <extension
       point="org.eclipse.ui.handlers">
       <handler
-         class="ca.carleton.tim.ksat.client.CreateNewDatabaseHandler"
+         class="ca.carleton.tim.ksat.client.handlers.CreateNewDatabaseHandler"
          commandId="ca.carleton.tim.ksat.client.command.CreateNewDatabase">
          <activeWhen>
             <reference
@@ -294,7 +296,7 @@
          </activeWhen>
       </handler>
       <handler
-            class="ca.carleton.tim.ksat.client.ConnectToDatabaseHandler"
+            class="ca.carleton.tim.ksat.client.handlers.ConnectToDatabaseHandler"
             commandId="ca.carleton.tim.ksat.client.command.ConnectToDatabase">
          <activeWhen>
             <reference
@@ -303,7 +305,7 @@
          </activeWhen>
       </handler>
       <handler
-            class="ca.carleton.tim.ksat.client.DisconnectFromDatabaseHandler"
+            class="ca.carleton.tim.ksat.client.handlers.DisconnectFromDatabaseHandler"
             commandId="ca.carleton.tim.ksat.client.command.DisconnectFromDatabase">
          <activeWhen>
             <reference
@@ -312,7 +314,7 @@
          </activeWhen>
       </handler>
       <handler
-            class="ca.carleton.tim.ksat.client.EditDatabaseHandler"
+            class="ca.carleton.tim.ksat.client.handlers.EditDatabaseHandler"
             commandId="ca.carleton.tim.ksat.client.command.EditDatabase">
          <activeWhen>
             <reference
@@ -321,7 +323,7 @@
          </activeWhen>
       </handler>
       <handler
-            class="ca.carleton.tim.ksat.client.RemoveDatabaseHandler"
+            class="ca.carleton.tim.ksat.client.handlers.RemoveDatabaseHandler"
             commandId="ca.carleton.tim.ksat.client.command.RemoveDatabase">
          <activeWhen>
             <reference
@@ -330,7 +332,7 @@
          </activeWhen>
       </handler>
       <handler
-            class="ca.carleton.tim.ksat.client.CreateNewAnalysisHandler"
+            class="ca.carleton.tim.ksat.client.handlers.CreateNewAnalysisHandler"
             commandId="ca.carleton.tim.ksat.client.command.CreateNewAnalysis">
          <activeWhen>
             <reference
@@ -339,7 +341,7 @@
          </activeWhen>
       </handler>
       <handler
-            class="ca.carleton.tim.ksat.client.CreateTablesHandler"
+            class="ca.carleton.tim.ksat.client.handlers.CreateTablesHandler"
             commandId="ca.carleton.tim.ksat.client.command.CreateTables">
          <activeWhen>
             <reference
@@ -348,7 +350,7 @@
          </activeWhen>
       </handler>
       <handler
-            class="ca.carleton.tim.ksat.client.RunAnalysisHandler"
+            class="ca.carleton.tim.ksat.client.handlers.RunAnalysisHandler"
             commandId="ca.carleton.tim.ksat.client.command.RunAnalysis">
          <activeWhen>
             <reference
@@ -356,7 +358,7 @@
             </reference></activeWhen>
       </handler>
       <handler
-            class="ca.carleton.tim.ksat.client.RemoveAnalysisHandler"
+            class="ca.carleton.tim.ksat.client.handlers.RemoveAnalysisHandler"
             commandId="ca.carleton.tim.ksat.client.command.RemoveAnalysis">
          <activeWhen>
             <reference
@@ -364,7 +366,7 @@
             </reference></activeWhen>
       </handler>
       <handler
-            class="ca.carleton.tim.ksat.client.ExportCSVHandler"
+            class="ca.carleton.tim.ksat.client.handlers.ExportCSVHandler"
             commandId="ca.carleton.tim.ksat.client.command.ExportCSV">
          <activeWhen>
             <reference
@@ -372,7 +374,7 @@
             </reference></activeWhen>
       </handler>
       <handler
-            class="ca.carleton.tim.ksat.client.RemoveSiteHandler"
+            class="ca.carleton.tim.ksat.client.handlers.RemoveSiteHandler"
             commandId="ca.carleton.tim.ksat.client.command.RemoveSite">
          <activeWhen>
             <reference
@@ -381,7 +383,7 @@
          </activeWhen>
       </handler>
       <handler
-            class="ca.carleton.tim.ksat.client.RemoveKeywordHandler"
+            class="ca.carleton.tim.ksat.client.handlers.RemoveKeywordHandler"
             commandId="ca.carleton.tim.ksat.client.command.RemoveKeyword">
          <activeWhen>
             <reference
@@ -390,7 +392,7 @@
          </activeWhen>
       </handler>
       <handler
-            class="ca.carleton.tim.ksat.client.RemoveResultHandler"
+            class="ca.carleton.tim.ksat.client.handlers.RemoveResultHandler"
             commandId="ca.carleton.tim.ksat.client.command.RemoveResult">
          <activeWhen>
             <iterate

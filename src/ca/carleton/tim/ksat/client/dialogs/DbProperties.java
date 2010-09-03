@@ -19,22 +19,29 @@
  * USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
-package ca.carleton.tim.ksat.client;
+package ca.carleton.tim.ksat.client.dialogs;
 
-//javase imports
-import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Text;
 
-import ca.carleton.tim.ksat.utils.FileUtil;
+public class DbProperties {
 
-public class DriverInfo {
+	protected Text databaseNameText;
+	protected Text userNameText;
+	protected Text urlText;
+	protected Text driverText;
+	protected Text platformText;
+	protected Text passwordText;
+	protected Combo logLevelCombo;
 	
-	protected String driverClass;
-	protected List<String> jarFilePaths = new ArrayList<String>();
-	
-	
-	protected void addJarPath(String jarPath) {
-		String nPath = FileUtil.normalize(jarPath);
-		jarFilePaths.add(nPath);
-	}
+    public DbProperties(Text databaseNameText, Text userNameText, Text urlText, Text driverText,
+    	Text platformText, Text passwordText, Combo logLevelCombo) {
+		this.databaseNameText = databaseNameText;
+		this.userNameText = userNameText;
+		this.urlText = urlText;
+		this.driverText = driverText;
+		this.platformText = platformText;
+		this.passwordText = passwordText;
+		this.logLevelCombo = logLevelCombo;
+    }
 }

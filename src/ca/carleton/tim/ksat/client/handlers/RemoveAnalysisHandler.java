@@ -19,22 +19,24 @@
  * USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
-package ca.carleton.tim.ksat.client;
+package ca.carleton.tim.ksat.client.handlers;
 
-//javase imports
-import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.IHandler;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.handlers.HandlerUtil;
 
-import ca.carleton.tim.ksat.utils.FileUtil;
+public class RemoveAnalysisHandler extends AbstractHandler implements IHandler {
 
-public class DriverInfo {
-	
-	protected String driverClass;
-	protected List<String> jarFilePaths = new ArrayList<String>();
-	
-	
-	protected void addJarPath(String jarPath) {
-		String nPath = FileUtil.normalize(jarPath);
-		jarFilePaths.add(nPath);
-	}
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        Shell activeShell = HandlerUtil.getActiveShell(event);
+        MessageDialog.openInformation(activeShell, "Cannot perform command",
+        	"Cannot (yet) Remove Analysis");
+        return null;
+    }
+
 }

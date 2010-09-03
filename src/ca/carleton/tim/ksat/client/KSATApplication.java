@@ -48,6 +48,10 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 
 //KSAT domain imports
+import ca.carleton.tim.ksat.client.views.AnalysesView;
+import ca.carleton.tim.ksat.client.views.KeywordsView;
+import ca.carleton.tim.ksat.client.views.ResultsView;
+import ca.carleton.tim.ksat.client.views.SitesView;
 import ca.carleton.tim.ksat.model.KeywordExpression;
 import ca.carleton.tim.ksat.model.Site;
 
@@ -88,6 +92,9 @@ public class KSATApplication implements IApplication {
         imageDesc = 
             AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/disabled_co.gif");//$NON-NLS-1$
         IMAGE_REGISTRY.put("errorDriver", imageDesc.createImage());
+        imageDesc = 
+            AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/editDriver.gif");//$NON-NLS-1$
+        IMAGE_REGISTRY.put("editDriver", imageDesc.createImage());
         
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new KSATWorkbenchAdvisor());
@@ -172,7 +179,7 @@ public class KSATApplication implements IApplication {
         }
 	    return views;
 	}
-    static void reevaluateIsConnected(IViewPart view) {
+    public static void reevaluateIsConnected(IViewPart view) {
         IEvaluationService service = 
             (IEvaluationService)view.getSite().getService(IEvaluationService.class);
         service.requestEvaluation("ca.carleton.tim.ksat.client.isConnected");

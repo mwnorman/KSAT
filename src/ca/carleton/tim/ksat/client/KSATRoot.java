@@ -52,8 +52,8 @@ public class KSATRoot {
         return KSATRootHelper.singleton;
     }
 
-    protected Object parent = null;
-    protected List<AnalysisDatabase> databases = new ArrayList<AnalysisDatabase>();
+    public Object parent = null;
+    public List<AnalysisDatabase> databases = new ArrayList<AnalysisDatabase>();
     protected AnalysisDatabase currentDatabase = null;
     protected SessionConfigs sessionConfigs = null;
     protected LogConsole logConsole = null;
@@ -138,7 +138,7 @@ public class KSATRoot {
 		return null;
     }
 
-    protected SessionConfigs getSessionConfigs() {
+    public SessionConfigs getSessionConfigs() {
 		return sessionConfigs;
 	}
 	protected void setSessionConfigs(SessionConfigs sessionConfigs) {

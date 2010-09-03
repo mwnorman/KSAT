@@ -40,6 +40,7 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 //KSAT domain imports
+import ca.carleton.tim.ksat.client.preferences.LoggingPreferencePage;
 import ca.carleton.tim.ksat.model.Analysis;
 import ca.carleton.tim.ksat.persist.AnalysisProject;
 
@@ -48,7 +49,7 @@ public class AnalysisDatabase {
     public static final String KSAT_SEQUENCE_TABLENAME = "KSAT_SEQUENCE_TABLE";
     
     protected KSATRoot parent;
-    protected DatabaseSession session;
+    public DatabaseSession session;
     protected List<AnalysisAdapter> analyses = new ArrayList<AnalysisAdapter>();
     
     public AnalysisDatabase() {

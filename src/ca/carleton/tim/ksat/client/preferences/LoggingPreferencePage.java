@@ -19,22 +19,29 @@
  * USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
-package ca.carleton.tim.ksat.client;
+package ca.carleton.tim.ksat.client.preferences;
 
-//javase imports
-import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.PlatformUI;
 
-import ca.carleton.tim.ksat.utils.FileUtil;
+public class LoggingPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-public class DriverInfo {
-	
-	protected String driverClass;
-	protected List<String> jarFilePaths = new ArrayList<String>();
-	
-	
-	protected void addJarPath(String jarPath) {
-		String nPath = FileUtil.normalize(jarPath);
-		jarFilePaths.add(nPath);
-	}
+    public static final String LOGGING_PREFKEY = "enableLogging";
+    
+    public LoggingPreferencePage() {
+        super(GRID);
+        setPreferenceStore(PlatformUI.getPreferenceStore());
+    }
+    
+    public void createFieldEditors() {
+        addField(new  
+            BooleanFieldEditor(LOGGING_PREFKEY, "enable logging", getFieldEditorParent()));
+    }
+
+    public void init(IWorkbench workbench) {
+    }
+    
 }

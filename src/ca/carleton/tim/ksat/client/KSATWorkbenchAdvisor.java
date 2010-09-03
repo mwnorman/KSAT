@@ -21,10 +21,18 @@
  */
 package ca.carleton.tim.ksat.client;
 
-//RCP imports
+//javase imports
+import java.io.File;
 import java.io.PrintStream;
+import java.net.URL;
+import java.util.Map;
 
+//RCP imports
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.osgi.service.datalocation.Location;
+import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -34,6 +42,12 @@ import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.console.MessageConsoleStream;
+
+//KSAT imports
+import ca.carleton.tim.ksat.client.preferences.LoggingPreferencePage;
+import ca.carleton.tim.ksat.persist.DriverAdapterProject;
+import ca.carleton.tim.ksat.persist.Drivers;
+import static ca.carleton.tim.ksat.client.DriverAdapter.DRIVER_REGISTRY;
 
 public class KSATWorkbenchAdvisor extends WorkbenchAdvisor {
 
@@ -62,5 +76,34 @@ public class KSATWorkbenchAdvisor extends WorkbenchAdvisor {
             System.setErr(new PrintStream(messageStream));
         }
         ConsolePlugin.getDefault().getConsoleManager().addConsoles(new IConsole[]{logConsole});
+		XMLContext xc = new XMLContext(new DriverAdapterProject());
+        Location instanceLocation = Platform.getInstanceLocation();
+        URL fileURL = null;
+		try {
+			fileURL = FileLocator.toFileURL(instanceLocation.getURL());
+	        File instanceFile = new File(fileURL.toURI());
+	        File driversFile = new File(instanceFile, "drivers.xml");
+	        if (!driversFile.exists()) {
+	        	driversFile.createNewFile();
+	        }
+	        else {
+				Drivers drivers;
+				try {
+					drivers = (Drivers)xc.createUnmarshaller().unmarshal(driversFile);
+					if (drivers != null) {
+						Map<String, DriverAdapter> driversMap = drivers.getDrivers();
+						DRIVER_REGISTRY.clear();
+						DRIVER_REGISTRY.putAll(driversMap);
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					// ignore
+				}
+	        }
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 }
