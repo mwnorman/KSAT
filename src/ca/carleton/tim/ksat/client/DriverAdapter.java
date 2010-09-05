@@ -3,10 +3,8 @@ package ca.carleton.tim.ksat.client;
 //javase imports
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -15,6 +13,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+//EclipseLink imports
+import org.eclipse.persistence.internal.libraries.asm.ClassAdapter;
+import org.eclipse.persistence.internal.libraries.asm.ClassReader;
+import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
+
+//KSAT imports
+import ca.carleton.tim.ksat.utils.EmptyVisitor;
 
 public class DriverAdapter {
 	
@@ -92,31 +98,22 @@ public class DriverAdapter {
 						}
 		            }
 		            catch (Exception e) {
-		                e.printStackTrace();
+		                // ignore
 		            }
 		        }
 			}
 			if (driverClass == null) {
 				// jar is old - look for classes that implement java.sql.Driver interface
-				List<URL> urls = new ArrayList<URL>();
+				List<File> files = new ArrayList<File>();
 				for (String jarFileName : driverInfo.jarFilePaths) {
 			        if (jarFileName != null && jarFileName.length() >0) {
 			        	File f = new File(jarFileName);
 			        	if (f.exists() && !f.isDirectory()) {
-							try {
-				        		URL url = f.toURI().toURL();
-				        		urls.add(url);
-							}
-							catch (MalformedURLException e) {
-								e.printStackTrace();
-							}
+							files.add(f);
 			        	}
 			        }
 				}
-				if (urls.size() > 0) {
-					URL urlArray[] = new URL[urls.size()];
-					URLClassLoader clazzLoader = URLClassLoader.newInstance(
-						urls.toArray(urlArray));
+				if (files.size() > 0) {
 					for (String jarFileName : driverInfo.jarFilePaths) {
 				        if (jarFileName != null && jarFileName.length() >0) {
 				        	File file = new File(jarFileName);
@@ -124,14 +121,14 @@ public class DriverAdapter {
 								JarFile jarFile = new JarFile(file);
 								for (Enumeration<JarEntry> entries = jarFile.entries(); entries.hasMoreElements();) {
 				            		JarEntry entry = entries.nextElement();
-				            		String name = entry.getName();
-				            		if (name.endsWith(".class")) {
-				            			String cname = name.replaceFirst(".class", "").replaceAll("/", ".");
-				            			Class<?> clazz = clazzLoader.loadClass(cname);
-				        				if (Driver.class.isAssignableFrom(clazz) && !Driver.class.equals(clazz)) {
-				        					driverClass = cname;
-				        					break;
-				        				}
+				            		if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
+					            		InputStream is = jarFile.getInputStream(entry);
+					            		DriverClassAdapter dca = new DriverClassAdapter(null);
+					            		new ClassReader(is).accept(dca, true);
+					            		if (dca.getDriverClass() != null) {
+					            			driverClass = dca.getDriverClass().replace('/', '.');
+					            			break;
+					            		}
 				            		}
 				            	}
 						        if (driverClass != null && driverClass.length() > 0) {
@@ -151,6 +148,30 @@ public class DriverAdapter {
 	        }
 		}
 		return checked.booleanValue();
+	}
+	
+	class DriverClassAdapter extends ClassAdapter {
+		String driverClass = null;
+		public DriverClassAdapter(ClassVisitor cv) {
+			super(new EmptyVisitor());
+		}
+		public String getDriverClass() {
+			return driverClass;
+		}
+		@Override
+		public void visit(int version, int access, String name,
+			String superName, String[] interfaces, String sourceFile) {
+			if (interfaces != null && interfaces.length > 0) {
+				for (String intf : interfaces) {
+					if (Driver.class.getName().replace('.', '/').equals(intf)) {
+						driverClass = name;
+						break;
+					}
+				}
+			}
+			super.visit(version, access, name, superName, interfaces, sourceFile);
+		}
+		
 	}
 
 }

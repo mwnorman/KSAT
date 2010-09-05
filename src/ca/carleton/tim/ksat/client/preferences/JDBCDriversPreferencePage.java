@@ -58,7 +58,7 @@ import static ca.carleton.tim.ksat.client.DriverAdapter.DRIVER_REGISTRY;
 
 /**
  * This class is 'influenced by' net.sourceforge.sqlexplorer.preferences.DriverPreferencePage - but
- * is basically a 100% re-write. I did 'steal' the icons, so I've added the LGPL licence file.
+ * is basically a 100% re-write. I've re-used the icons, so I've added the LGPL licence file.
  * 
  * @author mnorman
  *
@@ -102,7 +102,7 @@ public class JDBCDriversPreferencePage extends PreferencePage implements IWorkbe
         tableViewer.setLabelProvider(dlp);
         tableViewer.getTable().addMouseListener(new MouseAdapter() {
             public void mouseDoubleClick(MouseEvent e) {
-                changeDriver();
+            	selectDriver();
             }
         });
         tableViewer.setInput(DRIVER_REGISTRY);
@@ -119,14 +119,14 @@ public class JDBCDriversPreferencePage extends PreferencePage implements IWorkbe
         edit.setLayoutData(grid);
         edit.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                changeDriver();
+                selectDriver();
                 tableViewer.refresh();
             }
         });
 		return myComposite;
 	}
 
-    protected void changeDriver() {
+    protected void selectDriver() {
         StructuredSelection sel = (StructuredSelection)tableViewer.getSelection();
         DriverAdapter dv = (DriverAdapter)sel.getFirstElement();
         if (dv != null) {

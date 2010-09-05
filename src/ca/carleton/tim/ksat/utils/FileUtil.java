@@ -5,36 +5,8 @@
  * Software License version 1.1, a copy of which has been included
  * with this distribution in the LICENSE.txt file.
  *
- *
- * Copyright (C) 2001-2003 Colin Bell
- * colbell@users.sourceforge.net
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
  */
 package ca.carleton.tim.ksat.utils;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 public class FileUtil {
 
@@ -188,53 +160,4 @@ public class FileUtil {
 		return buff.toString();
 	}
 
-	public static Class<?>[] getAssignableClasses(
-			URLClassLoader urlClassLoader, Class<?> type) {
-		List<Class<?>> classes = new ArrayList<Class<?>>();
-		URL[] urls = urlClassLoader.getURLs();
-		for (int i = 0; i < urls.length; ++i) {
-			URL url = urls[i];
-			File file = new File(url.getFile());
-			if (!file.isDirectory() && file.exists() && file.canRead()) {
-				ZipFile zipFile = null;
-				try {
-					zipFile = new ZipFile(file);
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-				for (Enumeration<? extends ZipEntry> it = zipFile.entries(); it
-						.hasMoreElements();) {
-					Class<?> cls = null;
-					String entryName = it.nextElement().getName();
-					String className = changeFileNameToClassName(entryName);
-					if (className != null) {
-						try {
-							cls = urlClassLoader.loadClass(className);
-						} catch (Throwable th) {
-							th.printStackTrace();
-						}
-						if (cls != null) {
-							if (type.isAssignableFrom(cls)) {
-								classes.add(cls);
-							}
-						}
-					}
-				}
-			}
-		}
-		return (Class<?>[]) classes.toArray(new Class[classes.size()]);
-	}
-
-	public static String changeFileNameToClassName(String name) {
-		if (name == null) {
-			throw new IllegalArgumentException("File Name == null");
-		}
-		String className = null;
-		if (name.toLowerCase().endsWith(".class")) {
-			className = name.replace('/', '.');
-			className = className.replace('\\', '.');
-			className = className.substring(0, className.length() - 6);
-		}
-		return className;
-	}
 }
