@@ -133,8 +133,10 @@ public class JDBCDriversPreferencePage extends PreferencePage implements IWorkbe
             EditJDBCDriverDialog dlg = new EditJDBCDriverDialog(getShell(), dv);
             int retCode = dlg.open();
             if (retCode == IDialogConstants.OK_ID) {
-            	tableViewer.refresh();
+            	dv.reset();
+            	dv.isOk();
             	select(dv);
+            	tableViewer.refresh();
             }
         }
     }
