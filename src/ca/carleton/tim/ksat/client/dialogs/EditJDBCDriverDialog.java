@@ -29,8 +29,6 @@ import java.io.InputStreamReader;
 import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -43,7 +41,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -62,11 +59,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 //EclipseLink imports
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.libraries.asm.ClassAdapter;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
@@ -75,6 +72,7 @@ import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import ca.carleton.tim.ksat.client.DriverAdapter;
 import ca.carleton.tim.ksat.client.KSATApplication;
 import ca.carleton.tim.ksat.utils.EmptyVisitor;
+import ca.carleton.tim.ksat.utils.FileUtil;
 
 /**
  * This class is 'influenced by' net.sourceforge.sqlexplorer.dialogs.CreateDriverDlg - but
@@ -83,7 +81,6 @@ import ca.carleton.tim.ksat.utils.EmptyVisitor;
  * @author mnorman
  *
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
 public class EditJDBCDriverDialog extends TitleAreaDialog {
 
 	static final String DRIVERS_META_INF = "META-INF/services/java.sql.Driver";
@@ -94,7 +91,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 
 	protected Shell shell; 
     protected ListViewer pathsListViewer;
-	protected Vector<String> paths = new NonSynchronizedVector(); // local collection of paths
+    protected ArrayList<String> paths = new ArrayList<String>();
 	protected boolean changed = false;
 	protected Combo driverClassCombo;
 	protected Text driverClassField;
@@ -112,7 +109,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 	@Override
 	protected Point getInitialSize() {
 		Point shellSize = super.getInitialSize();
-		shellSize.y += WIDTH_HINT/5; // stretch dialog a bit
+		shellSize.y += WIDTH_HINT/5; // stretch dialog a bit to accomodate combo
 		return shellSize;
 	}
 
@@ -144,7 +141,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 		}
 	}
 
-    @Override
+	@Override
     protected Control createDialogArea(Composite parent) {
         Composite parentComposite = (Composite) super.createDialogArea(parent);
         
@@ -219,19 +216,19 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
         data.grabExcessHorizontalSpace = true;
         pathsListViewer.getControl().setLayoutData(data);
         pathsListViewer.setContentProvider(new IStructuredContentProvider() {
+			public Object[] getElements(Object inputElement) {
+				return paths.toArray();
+			}
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			}
 			public void dispose() {
-			}
-			public Object[] getElements(Object inputElement) {
-				Vector v = (Vector)inputElement;
-				return v.toArray();
+				
 			}
 		});
         pathsListViewer.setLabelProvider(new LabelProvider() {
-        	public String getText(Object element) {
-                return element.toString();
-            }
+			public String getText(Object element) {
+				return element.toString();
+			}
         });
         pathsListViewer.setInput(paths);
         pathsListViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -254,15 +251,16 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
         newBtn.setText("New Jar Path...");
         newBtn.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event) {
-                FileDialog dlg = new FileDialog(shell, SWT.OPEN);
+                FileDialog dlg = new FileDialog(shell, SWT.MULTI | SWT.OPEN);
                 dlg.setFilterExtensions(new String[] {"*.jar;*.zip"});
-                String str = dlg.open();
-                if (str != null) {
-                	paths.add(str);
+                dlg.open();
+                String[] fileNames = dlg.getFileNames();
+                if (fileNames != null) {
+                	String path = FileUtil.normalize(dlg.getFilterPath());
+                	for (String fileName : fileNames) {
+                		paths.add(path + "/" + fileName);
+                	}
                 	changed = true;
-                	pathsListViewer.refresh();
-                    StructuredSelection sel = new StructuredSelection(str);
-                    pathsListViewer.setSelection(sel);
                     computeButtonsEnabled();
                 }
             }
@@ -280,7 +278,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
         upBtn.setLayoutData(data);
         upBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				moveJarPath(UP);
+				shiftJarPath(UP);
 			}
 		});
 
@@ -292,7 +290,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
         downBtn.setLayoutData(data);
         downBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				moveJarPath(DOWN);
+				shiftJarPath(DOWN);
 			}
 		});
 
@@ -301,13 +299,12 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
         deleteBtn.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event) {
             	IStructuredSelection selection = (IStructuredSelection)pathsListViewer.getSelection();
-            	String s = (String)selection.getFirstElement();
-                if (s != null) {
-                	paths.remove(s);
-                	computeButtonsEnabled();
-                	changed = true;
-                	pathsListViewer.refresh();
-                }
+            	if (!selection.isEmpty()) {
+	            	String pathToRemove = (String)selection.getFirstElement();
+	            	paths.remove(pathToRemove);
+	                changed = true;
+	                computeButtonsEnabled();
+            	}
             }
         });
         
@@ -359,8 +356,8 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
         testJarsButton.addSelectionListener(new SelectionAdapter() {
         	Combo driverClassCombo;
             public void widgetSelected(SelectionEvent event) {
-            	List<String> drivers = new ArrayList<String>();
-            	for (String jarFileName : paths) {
+            	ArrayList<String> drivers = new ArrayList<String>();
+            	for (String jarFileName : pathsListViewer.getList().getItems()) {
     		        File file = null;
     		        if (jarFileName != null && jarFileName.length() >0) {
     		            try {
@@ -418,32 +415,42 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 		if (changed) {
 			driver.getJarPaths().clear();
 			driver.reset();
-			for (String jarPath : (Vector<String>)paths) {
+			for (String jarPath : paths) {
 				driver.getJarPaths().add(jarPath);
 			}
 		}
 	}
 	
-	protected void moveJarPath(int offset) {
-		org.eclipse.swt.widgets.List list = pathsListViewer.getList();
-		int idx = list.getSelectionIndex();
-        if (idx >= 0) {
-            int target = idx + offset;
-            String[] selection = list.getSelection();
-            list.remove(idx);
-            list.add(selection[0], target);
-            list.setSelection(target);
-            computeButtonsEnabled();
-        }
+	protected void shiftJarPath(int direction) {
+		List list = pathsListViewer.getList();      
+		int count = list.getItemCount();
+		int index = list.getSelectionIndex();
+		if ((index ==0 && direction == UP) || (index == count-1 && direction == DOWN)){
+		    return; //do not shift
+		}
+		else{
+		    reSortList(index, direction);
+		    list.setFocus();
+		    list.select(index + direction);
+		}
+		computeButtonsEnabled();
+	}
+	
+	protected void reSortList(int index, int direction) {
+	    String savedPath = paths.get(index);
+	    paths.remove(index);
+	    paths.add(index + direction, savedPath);
+	    pathsListViewer.setInput(paths.toArray());
 	}
 	
 	protected void computeButtonsEnabled() {
-		org.eclipse.swt.widgets.List list = pathsListViewer.getList();
+		List list = pathsListViewer.getList();
         int index = list.getSelectionIndex();
         int size = list.getItemCount();
 	    deleteBtn.setEnabled(index >= 0);
         upBtn.setEnabled(size > 1 && index > 0);
         downBtn.setEnabled(size > 1 && index >= 0 && index < size - 1);
+        pathsListViewer.refresh();
     }
 
 	class DriverClassAdapter extends ClassAdapter {

@@ -2,6 +2,7 @@ package ca.carleton.tim.ksat.client;
 
 //javase imports
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ public class DriverAdapter {
 	protected String name;
 	protected DriverInfo driverInfo = new DriverInfo();
 	protected String exampleURL;
+	protected List<String> platforms = new ArrayList<String>();
 	protected Boolean checked = null;
 	
 	public DriverAdapter() {
@@ -53,6 +55,15 @@ public class DriverAdapter {
 	}
 	public String getExampleURL() {
 		return exampleURL;
+	}
+
+	public List<String> getPlatforms() {
+		return platforms;
+	}
+	public void addPlatform(String platform) {
+		if (!platforms.contains(platform)) {
+			platforms.add(platform);
+		}
 	}
 	
 	public void reset() {

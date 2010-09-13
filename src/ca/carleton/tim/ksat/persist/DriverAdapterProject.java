@@ -76,6 +76,12 @@ public class DriverAdapterProject extends Project {
         exampleURLMapping.setIsCDATA(true);
         descriptor.addMapping(exampleURLMapping);
         
+        XMLCompositeDirectCollectionMapping platformsMapping = 
+        	new XMLCompositeDirectCollectionMapping();
+        platformsMapping.setAttributeName("platforms");
+        platformsMapping.setXPath("eclipselink-platforms/eclipselink-platform/text()");
+        descriptor.addMapping(platformsMapping);
+        
         XMLCompositeObjectMapping infoMapping = new XMLCompositeObjectMapping();
         infoMapping.setAttributeName("driverInfo");
         infoMapping.setReferenceClass(DriverInfo.class);
