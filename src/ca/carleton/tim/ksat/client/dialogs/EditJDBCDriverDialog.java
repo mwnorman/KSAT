@@ -107,6 +107,11 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 	}
 
 	@Override
+	public boolean isHelpAvailable() {
+		return false;
+	}
+	
+	@Override
 	protected Point getInitialSize() {
 		Point shellSize = super.getInitialSize();
 		shellSize.y += WIDTH_HINT/5; // stretch dialog a bit to accomodate combo
