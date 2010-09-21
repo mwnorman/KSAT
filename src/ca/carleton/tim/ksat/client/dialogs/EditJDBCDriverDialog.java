@@ -49,7 +49,9 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -57,7 +59,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
@@ -86,8 +87,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 	static final String DRIVERS_META_INF = "META-INF/services/java.sql.Driver";
 	static final int UP = -1;
 	static final int DOWN = 1;
-	static final int WIDTH_HINT = 250;
-	static final int MARGIN_WIDTH = 10;
+	static final int WIDTH_HINT = 80;
 
 	protected Shell shell; 
     protected ListViewer pathsListViewer;
@@ -114,7 +114,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 	@Override
 	protected Point getInitialSize() {
 		Point shellSize = super.getInitialSize();
-		shellSize.y += WIDTH_HINT/5; // stretch dialog a bit to accomodate combo
+		shellSize.y += 50; // stretch dialog a bit to accomodate combo
 		return shellSize;
 	}
 
@@ -148,78 +148,43 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 
 	@Override
     protected Control createDialogArea(Composite parent) {
-        Composite parentComposite = (Composite) super.createDialogArea(parent);
+		Composite parentComposite = (Composite)super.createDialogArea(parent);
+		Composite outerContainer = new Composite(parentComposite, SWT.NONE);
+		outerContainer.setLayout(new FormLayout());
+		outerContainer.setLayoutData(new GridData(GridData.FILL_BOTH));
+		outerContainer.setFont(parentComposite.getFont());
+		
+		final Composite innerContainer = new Composite(outerContainer, SWT.NONE);
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 3;
+		innerContainer.setLayout(gridLayout);
+		final FormData formData = new FormData();
+		formData.left = new FormAttachment(0);
+		formData.bottom = new FormAttachment(100, 0);
+		formData.right = new FormAttachment(100, -8);
+		formData.top = new FormAttachment(0, 4);
+		innerContainer.setLayoutData(formData);
+		
+		Label driverClassLabel = new Label(innerContainer, SWT.NONE);
+		GridData gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+		gridData.widthHint = WIDTH_HINT;
+		driverClassLabel.setLayoutData(gridData);
+		driverClassLabel.setText("Driver Class");
+		driverClassField = new Text(innerContainer, SWT.BORDER);
+		driverClassField.setText(driver.getDriverClass());
+		driverClassField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		
+		Label exampleURLLabel = new Label(innerContainer, SWT.NONE);
+		gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+		gridData.widthHint = WIDTH_HINT;
+		exampleURLLabel.setLayoutData(gridData);
+		exampleURLLabel.setText("Example URL");
+		Text exampleUrlField = new Text(innerContainer, SWT.BORDER);
+		exampleUrlField.setText(driver.getExampleURL());
+		exampleUrlField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         
-        Composite composite = new Composite(parentComposite, SWT.NONE);
-        GridLayout layout = new GridLayout();
-        layout.marginHeight = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
-        layout.marginWidth = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
-        layout.verticalSpacing = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING);
-        layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
-        composite.setLayout(layout);
-        composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-        composite.setFont(parentComposite.getFont());
-        
-        Composite nameGroup = new Composite(composite, SWT.NONE);
-        layout = new GridLayout();
-        layout.numColumns = 3;
-        layout.marginWidth = MARGIN_WIDTH;
-        nameGroup.setLayout(layout);
-        GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-        nameGroup.setLayoutData(data);
-
-        Composite topComposite = new Composite(nameGroup, SWT.NONE);
-        data = new GridData(GridData.FILL_VERTICAL | GridData.FILL_HORIZONTAL);
-        data.horizontalSpan = 3;
-        topComposite.setLayoutData(data);
-        topComposite.setLayout(new GridLayout());
-
-        Group topGroup = new Group(topComposite, SWT.NULL);
-        topGroup.setText("Driver Info");
-        data = new GridData(GridData.FILL_VERTICAL | GridData.FILL_HORIZONTAL);
-        data.horizontalSpan = 3;
-        data.widthHint = WIDTH_HINT;
-        topGroup.setLayoutData(data);
-        layout = new GridLayout();
-        layout.numColumns = 3;
-        layout.marginWidth = MARGIN_WIDTH;
-        topGroup.setLayout(layout);
-
-        Label label = new Label(topGroup, SWT.WRAP);
-        label.setText("Driver Class");
-        driverClassField = new Text(topGroup, SWT.BORDER);
-        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-        data.horizontalSpan = 2;
-        data.widthHint = WIDTH_HINT;
-        driverClassField.setText(driver.getDriverClass());
-        driverClassField.setLayoutData(data);
-        Label label5 = new Label(topGroup, SWT.WRAP);
-        label5.setText("Example URL");
-        Text exampleUrlField = new Text(topGroup, SWT.READ_ONLY | SWT.BORDER);
-        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-        data.widthHint = WIDTH_HINT;
-        data.horizontalSpan = 2;
-        exampleUrlField.setText(driver.getExampleURL());
-        exampleUrlField.setLayoutData(data);
-
-        Composite centralComposite = new Composite(nameGroup, SWT.NONE);
-        data = new GridData(GridData.FILL_VERTICAL | GridData.FILL_HORIZONTAL);
-        data.horizontalSpan = 3;
-        data.verticalSpan = 4;
-        centralComposite.setLayoutData(data);
-        centralComposite.setLayout(new FillLayout());
-        
-        Composite cmp = new Composite(centralComposite, SWT.NULL);
-        GridLayout grid = new GridLayout();
-        grid.numColumns = 2;
-        cmp.setLayout(grid);
-        pathsListViewer = new ListViewer(cmp, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-        data = new GridData();
-        data.grabExcessVerticalSpace = true;
-        data.horizontalAlignment = GridData.FILL;
-        data.verticalAlignment = GridData.FILL;
-        data.grabExcessHorizontalSpace = true;
-        pathsListViewer.getControl().setLayoutData(data);
+        pathsListViewer = new ListViewer(innerContainer, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        pathsListViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
         pathsListViewer.setContentProvider(new IStructuredContentProvider() {
 			public Object[] getElements(Object inputElement) {
 				return paths.toArray();
@@ -241,20 +206,13 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 				computeButtonsEnabled();
 			}
 		});
-
-        Composite left = new Composite(cmp, SWT.NULL);
-        data = new GridData();
-        data.horizontalSpan = 1;
-        data.grabExcessVerticalSpace = true;
-        data.horizontalAlignment = GridData.FILL;
-        data.verticalAlignment = GridData.FILL;
-        left.setLayoutData(data);
-        GridLayout gridLayout = new GridLayout();
-        gridLayout.numColumns = 1;
-        left.setLayout(gridLayout);
-        Button newBtn = new Button(left, SWT.NULL);
-        newBtn.setText("New Jar Path...");
-        newBtn.addSelectionListener(new SelectionAdapter() {
+                
+        Button addBtn = new Button(innerContainer, SWT.NULL);
+        gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        gridData.widthHint = WIDTH_HINT;
+        addBtn.setLayoutData(gridData);
+        addBtn.setText("Add Jars");
+        addBtn.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event) {
                 FileDialog dlg = new FileDialog(shell, SWT.MULTI | SWT.OPEN);
                 dlg.setFilterExtensions(new String[] {"*.jar;*.zip"});
@@ -270,59 +228,52 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
                 }
             }
         });
-        data = new GridData();
-        data.grabExcessHorizontalSpace = true;
-        data.horizontalAlignment = GridData.FILL;
-        newBtn.setLayoutData(data);
-
-        upBtn = new Button(left, SWT.NULL);
+        
+        upBtn = new Button(innerContainer, SWT.NULL);
+        gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        gridData.widthHint = WIDTH_HINT;
+        upBtn.setLayoutData(gridData);
         upBtn.setText("Up");
-        data = new GridData();
-        data.grabExcessHorizontalSpace = true;
-        data.horizontalAlignment = GridData.FILL;
-        upBtn.setLayoutData(data);
         upBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				shiftJarPath(UP);
 			}
 		});
-
-        downBtn = new Button(left, SWT.NULL);
+        
+        downBtn = new Button(innerContainer, SWT.NULL);
+        gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        gridData.widthHint = WIDTH_HINT;
+        downBtn.setLayoutData(gridData);
         downBtn.setText("Down");
-        data = new GridData();
-        data.grabExcessHorizontalSpace = true;
-        data.horizontalAlignment = GridData.FILL;
-        downBtn.setLayoutData(data);
         downBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				shiftJarPath(DOWN);
 			}
 		});
-
-        deleteBtn = new Button(left, SWT.NULL);
+        
+        deleteBtn = new Button(innerContainer, SWT.NULL);
+        gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+        gridData.widthHint = WIDTH_HINT;
+        deleteBtn.setLayoutData(gridData);
         deleteBtn.setText("Delete");
         deleteBtn.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event) {
             	IStructuredSelection selection = (IStructuredSelection)pathsListViewer.getSelection();
             	if (!selection.isEmpty()) {
-	            	String pathToRemove = (String)selection.getFirstElement();
-	            	paths.remove(pathToRemove);
-	                changed = true;
-	                computeButtonsEnabled();
+        	String pathToRemove = (String)selection.getFirstElement();
+        	paths.remove(pathToRemove);
+            changed = true;
+            computeButtonsEnabled();
             	}
             }
         });
         
-        data = new GridData();
-        data.grabExcessHorizontalSpace = true;
-        data.horizontalAlignment = GridData.FILL;
-        deleteBtn.setLayoutData(data);
-        
-        driverClassCombo = new Combo(cmp, SWT.BORDER | SWT.DROP_DOWN);
-        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-        data.widthHint = WIDTH_HINT;
-        data.horizontalSpan = 1;
-        driverClassCombo.setLayoutData(data);
+        driverClassCombo = new Combo(innerContainer, SWT.BORDER | SWT.DROP_DOWN);
+        gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
+        gridData.grabExcessHorizontalSpace = false;
+        gridData.widthHint = WIDTH_HINT;
+        gridData.horizontalSpan = 2;
+        driverClassCombo.setLayoutData(gridData);
         driverClassCombo.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent event) {
             }
@@ -352,14 +303,14 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
         if (driver.isOk()) {
         	driverClassCombo.setItems(new String[]{driver.getDriverClass()});
         }
-        Button testJarsButton = new Button(left, SWT.NULL);
+        
+        Button testJarsButton = new Button(innerContainer, SWT.NULL);
         testJarsButton.setText("Test Jars");
-        data = new GridData();
-        data.grabExcessHorizontalSpace = true;
-        data.horizontalAlignment = GridData.FILL;
-        testJarsButton.setLayoutData(data);
+        gridData = new GridData();
+        gridData.widthHint = WIDTH_HINT;
+        gridData.horizontalAlignment = SWT.FILL;
+        testJarsButton.setLayoutData(gridData);
         testJarsButton.addSelectionListener(new SelectionAdapter() {
-        	Combo driverClassCombo;
             public void widgetSelected(SelectionEvent event) {
             	ArrayList<String> drivers = new ArrayList<String>();
             	for (String jarFileName : pathsListViewer.getList().getItems()) {
@@ -403,14 +354,8 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
             		driverClassCombo.select(0);
             	}
             }
-            public SelectionAdapter setCombo(Combo driverClassCombo) {
-            	this.driverClassCombo = driverClassCombo;
-            	return this;
-            }
-        }.setCombo(driverClassCombo));
+        });
         computeButtonsEnabled();
-        
-        nameGroup.layout(true, true);
 		return parentComposite;
     }
 
@@ -450,6 +395,9 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 	
 	protected void computeButtonsEnabled() {
 		List list = pathsListViewer.getList();
+		GridData gd_list = new GridData(SWT.FILL, SWT.FILL, false, false, 2, 4);
+		gd_list.widthHint = 317;
+		list.setLayoutData(gd_list);
         int index = list.getSelectionIndex();
         int size = list.getItemCount();
 	    deleteBtn.setEnabled(index >= 0);
