@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.w3c.dom.Document;
 
 //JUnit 4 imports
@@ -15,7 +14,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
@@ -54,7 +52,7 @@ public class DriverAdapterXMLTestSuite {
 		DriverAdapter da2 = new DriverAdapter("derby");
 		da2.addJarPath("C:\\Program Files\\Sun\\JavaDB\\lib\\derby.jar");
 		da2.setDriverClass("org.apache.derby.jdbc.AutoloadedDriver");
-		da2.setExampleURL("jdbc:derby://<host>:<port>/<dbname>;create=true;");
+		da2.addExampleURL("server","jdbc:derby://<host>:<port>/<dbname>");
 		
 		Drivers drivers = new Drivers();
 		drivers.setDrivers(new HashMap<String, DriverAdapter>());
@@ -81,7 +79,9 @@ public class DriverAdapterXMLTestSuite {
 		      "</driver-info>" +
 		   "</driver>" +
 		   "<driver name=\"derby\">" +
-		      "<example-url><![CDATA[jdbc:derby://<host>:<port>/<dbname>;create=true;]]></example-url>" +
+		      "<example-urls>" +
+		          "<url name=\"server\"><![CDATA[jdbc:derby://<host>:<port>/<dbname>]]></url>" +
+		      "</example-urls>" +
 		      "<driver-info>" +
 		         "<driver-class>org.apache.derby.jdbc.AutoloadedDriver</driver-class>" +
 		         "<paths>" +
@@ -102,7 +102,7 @@ public class DriverAdapterXMLTestSuite {
 		assertEquals("one", nextMe.getKey());
 		DriverAdapter da1 = nextMe.getValue();
 		assertEquals("one", da1.getName());
-		assertNull(da1.getExampleURL());
+		assertTrue(da1.getExampleURLs().isEmpty());
 		assertEquals("org.foo.bar.MyJDBCDriver", da1.getDriverClass());
 		List<String> jarPaths = da1.getJarPaths();
 		assertTrue(jarPaths.size() == 2);
@@ -112,7 +112,7 @@ public class DriverAdapterXMLTestSuite {
 		assertEquals("derby", nextMe.getKey());
 		DriverAdapter da2 = nextMe.getValue();
 		assertEquals("derby", da2.getName());
-		assertEquals("jdbc:derby://<host>:<port>/<dbname>;create=true;", da2.getExampleURL());
+		//assertEquals("jdbc:derby://<host>:<port>/<dbname>;create=true;", da2.getExampleURL());
 		assertEquals("org.foo.bar.MyJDBCDriver", da1.getDriverClass());
 		jarPaths = da2.getJarPaths();
 		assertTrue(jarPaths.size() == 1);

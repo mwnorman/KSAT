@@ -3,7 +3,7 @@ package ca.carleton.tim.ksat.client;
 //javase imports
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
@@ -11,11 +11,11 @@ import java.util.jar.JarFile;
 
 public class DriverAdapter {
 	
-	public static Map<String, DriverAdapter> DRIVER_REGISTRY = new HashMap<String, DriverAdapter>();
+	public static Map<String, DriverAdapter> DRIVER_REGISTRY = new LinkedHashMap<String, DriverAdapter>();
 	
 	protected String name;
 	protected DriverInfo driverInfo = new DriverInfo();
-	protected String exampleURL;
+	protected Map<String, String> exampleURLs = new LinkedHashMap<String, String>();
 	protected List<String> platforms = new ArrayList<String>();
 	protected Boolean checked = null;
 	
@@ -50,11 +50,17 @@ public class DriverAdapter {
 		return driverInfo.driverClass;
 	}
 
-	public void setExampleURL(String exampleURL) {
-		this.exampleURL = exampleURL;
+	public void setExampleURL(Map<String, String> exampleURLs) {
+		this.exampleURLs = exampleURLs;
 	}
-	public String getExampleURL() {
-		return exampleURL;
+	public void addExampleURL(String name, String url) {
+		exampleURLs.put(name, url);
+	}
+	public String getExampleURL(String name) {
+		return exampleURLs.get(name);
+	}
+	public Map<String, String> getExampleURLs() {
+		return exampleURLs;
 	}
 
 	public List<String> getPlatforms() {

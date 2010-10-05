@@ -180,7 +180,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 		exampleURLLabel.setLayoutData(gridData);
 		exampleURLLabel.setText("Example URL");
 		Text exampleUrlField = new Text(innerContainer, SWT.BORDER);
-		exampleUrlField.setText(driver.getExampleURL());
+		exampleUrlField.setText("TODO"); // TODO
 		exampleUrlField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         
         pathsListViewer = new ListViewer(innerContainer, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);

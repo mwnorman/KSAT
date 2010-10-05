@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<drivers xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <driver name="Derby">
+     <example-urls>
+		 <url name="embedded (local file)"><![CDATA[jdbc:derby:<optional path to><dbname>;create=true;]]></url>
+		 <url name="embedded (resource)"><![CDATA[jdbc:derby:jar:<optional path to archive><path within archive><dbname>;create=true;]]></url>
+		 <url name="server"><![CDATA[jdbc:derby://<host>:<port(default is 3600)>/<dbname>]]></url>
+     </example-urls>
+     <eclipselink-platforms>
+         <platform>org.eclipse.persistence.platform.database.DerbyPlatform</platform>
+         <platform>org.eclipse.persistence.platform.database.JavaDBPlatform</platform>
+     </eclipselink-platforms>
+     <driver-info>
+        <driver-class>org.apache.derby.jdbc.AutoloadedDriver</driver-class>
+        <paths/>
+     </driver-info>
+  </driver>
+  <driver name="DB2">
+     <example-urls>
+         <url name="typical"><![CDATA[jdbc:db2://<host>:<port(default is 50000)>/<dbname>]]></url>
+     </example-urls>
+     <eclipselink-platforms>
+         <platform>org.eclipse.persistence.platform.database.DB2Platform</platform>
+         <platform>org.eclipse.persistence.platform.database.DB2MainframePlatform</platform>
+     </eclipselink-platforms>
+     <driver-info>
+        <driver-class>com.ibm.db2.jcc.DB2Driver</driver-class>
+        <paths/>
+     </driver-info>
+  </driver>
+  <driver name="Firebird">
+     <example-urls>
+		 <url name="typical"><![CDATA[jdbc:firebirdsql:<host>/<port(optional;default is 3050)>:<path to db>?<prop1=value>&<prop2=value>...(properties are optional)]]></url>
+     </example-urls>
+     <eclipselink-platforms>
+         <platform>org.eclipse.persistence.platform.database.FirebirdPlatform</platform>
+     </eclipselink-platforms>
+     <driver-info>
+        <driver-class>org.firebirdsql.jdbc.FBDriver</driver-class>
+        <paths/>
+     </driver-info>
+  </driver>
+  <driver name="H2">
+     <example-urls>
+		 <url name="embedded"><![CDATA[jdbc:h2:<path to db>]]></url>
+		 <url name="server"><![CDATA[jdbc:h2:tcp://<host>/<path to db>]]></url>
+     </example-urls>
+     <eclipselink-platforms>
+         <platform>org.eclipse.persistence.platform.database.H2Platform</platform>
+     </eclipselink-platforms>
+     <driver-info>
+        <driver-class>org.h2.Driver</driver-class>
+        <paths/>
+     </driver-info>
+  </driver>
+  <driver name="HyperSQL">
+     <example-urls>
+		 <url name="embedded (local file)"><![CDATA[jdbc:hsqldb:file:<path to db>]]></url>
+		 <url name="embedded (in-memory)"><![CDATA[jdbc:hsqldb:mem:<dbname>]]></url>
+		 <url name="embedded (resource)"><![CDATA[jdbc:hsqldb:res:org.my.package.MyReadOnlyDB]]></url>
+     </example-urls>
+     <eclipselink-platforms>
+         <platform>org.eclipse.persistence.platform.database.HSQLPlatform</platform>
+     </eclipselink-platforms>
+     <driver-info>
+        <driver-class>org.hsqldb.jdbc.JDBCDriver</driver-class>
+        <paths/>
+     </driver-info>
+  </driver>
+  <driver name="Oracle">
+     <example-urls>
+		 <url name="typical"><![CDATA[jdbc:oracle:thin:@<host>:<port(default is 1521)>:<dbname>]]></url>
+     </example-urls>
+     <eclipselink-platforms>
+         <platform>org.eclipse.persistence.platform.database.oracle.Oracle9Platform</platform>
+         <platform>org.eclipse.persistence.platform.database.oracle.Oracle10Platform</platform>
+         <platform>org.eclipse.persistence.platform.database.oracle.Oracle11Platform</platform>
+     </eclipselink-platforms>
+     <driver-info>
+        <driver-class>oracle.jdbc.OracleDriver</driver-class>
+        <paths/>
+     </driver-info>
+  </driver>
+</drivers>

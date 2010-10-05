@@ -23,6 +23,8 @@ package ca.carleton.tim.ksat.client;
 
 //javase imports
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.Map;
@@ -53,6 +55,8 @@ public class KSATWorkbenchAdvisor extends WorkbenchAdvisor {
 
 	private static final String PERSPECTIVE_ID = 
 	    "ca.carleton.tim.ksat.client.perspective";
+	private static final String DEFAULT_DRIVERS = 
+		"ca/carleton/tim/ksat/default_drivers.xml";
 
     public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
         return new KSATWorkbenchWindowAdvisor(configurer);
@@ -85,22 +89,36 @@ public class KSATWorkbenchAdvisor extends WorkbenchAdvisor {
 	        File driversFile = new File(instanceFile, "drivers.xml");
 	        if (!driversFile.exists()) {
 	        	driversFile.createNewFile();
+	        	try {
+	        		InputStream is =
+	        			this.getClass().getClassLoader().getResourceAsStream(DEFAULT_DRIVERS);
+	        		if (is != null) {
+	        			 byte[] buf = new byte[8192];
+	        			 FileOutputStream fos = new FileOutputStream(driversFile);
+	        			 int count;
+	        			 while ((count = is.read(buf, 0, buf.length)) > 0) {
+	        				 fos.write(buf, 0, count);
+	        			 }
+	        			 fos.flush();
+	        		}
+	        	}
+	        	catch (Exception e) {
+	        		e.printStackTrace();
+	        	}
 	        }
-	        else {
-				Drivers drivers;
-				try {
-					drivers = (Drivers)xc.createUnmarshaller().unmarshal(driversFile);
-					if (drivers != null) {
-						Map<String, DriverAdapter> driversMap = drivers.getDrivers();
-						DRIVER_REGISTRY.clear();
-						DRIVER_REGISTRY.putAll(driversMap);
-					}
+			Drivers drivers;
+			try {
+				drivers = (Drivers)xc.createUnmarshaller().unmarshal(driversFile);
+				if (drivers != null) {
+					Map<String, DriverAdapter> driversMap = drivers.getDrivers();
+					DRIVER_REGISTRY.clear();
+					DRIVER_REGISTRY.putAll(driversMap);
 				}
-				catch (Exception e) {
-					e.printStackTrace();
-					// ignore
-				}
-	        }
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				// ignore
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
