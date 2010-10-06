@@ -29,18 +29,23 @@ import java.io.InputStreamReader;
 import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 //Graphics (SWT/JFaces) imports
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -59,9 +64,13 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 //EclipseLink imports
@@ -77,7 +86,8 @@ import ca.carleton.tim.ksat.utils.FileUtil;
 
 /**
  * This class is 'influenced by' net.sourceforge.sqlexplorer.dialogs.CreateDriverDlg - but
- * is basically a 100% re-write. I've re-used the icons, so I've added the LGPL licence file.
+ * is basically a 100% re-write. However, since I've re-used the icons, I need to include
+ * the LGPL licence file.
  * 
  * @author mnorman
  *
@@ -89,7 +99,8 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 	static final int DOWN = 1;
 	static final int WIDTH_HINT = 80;
 
-	protected Shell shell; 
+	protected Shell shell;
+	protected Table exampleURLsTable;
     protected ListViewer pathsListViewer;
     protected ArrayList<String> paths = new ArrayList<String>();
 	protected boolean changed = false;
@@ -114,7 +125,8 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 	@Override
 	protected Point getInitialSize() {
 		Point shellSize = super.getInitialSize();
-		shellSize.y += 50; // stretch dialog a bit to accomodate combo
+		shellSize.x += 10; // stretch dialog a bit to accomodate table and list 
+		shellSize.y += WIDTH_HINT;
 		return shellSize;
 	}
 
@@ -173,17 +185,58 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 		driverClassField = new Text(innerContainer, SWT.BORDER);
 		driverClassField.setText(driver.getDriverClass());
 		driverClassField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		
-		Label exampleURLLabel = new Label(innerContainer, SWT.NONE);
-		gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-		gridData.widthHint = WIDTH_HINT;
-		exampleURLLabel.setLayoutData(gridData);
-		exampleURLLabel.setText("Example URL");
-		Text exampleUrlField = new Text(innerContainer, SWT.BORDER);
-		exampleUrlField.setText("TODO"); // TODO
-		exampleUrlField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         
-        pathsListViewer = new ListViewer(innerContainer, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        Group exampleUrlsGroup = new Group(innerContainer, SWT.NONE);
+        exampleUrlsGroup.setText("Example URLs");
+        exampleUrlsGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 3, 1));
+        exampleUrlsGroup.setLayout(new GridLayout(3, false));
+        
+        TableViewer tableViewer = new TableViewer(exampleUrlsGroup, SWT.V_SCROLL | SWT.H_SCROLL | 
+            SWT.BORDER);
+        exampleURLsTable = tableViewer.getTable();
+        gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
+        gridData.widthHint = WIDTH_HINT * 4;
+        exampleURLsTable.setLayoutData(gridData);
+        exampleURLsTable.setLinesVisible(true);
+        exampleURLsTable.setHeaderVisible(true);
+        TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn nameColumn = tableViewerColumn.getColumn();
+        nameColumn.setResizable(false);
+        nameColumn.setWidth(WIDTH_HINT);
+        nameColumn.setText("Name");
+        EditingSupport nullEditingSupport = new EditingSupport(tableViewer) {
+			protected void setValue(Object element, Object value) {
+			}
+			protected Object getValue(Object element) {
+				return null;
+			}
+			protected CellEditor getCellEditor(Object element) {
+				return null;
+			}
+			protected boolean canEdit(Object element) {
+				return false;
+			}
+		};
+		tableViewerColumn.setEditingSupport(nullEditingSupport);
+        TableViewerColumn tableViewerColumn_1 = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn urlColumn = tableViewerColumn_1.getColumn();
+        urlColumn.setResizable(false);
+        urlColumn.setWidth(WIDTH_HINT * 4);
+        urlColumn.setText("URL");
+        tableViewerColumn_1.setEditingSupport(nullEditingSupport);
+        for (Map.Entry<String,String> me :driver.getExampleURLs().entrySet()) {
+            TableItem tableItem = new TableItem(exampleURLsTable, SWT.NULL);
+            tableItem.setText(new String[] {me.getKey(), me.getValue()});
+        }
+        nameColumn.pack();
+        urlColumn.pack();
+
+        Group pathsGroup = new Group(innerContainer, SWT.NONE);
+        pathsGroup.setText("Paths to JDBC Driver Jar(s)");
+        pathsGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 3, 1));
+        pathsGroup.setLayout(new GridLayout(3, false));
+        
+        pathsListViewer = new ListViewer(pathsGroup, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
         pathsListViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
         pathsListViewer.setContentProvider(new IStructuredContentProvider() {
 			public Object[] getElements(Object inputElement) {
@@ -207,7 +260,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 			}
 		});
                 
-        Button addBtn = new Button(innerContainer, SWT.NULL);
+        Button addBtn = new Button(pathsGroup, SWT.NULL);
         gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
         gridData.widthHint = WIDTH_HINT;
         addBtn.setLayoutData(gridData);
@@ -229,7 +282,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
             }
         });
         
-        upBtn = new Button(innerContainer, SWT.NULL);
+        upBtn = new Button(pathsGroup, SWT.NULL);
         gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
         gridData.widthHint = WIDTH_HINT;
         upBtn.setLayoutData(gridData);
@@ -240,7 +293,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 			}
 		});
         
-        downBtn = new Button(innerContainer, SWT.NULL);
+        downBtn = new Button(pathsGroup, SWT.NULL);
         gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
         gridData.widthHint = WIDTH_HINT;
         downBtn.setLayoutData(gridData);
@@ -251,7 +304,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
 			}
 		});
         
-        deleteBtn = new Button(innerContainer, SWT.NULL);
+        deleteBtn = new Button(pathsGroup, SWT.NULL);
         gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
         gridData.widthHint = WIDTH_HINT;
         deleteBtn.setLayoutData(gridData);
@@ -268,7 +321,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
             }
         });
         
-        driverClassCombo = new Combo(innerContainer, SWT.BORDER | SWT.DROP_DOWN);
+        driverClassCombo = new Combo(pathsGroup, SWT.BORDER | SWT.DROP_DOWN);
         gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         gridData.grabExcessHorizontalSpace = false;
         gridData.widthHint = WIDTH_HINT;
@@ -304,7 +357,7 @@ public class EditJDBCDriverDialog extends TitleAreaDialog {
         	driverClassCombo.setItems(new String[]{driver.getDriverClass()});
         }
         
-        Button testJarsButton = new Button(innerContainer, SWT.NULL);
+        Button testJarsButton = new Button(pathsGroup, SWT.NULL);
         testJarsButton.setText("Test Jars");
         gridData = new GridData();
         gridData.widthHint = WIDTH_HINT;

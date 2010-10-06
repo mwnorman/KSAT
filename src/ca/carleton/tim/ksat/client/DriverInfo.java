@@ -29,7 +29,7 @@ import ca.carleton.tim.ksat.utils.FileUtil;
 
 public class DriverInfo {
 	
-	protected String driverClass;
+	protected String driverClass = "";
 	protected List<String> jarFilePaths = new ArrayList<String>();
 	
 	
