@@ -31,6 +31,10 @@ public class Drivers {
 
 	protected Map<String, DriverAdapter> drivers;
 
+	public Drivers() {
+		super();
+	}
+	
 	public Map<String, DriverAdapter> getDrivers() {
 		return drivers;
 	}

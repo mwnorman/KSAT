@@ -22,9 +22,14 @@
 package ca.carleton.tim.ksat.client.preferences;
 
 //javase imports
+import java.io.File;
+import java.io.FileOutputStream;
+import java.net.URL;
 import java.util.Collection;
 
 //Graphics (SWT/JFaces) imports
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -34,6 +39,9 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.osgi.service.datalocation.Location;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -54,6 +62,8 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import ca.carleton.tim.ksat.client.DriverAdapter;
 import ca.carleton.tim.ksat.client.KSATApplication;
 import ca.carleton.tim.ksat.client.dialogs.EditJDBCDriverDialog;
+import ca.carleton.tim.ksat.persist.DriverAdapterProject;
+import ca.carleton.tim.ksat.persist.Drivers;
 import static ca.carleton.tim.ksat.client.DriverAdapter.DRIVER_REGISTRY;
 
 /**
@@ -137,6 +147,22 @@ public class JDBCDriversPreferencePage extends PreferencePage implements IWorkbe
             	dv.isOk();
             	select(dv);
             	tableViewer.refresh();
+        		XMLContext xc = new XMLContext(new DriverAdapterProject());
+                Location instanceLocation = Platform.getInstanceLocation();
+                URL fileURL = null;
+        		try {
+        			fileURL = FileLocator.toFileURL(instanceLocation.getURL());
+        	        File instanceFile = new File(fileURL.toURI());
+        	        File driversFile = new File(instanceFile, "drivers.xml");
+        	        driversFile.setWritable(true);
+        	        XMLMarshaller marshaller = xc.createMarshaller();
+        	        Drivers drvs = new Drivers();
+        	        drvs.setDrivers(DRIVER_REGISTRY);
+        	        marshaller.marshal(drvs, new FileOutputStream(driversFile));
+	        	}
+	        	catch (Exception e) {
+	        		e.printStackTrace();
+	        	}
             }
         }
     }
