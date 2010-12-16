@@ -72,9 +72,7 @@
          <url name="typical"><![CDATA[jdbc:oracle:thin:@<host>:<port(default is 1521)>:<dbname>]]></url>
      </example-urls>
      <eclipselink-platforms>
-         <platform>org.eclipse.persistence.platform.database.oracle.Oracle9Platform</platform>
-         <platform>org.eclipse.persistence.platform.database.oracle.Oracle10Platform</platform>
-         <platform>org.eclipse.persistence.platform.database.oracle.Oracle11Platform</platform>
+	     <platform>org.eclipse.persistence.platform.database.OraclePlatform</platform>
      </eclipselink-platforms>
      <driver-info>
         <driver-class>oracle.jdbc.OracleDriver</driver-class>

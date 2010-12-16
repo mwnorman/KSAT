@@ -28,19 +28,19 @@ public class DbProperties {
 
 	protected Text databaseNameText;
 	protected Text userNameText;
-	protected Text urlText;
-	protected Text driverText;
-	protected Text platformText;
+	protected Combo urlCombo;
+	protected Combo driverCombo;
+	protected Combo platformCombo;
 	protected Text passwordText;
 	protected Combo logLevelCombo;
 	
-    public DbProperties(Text databaseNameText, Text userNameText, Text urlText, Text driverText,
-    	Text platformText, Text passwordText, Combo logLevelCombo) {
+    public DbProperties(Text databaseNameText, Text userNameText, Combo urlCombo, Combo driverCombo,
+    	Combo platformCombo, Text passwordText, Combo logLevelCombo) {
 		this.databaseNameText = databaseNameText;
 		this.userNameText = userNameText;
-		this.urlText = urlText;
-		this.driverText = driverText;
-		this.platformText = platformText;
+		this.urlCombo = urlCombo;
+		this.driverCombo = driverCombo;
+		this.platformCombo = platformCombo;
 		this.passwordText = passwordText;
 		this.logLevelCombo = logLevelCombo;
     }

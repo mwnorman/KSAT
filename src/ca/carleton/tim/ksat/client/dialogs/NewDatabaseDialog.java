@@ -21,6 +21,8 @@
  */
 package ca.carleton.tim.ksat.client.dialogs;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
@@ -40,8 +42,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import ca.carleton.tim.ksat.client.AnalysisDatabase;
+import ca.carleton.tim.ksat.client.DriverAdapter;
 import ca.carleton.tim.ksat.client.handlers.CreateNewDatabaseHandler;
 import ca.carleton.tim.ksat.client.views.AnalysesView;
+import static ca.carleton.tim.ksat.client.DriverAdapter.DRIVER_REGISTRY;
 
 public class NewDatabaseDialog extends Dialog {
 
@@ -80,7 +84,7 @@ public class NewDatabaseDialog extends Dialog {
     protected void buttonPressed(int buttonId) {
         if (buttonId == 0) { //Ok
         	if (dbProperties.databaseNameText.getText().length() == 0 ||
-        		dbProperties.urlText.getText().length() == 0) {
+        		dbProperties.urlCombo.getText().length() == 0) {
         		IStatus status = new Status(IStatus.ERROR, AnalysesView.ID, "empty database property");
         		ErrorDialog.openError(activeShell, "Invalid Database Properties", 
         				"All Database Properties must be specified", status);
@@ -90,9 +94,9 @@ public class NewDatabaseDialog extends Dialog {
         	else {
 	        	newDatabaseHandler.setDatabaseName(dbProperties.databaseNameText.getText());
 	    		newDatabaseHandler.setUserName(dbProperties.userNameText.getText());
-	    		newDatabaseHandler.setUrl(dbProperties.urlText.getText());
-	    		newDatabaseHandler.setDriverClass(dbProperties.driverText.getText());
-	    		newDatabaseHandler.setPlatformClass(dbProperties.platformText.getText());
+	    		newDatabaseHandler.setUrl(dbProperties.urlCombo.getText());
+	    		newDatabaseHandler.setDriverClass(dbProperties.driverCombo.getText());
+	    		newDatabaseHandler.setPlatformClass(dbProperties.platformCombo.getText());
 	    		newDatabaseHandler.setPassword(dbProperties.passwordText.getText());
 	    		int index = dbProperties.logLevelCombo.getSelectionIndex();
 	    		String item = dbProperties.logLevelCombo.getItem(index);
@@ -108,7 +112,7 @@ public class NewDatabaseDialog extends Dialog {
         layout.numColumns = 2;
         outerContainer.setLayout(layout);
         GridData data = new GridData();
-        data.widthHint = 400;
+        data.widthHint = 500;
         data.verticalAlignment = GridData.FILL;
         data.horizontalAlignment = GridData.FILL;
         outerContainer.setLayoutData(data);
@@ -127,37 +131,103 @@ public class NewDatabaseDialog extends Dialog {
         Text passwordText = new Text(outerContainer, SWT.BORDER);
         passwordText.setEchoChar('*');
         passwordText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+           
         Label urlLabel = new Label(outerContainer, SWT.NONE);
         urlLabel.setText("Database URL:");
-        Text urlText = new Text(outerContainer, SWT.BORDER);
-        urlText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        Combo urlCombo = new Combo(outerContainer, SWT.DROP_DOWN);
+        urlCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        boolean someExampleUrl = false;
+        for (Map.Entry<String, DriverAdapter> me : DRIVER_REGISTRY.entrySet()) {
+        	DriverAdapter da = me.getValue();
+        	if (da.isOk()) {
+        		for (String exampleUrl : da.getExampleURLs().values()) {
+        			urlCombo.add(exampleUrl);
+        			someExampleUrl = true;
+        		}
+        	}
+        }
+        if (someExampleUrl) {
+        	urlCombo.select(0);
+        }
+        
         Label driverLabel = new Label(outerContainer, SWT.NONE);
         driverLabel.setText("Database Driver class:");
-        Text driverText = new Text(outerContainer, SWT.BORDER);
-        driverText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        Combo driverCombo = new Combo(outerContainer, SWT.DROP_DOWN);
+        driverCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        boolean someDriver = false;
+        for (Map.Entry<String, DriverAdapter> me : DRIVER_REGISTRY.entrySet()) {
+        	DriverAdapter da = me.getValue();
+        	if (da.isOk()) {
+        		driverCombo.add(da.getDriverClass());
+        		someDriver = true;
+        	}
+        }
+        if (someDriver) {
+        	driverCombo.select(0);
+        }
+        
         Label platformLabel = new Label(outerContainer, SWT.NONE);
         platformLabel.setText("Database Platform class:");
-        Text platformText = new Text(outerContainer, SWT.BORDER);
-        platformText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        Combo platformCombo = new Combo(outerContainer, SWT.DROP_DOWN);
+        platformCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        boolean somePlatform = false;
+        for (Map.Entry<String, DriverAdapter> me : DRIVER_REGISTRY.entrySet()) {
+        	DriverAdapter da = me.getValue();
+        	if (da.isOk()) {
+        		for (String platform : da.getPlatforms()) {
+        			platformCombo.add(platform);
+        			somePlatform = true;
+        		}
+        	}
+        }
+        if (somePlatform) {
+        	platformCombo.select(0);
+        }
+        
         Label logLabel = new Label(outerContainer, SWT.NONE);
         logLabel.setText("Logging Level");
         Combo logLevelCombo = new Combo(outerContainer, SWT.DROP_DOWN | SWT.READ_ONLY);
         for (int level = AbstractSessionLog.ALL, off = AbstractSessionLog.OFF+1; level < off; level++) {
         	logLevelCombo.add(AbstractSessionLog.translateLoggingLevelToString(level));
+        	logLevelCombo.select(level);
         }
         if (currentDatabase != null) {
         	DatabaseSession session = currentDatabase.getSession();
         	DatabaseLogin login = (DatabaseLogin)session.getDatasourceLogin();
         	databaseNameText.setText(session.getName());
         	userNameText.setText(login.getUserName());
-        	urlText.setText(login.getDatabaseURL());
-        	driverText.setText(login.getDriverClassName());
-        	platformText.setText(login.getPlatformClassName());
-        	int logLevel = session.getLogLevel();
-        	logLevelCombo.setText(AbstractSessionLog.translateLoggingLevelToString(logLevel));
+        	urlCombo.removeAll();
+        	urlCombo.setText(login.getDatabaseURL());
+        	// find driver and set selection index
+        	String[] driverItems = driverCombo.getItems();
+        	String theDriverClassName = login.getDriverClassName();
+        	for (int i = 0, len = driverItems.length; i < len; i++) {
+    			if (driverItems[i].equals(theDriverClassName)) {
+    				driverCombo.select(i);
+    				break;
+    			}
+        	}
+        	// find platform and set selection index
+        	String[] platformItems = platformCombo.getItems();
+        	String thePlatformName = login.getPlatformClassName();
+        	for (int i = 0, len = platformItems.length; i < len; i++) {
+    			if (platformItems[i].equals(thePlatformName)) {
+    				platformCombo.select(i);
+    				break;
+    			}
+        	}
+        	// find logLevel and set selection index
+        	String[] logItems = logLevelCombo.getItems();
+        	String logLevel = AbstractSessionLog.translateLoggingLevelToString(session.getLogLevel());
+        	for (int i = 0, len = logItems.length; i < len; i++) {
+    			if (logItems[i].equals(logLevel)) {
+    				logLevelCombo.select(i);
+    				break;
+    			}
+        	}
         }
         outerContainer.pack();
-        return new DbProperties(databaseNameText, userNameText, urlText, driverText, platformText, 
+        return new DbProperties(databaseNameText, userNameText, urlCombo, driverCombo, platformCombo, 
         	passwordText, logLevelCombo);
     }
 

@@ -23,8 +23,12 @@ package ca.carleton.tim.ksat.client.handlers;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -33,6 +37,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.service.datalocation.Location;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
@@ -46,13 +51,18 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import ca.carleton.tim.ksat.client.AnalysisDatabase;
+import ca.carleton.tim.ksat.client.DriverAdapter;
 import ca.carleton.tim.ksat.client.KSATApplication;
 import ca.carleton.tim.ksat.client.KSATRoot;
 import ca.carleton.tim.ksat.client.dialogs.NewDatabaseDialog;
 import ca.carleton.tim.ksat.client.views.AnalysesView;
 import ca.carleton.tim.ksat.persist.AnalysisProject;
+import ca.carleton.tim.ksat.utils.BundleDelegatingClassLoader;
+import static ca.carleton.tim.ksat.client.DriverAdapter.DRIVER_REGISTRY;
 
 public class CreateNewDatabaseHandler extends AbstractHandler {
 
@@ -85,7 +95,34 @@ public class CreateNewDatabaseHandler extends AbstractHandler {
             login.setPassword(password);
             login.setConnectionString(url);
             login.setDriverClassName(driverClass);
-            login.setPlatformClassName(platformClass);
+            for (Map.Entry<String, DriverAdapter> me : DRIVER_REGISTRY.entrySet()) {
+            	DriverAdapter da = me.getValue();
+            	if (da.isOk()) {
+            		if (da.getDriverClass().equals(driverClass)) {
+            			List<String> paths = da.getJarPaths();
+            			List<URL> urls = new ArrayList<URL>();
+            			for (String path : paths) {
+            				File f = new File(path);
+            				try {
+								urls.add(f.toURI().toURL());
+							}
+            				catch (MalformedURLException e) {
+								// ignore
+							}
+            			}
+            			URLClassLoader urlClassLoader = 
+            				new URLClassLoader(urls.toArray(new URL[urls.size()]));
+            			Bundle coreEclipseLinkBundle = FrameworkUtil.getBundle(DatabaseLogin.class);
+            			BundleDelegatingClassLoader bdcl = 
+            				BundleDelegatingClassLoader.createBundleClassLoaderFor(
+            					coreEclipseLinkBundle, urlClassLoader);
+                        login.setPlatformClassName(platformClass, bdcl);
+                        ConversionManager cm = login.getDatasourcePlatform().getConversionManager();
+                        cm.setLoader(bdcl);
+                        break;
+            		}
+            	}
+            }
             login.setDefaultSequence(new TableSequence("", AnalysisDatabase.KSAT_SEQUENCE_TABLENAME));
             analysisProject.setDatasourceLogin(login);
             DatabaseSession session = analysisProject.createDatabaseSession();
@@ -126,7 +163,6 @@ public class CreateNewDatabaseHandler extends AbstractHandler {
         	catch (Exception e) {
         		e.printStackTrace();
         	}
-        
         }
         return null;
     }

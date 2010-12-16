@@ -77,7 +77,7 @@ public class EditDatabaseDialog extends Dialog {
         if (buttonId == 0) { //Ok
         	if (dbProperties.databaseNameText.getText().length() == 0 ||
         		dbProperties.userNameText.getText().length() == 0 ||
-        		dbProperties.urlText.getText().length() == 0 ||
+        		dbProperties.urlCombo.getText().length() == 0 ||
         		dbProperties.passwordText.getText().length() == 0) {
         		IStatus status = new Status(IStatus.ERROR, AnalysesView.ID, "empty database property");
         		ErrorDialog.openError(activeShell, "Invalid Database Properties", 
@@ -88,9 +88,9 @@ public class EditDatabaseDialog extends Dialog {
         	else {
 	        	editDatabaseHandler.setDatabaseName(dbProperties.databaseNameText.getText());
 	    		editDatabaseHandler.setUserName(dbProperties.userNameText.getText());
-	    		editDatabaseHandler.setUrl(dbProperties.urlText.getText());
-	    		editDatabaseHandler.setDriver(dbProperties.driverText.getText());
-	    		editDatabaseHandler.setPlatform(dbProperties.platformText.getText());
+	    		editDatabaseHandler.setUrl(dbProperties.urlCombo.getText());
+	    		editDatabaseHandler.setDriver(dbProperties.driverCombo.getText());
+	    		editDatabaseHandler.setPlatform(dbProperties.platformCombo.getText());
 	    		editDatabaseHandler.setPassword(dbProperties.passwordText.getText());
 	    		int index = dbProperties.logLevelCombo.getSelectionIndex();
 	    		String item = dbProperties.logLevelCombo.getItem(index);
