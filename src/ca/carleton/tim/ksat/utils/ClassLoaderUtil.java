@@ -19,27 +19,46 @@
  * USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
-package ca.carleton.tim.ksat.persist;
+package ca.carleton.tim.ksat.utils;
 
 //javase imports
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-//KSAT domain imports
+//KSAT imports
 import ca.carleton.tim.ksat.client.DriverAdapter;
+import static ca.carleton.tim.ksat.client.DriverAdapter.DRIVER_REGISTRY;
 
-public class Drivers {
+public class ClassLoaderUtil {
 
-	protected Map<String, DriverAdapter> drivers;
-
-	public Drivers() {
-		super();
+	public static ClassLoader buildDriverClassLoader(String driverClass) {
+		ClassLoader cl = null;
+	    for (Map.Entry<String, DriverAdapter> me : DRIVER_REGISTRY.entrySet()) {
+	    	DriverAdapter da = me.getValue();
+	    	if (da.isOk()) {
+	    		if (da.getDriverClass().equals(driverClass)) {
+	    			List<String> paths = da.getJarPaths();
+	    			List<URL> urls = new ArrayList<URL>();
+	    			for (String path : paths) {
+	    				File f = new File(path);
+	    				try {
+							urls.add(f.toURI().toURL());
+						}
+	    				catch (MalformedURLException e) {
+							// ignore
+						}
+	    			}
+	    			cl = new URLClassLoader(urls.toArray(new URL[urls.size()]),
+	    				ClassLoaderUtil.class.getClassLoader());
+	                break;
+	    		}
+	    	}
+	    }
+	    return cl;
 	}
-	
-	public Map<String, DriverAdapter> getDrivers() {
-		return drivers;
-	}
-	public void setDrivers(Map<String, DriverAdapter> drivers) {
-		this.drivers = drivers;
-	}
-	
 }

@@ -21,9 +21,11 @@
  */
 package ca.carleton.tim.ksat.client.dialogs;
 
+//Graphics (SWT/JFaces) imports
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Shell;
 
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.handlers.CreateNewAnalysisHandler;
 
 public class CreateNewAnalysisDialog extends InputDialog {

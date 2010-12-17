@@ -22,8 +22,6 @@
 package ca.carleton.tim.ksat.client.dialogs;
 
 //Graphics (SWT/JFaces) imports
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.window.IShellProvider;
@@ -32,6 +30,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
+//RCP imports
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.AnalysisDatabase;
 import ca.carleton.tim.ksat.client.handlers.EditDatabaseHandler;
 import ca.carleton.tim.ksat.client.views.AnalysesView;

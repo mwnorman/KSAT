@@ -21,13 +21,16 @@
  */
 package ca.carleton.tim.ksat.client.handlers;
 
+//Graphics (SWT/JFaces) imports
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.handlers.HandlerUtil;
+
+//RCP imports
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.handlers.HandlerUtil;
 
 public class RemoveDatabaseHandler extends AbstractHandler implements IHandler {
 

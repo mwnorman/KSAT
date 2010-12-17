@@ -21,15 +21,20 @@
  */
 package ca.carleton.tim.ksat.client.views;
 
+//javase imports
 import java.util.Arrays;
 import java.util.List;
 
+//Graphics (JFaces/SWT) imports
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.swt.widgets.TableItem;
 
+//EclipseLink imports
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.UnitOfWork;
+
+//KSAT domain imports
 import ca.carleton.tim.ksat.model.Site;
 
 public class TableCellModifier implements ICellModifier {

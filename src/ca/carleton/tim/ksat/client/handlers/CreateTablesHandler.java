@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.Status;
 //EclipseLink import
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.KSATApplication;
 import ca.carleton.tim.ksat.client.KSATRoot;
 import ca.carleton.tim.ksat.client.views.AnalysesView;

@@ -25,14 +25,14 @@ package ca.carleton.tim.ksat.client;
 import java.util.ArrayList;
 import java.util.List;
 
+//KSAT domain imports
 import ca.carleton.tim.ksat.utils.FileUtil;
 
 public class DriverInfo {
 	
 	protected String driverClass = "";
 	protected List<String> jarFilePaths = new ArrayList<String>();
-	
-	
+
 	protected void addJarPath(String jarPath) {
 		String nPath = FileUtil.normalize(jarPath);
 		jarFilePaths.add(nPath);

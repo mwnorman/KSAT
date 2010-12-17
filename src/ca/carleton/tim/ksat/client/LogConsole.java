@@ -21,6 +21,7 @@
  */
 package ca.carleton.tim.ksat.client;
 
+//graphic (JFaces/SWT) imports
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;

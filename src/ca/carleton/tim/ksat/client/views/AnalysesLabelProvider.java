@@ -25,6 +25,7 @@ package ca.carleton.tim.ksat.client.views;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.AnalysisDatabase;
 import ca.carleton.tim.ksat.client.KSATApplication;
 import ca.carleton.tim.ksat.client.KSATRoot;

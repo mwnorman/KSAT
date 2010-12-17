@@ -29,6 +29,7 @@
  */
 package ca.carleton.tim.ksat.utils;
 
+//EclipseLink imports
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;

@@ -21,6 +21,7 @@
  */
 package ca.carleton.tim.ksat.client;
 
+//graphic (JFaces/SWT) imports
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
 

@@ -21,6 +21,7 @@
  */
 package ca.carleton.tim.ksat.client.preferences;
 
+//Graphics (SWT/JFaces) imports
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbench;

@@ -52,7 +52,7 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
-//KSAT (domain) imports
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.KSATRoot;
 import ca.carleton.tim.ksat.client.ResultAdapter;
 import ca.carleton.tim.ksat.model.AnalysisResult;

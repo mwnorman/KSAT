@@ -21,7 +21,7 @@
  */
 package ca.carleton.tim.ksat.client;
 
-//KSAT imports
+//KSAT domain imports
 import ca.carleton.tim.ksat.model.AnalysisResult;
 
 public class ResultAdapter {

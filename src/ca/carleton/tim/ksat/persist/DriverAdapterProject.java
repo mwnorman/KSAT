@@ -44,7 +44,7 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
 
-//KSAT imports
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.DriverAdapter;
 import ca.carleton.tim.ksat.client.DriverInfo;
 

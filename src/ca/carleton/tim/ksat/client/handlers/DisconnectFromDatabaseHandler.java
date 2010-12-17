@@ -21,15 +21,20 @@
  */
 package ca.carleton.tim.ksat.client.handlers;
 
+//javase imports
 import java.util.ArrayList;
 
+//Graphics (SWT/JFace) imports
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.handlers.HandlerUtil;
+
+//RCP imports
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.handlers.HandlerUtil;
 
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.AnalysisAdapter;
 import ca.carleton.tim.ksat.client.AnalysisDatabase;
 import ca.carleton.tim.ksat.client.KSATApplication;

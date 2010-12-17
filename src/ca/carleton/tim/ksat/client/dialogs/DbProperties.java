@@ -21,6 +21,7 @@
  */
 package ca.carleton.tim.ksat.client.dialogs;
 
+//Graphics (SWT/JFaces) imports
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Text;
 

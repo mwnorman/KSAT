@@ -28,8 +28,6 @@ import java.net.URL;
 import java.util.Collection;
 
 //Graphics (SWT/JFaces) imports
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -40,8 +38,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.osgi.service.datalocation.Location;
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -57,6 +53,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+
+//RCP imports
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
+
+//EclipseLink imports
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 
 //KSAT imports
 import ca.carleton.tim.ksat.client.DriverAdapter;

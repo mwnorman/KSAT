@@ -45,7 +45,7 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-//KSAT imports
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.preferences.LoggingPreferencePage;
 import ca.carleton.tim.ksat.persist.DriverAdapterProject;
 import ca.carleton.tim.ksat.persist.Drivers;

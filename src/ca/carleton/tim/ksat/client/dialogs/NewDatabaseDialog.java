@@ -21,16 +21,12 @@
  */
 package ca.carleton.tim.ksat.client.dialogs;
 
+//javas imports
 import java.util.Map;
-
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+//Graphics (SWT/JFaces) imports
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.window.IShellProvider;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -41,6 +37,16 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+//RCP imports
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+
+//EclipseLink imports
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
+
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.AnalysisDatabase;
 import ca.carleton.tim.ksat.client.DriverAdapter;
 import ca.carleton.tim.ksat.client.handlers.CreateNewDatabaseHandler;

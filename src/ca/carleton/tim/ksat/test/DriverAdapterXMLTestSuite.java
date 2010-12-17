@@ -44,7 +44,7 @@ import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
-//KSAT imports
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.DriverAdapter;
 import ca.carleton.tim.ksat.persist.DriverAdapterProject;
 import ca.carleton.tim.ksat.persist.Drivers;

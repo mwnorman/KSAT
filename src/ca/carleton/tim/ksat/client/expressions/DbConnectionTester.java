@@ -21,8 +21,10 @@
  */
 package ca.carleton.tim.ksat.client.expressions;
 
+//RCP imports
 import org.eclipse.core.expressions.PropertyTester;
 
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.AnalysisDatabase;
 
 public class DbConnectionTester extends PropertyTester {

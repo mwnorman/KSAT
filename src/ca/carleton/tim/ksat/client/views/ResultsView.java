@@ -21,6 +21,7 @@
  */
 package ca.carleton.tim.ksat.client.views;
 
+//Graphics (JFaces/SWT) imports
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;

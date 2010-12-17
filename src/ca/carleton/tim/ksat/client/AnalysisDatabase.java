@@ -31,6 +31,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
 
 //EclipseLink imports
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
@@ -43,6 +44,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import ca.carleton.tim.ksat.client.preferences.LoggingPreferencePage;
 import ca.carleton.tim.ksat.model.Analysis;
 import ca.carleton.tim.ksat.persist.AnalysisProject;
+import static ca.carleton.tim.ksat.utils.ClassLoaderUtil.buildDriverClassLoader;
 
 public class AnalysisDatabase {
 
@@ -90,6 +92,9 @@ public class AnalysisDatabase {
         login.setConnectionString(loginConfig.getConnectionURL());
         login.setDriverClassName(loginConfig.getDriverClass());
         login.setPlatformClassName(loginConfig.getPlatformClass());
+        ClassLoader driverClassLoader = buildDriverClassLoader(loginConfig.getDriverClass());
+        ConversionManager cm = login.getDatasourcePlatform().getConversionManager();
+        cm.setLoader(driverClassLoader);
         login.setDefaultSequence(new TableSequence("", KSAT_SEQUENCE_TABLENAME));
         analysisProject.setDatasourceLogin(login);
         session = analysisProject.createDatabaseSession();

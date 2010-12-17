@@ -21,20 +21,27 @@
  */
 package ca.carleton.tim.ksat.client.handlers;
 
+//javase imports
 import java.net.URLDecoder;
 import java.util.List;
 
+//Graphics (SWT/JFaces) imports
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.handlers.HandlerUtil;
+
+//RCP imports
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.handlers.HandlerUtil;
 
+//EclipseLink imports
+import org.eclipse.persistence.sessions.UnitOfWork;
+
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.KSATApplication;
 import ca.carleton.tim.ksat.client.KSATRoot;
 import ca.carleton.tim.ksat.client.views.AnalysesView;

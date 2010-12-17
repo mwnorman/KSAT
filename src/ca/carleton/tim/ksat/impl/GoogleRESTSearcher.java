@@ -40,9 +40,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+//RCP imports
 import org.eclipse.core.runtime.IProgressMonitor;
 
-//KSAT imports
+//KSAT domain imports
 import ca.carleton.tim.ksat.json.JSONObject;
 import ca.carleton.tim.ksat.model.Analysis;
 import ca.carleton.tim.ksat.model.KeywordExpression;

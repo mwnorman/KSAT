@@ -35,8 +35,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 //Graphics (SWT/JFaces) imports
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -58,6 +56,10 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.eclipse.ui.part.ViewPart;
+
+//RCP imports
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
 //EclipseLink imports
 import org.eclipse.persistence.oxm.XMLContext;

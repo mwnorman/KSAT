@@ -21,6 +21,7 @@
  */
 package ca.carleton.tim.ksat.client.handlers;
 
+//javase imports
 import java.io.File;
 import java.io.FileWriter;
 import java.net.MalformedURLException;
@@ -30,13 +31,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+//Graphics (SWT/JFace) imports
+import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.service.datalocation.Location;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.handlers.HandlerUtil;
+
+//RCP imports
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.window.Window;
-import org.eclipse.osgi.service.datalocation.Location;
+
+//EclipseLink imports
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
@@ -48,12 +57,8 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.handlers.HandlerUtil;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.AnalysisDatabase;
 import ca.carleton.tim.ksat.client.DriverAdapter;
 import ca.carleton.tim.ksat.client.KSATApplication;
@@ -61,7 +66,6 @@ import ca.carleton.tim.ksat.client.KSATRoot;
 import ca.carleton.tim.ksat.client.dialogs.NewDatabaseDialog;
 import ca.carleton.tim.ksat.client.views.AnalysesView;
 import ca.carleton.tim.ksat.persist.AnalysisProject;
-import ca.carleton.tim.ksat.utils.BundleDelegatingClassLoader;
 import static ca.carleton.tim.ksat.client.DriverAdapter.DRIVER_REGISTRY;
 
 public class CreateNewDatabaseHandler extends AbstractHandler {
@@ -111,14 +115,23 @@ public class CreateNewDatabaseHandler extends AbstractHandler {
 							}
             			}
             			URLClassLoader urlClassLoader = 
-            				new URLClassLoader(urls.toArray(new URL[urls.size()]));
+            				new URLClassLoader(urls.toArray(new URL[urls.size()]),
+            				this.getClass().getClassLoader());
+            			/*
             			Bundle coreEclipseLinkBundle = FrameworkUtil.getBundle(DatabaseLogin.class);
+            			BundleProxyClassLoader bpcl = 
+            				new BundleProxyClassLoader(coreEclipseLinkBundle, urlClassLoader);
             			BundleDelegatingClassLoader bdcl = 
             				BundleDelegatingClassLoader.createBundleClassLoaderFor(
             					coreEclipseLinkBundle, urlClassLoader);
-                        login.setPlatformClassName(platformClass, bdcl);
+                        login.setPlatformClassName(platformClass, bpcl);
                         ConversionManager cm = login.getDatasourcePlatform().getConversionManager();
-                        cm.setLoader(bdcl);
+                        cm.setLoader(bpcl);
+                        break;
+            			*/
+                        login.setPlatformClassName(platformClass, urlClassLoader);
+                        ConversionManager cm = login.getDatasourcePlatform().getConversionManager();
+                        cm.setLoader(urlClassLoader);
                         break;
             		}
             	}

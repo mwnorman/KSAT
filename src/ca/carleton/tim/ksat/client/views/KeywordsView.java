@@ -26,12 +26,6 @@ import java.net.URLDecoder;
 import java.util.List;
 
 //Graphics (JFaces/SWT) imports
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -48,9 +42,15 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-
-//RCP imports
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
+
+//EclipseLin imports
+import org.eclipse.persistence.sessions.DatabaseSession;
 
 //KSAT domain imports
 import ca.carleton.tim.ksat.client.KSATApplication;

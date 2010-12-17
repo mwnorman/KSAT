@@ -48,7 +48,7 @@ import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.sessions.Project;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME_QNAME;
 
-//KSAT imports
+//KSAT domain imports
 import ca.carleton.tim.ksat.model.AnalysisResult;
 import ca.carleton.tim.ksat.model.KeywordExpression;
 import ca.carleton.tim.ksat.model.Site;

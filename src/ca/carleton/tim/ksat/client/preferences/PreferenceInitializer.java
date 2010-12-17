@@ -21,6 +21,7 @@
  */
 package ca.carleton.tim.ksat.client.preferences;
 
+//RCP imports
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 
 /**

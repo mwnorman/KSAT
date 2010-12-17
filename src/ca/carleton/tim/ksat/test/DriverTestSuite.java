@@ -26,6 +26,7 @@ import org.junit.Test;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.DriverAdapter;
 
 public class DriverTestSuite {

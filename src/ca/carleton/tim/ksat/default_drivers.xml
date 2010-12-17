@@ -91,4 +91,40 @@
         <paths/>
      </driver-info>
   </driver>
+  <driver name="(MS)SQLServer">
+     <example-urls>
+         <url name="typical"><![CDATA[jdbc:sqlserver://<host>:<port(default is 1433)>;DatabaseName=<dbname>]]></url>
+     </example-urls>
+     <eclipselink-platforms>
+         <platform>org.eclipse.persistence.platform.database.SQLServerPlatform</platform>
+     </eclipselink-platforms>
+     <driver-info>
+        <driver-class>com.microsoft.sqlserver.jdbc.SQLServerDriver</driver-class>
+        <paths/>
+     </driver-info>
+  </driver>
+  <driver name="(jTDS)SQLServer">
+     <example-urls>
+         <url name="typical"><![CDATA[jdbc:jtds:sqlserver://<host>:<port(optional;default is 1433)>/<dbname>;<prop1=value>(properties are optional)]]></url>
+     </example-urls>
+     <eclipselink-platforms>
+         <platform>org.eclipse.persistence.platform.database.SQLServerPlatform</platform>
+     </eclipselink-platforms>
+     <driver-info>
+        <driver-class>net.sourceforge.jtds.jdbc.Driver</driver-class>
+        <paths/>
+     </driver-info>
+  </driver>
+  <driver name="PostgreSQL">
+     <example-urls>
+         <url name="typical"><![CDATA[jdbc:postgresql://<host>:<port(optional;default is 5432)>/<dbname>]]></url>
+     </example-urls>
+     <eclipselink-platforms>
+         <platform>org.eclipse.persistence.platform.database.PostgreSQLPlatform</platform>
+     </eclipselink-platforms>
+     <driver-info>
+        <driver-class>org.postgresql.Driver</driver-class>
+        <paths/>
+     </driver-info>
+  </driver>
 </drivers>

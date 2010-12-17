@@ -21,21 +21,30 @@
  */
 package ca.carleton.tim.ksat.client.handlers;
 
+//javase imports
 import java.io.File;
 import java.io.FileWriter;
 import java.net.URL;
 import java.util.List;
 import java.util.Vector;
 
+//Graphics (SWT/JFace) imports
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.service.datalocation.Location;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.handlers.HandlerUtil;
+
+//RCP imports
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.window.Window;
-import org.eclipse.osgi.service.datalocation.Location;
+
+//EclipseLink imports
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
@@ -46,10 +55,8 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.handlers.HandlerUtil;
 
+//KSAT domain imports
 import ca.carleton.tim.ksat.client.AnalysisDatabase;
 import ca.carleton.tim.ksat.client.KSATApplication;
 import ca.carleton.tim.ksat.client.KSATRoot;

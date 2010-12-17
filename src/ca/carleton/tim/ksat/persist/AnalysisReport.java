@@ -25,7 +25,7 @@ package ca.carleton.tim.ksat.persist;
 import java.util.Date;
 import java.util.List;
 
-//domain-specific imports (KSAT)
+//KSAT domain imports
 import ca.carleton.tim.ksat.model.Analysis;
 import ca.carleton.tim.ksat.model.AnalysisResult;
 import ca.carleton.tim.ksat.model.KeywordExpression;
